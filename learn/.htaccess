@@ -1,0 +1,6 @@
+# Rewrite /learn/lesson/123 → /learn/lesson.php?id=123
+Options -Indexes
+RewriteEngine On
+
+# /learn/lesson/123
+RewriteRule ^lesson/([0-9]+)/?$ lesson.php?id=$1 [L,QSA]

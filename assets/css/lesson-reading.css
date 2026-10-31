@@ -1,0 +1,236 @@
+/* ==========================================================================
+   WEB3EDU — LESSON READING EXPERIENCE
+   Only the lesson content container becomes independently scrollable on
+   desktop. Everything else on the page (audio, video, TTS controls, guide
+   progress / lesson info sidebar, prev/next nav, AI study card, footer)
+   keeps its normal page-flow layout — this file does not touch them.
+   ========================================================================== */
+
+@media (min-width: 769px) {
+  .lesson-content-body.lesson-content-scroll {
+    height: 700px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary, #8b5cf6) transparent;
+  }
+
+  /* Thin, rounded, purple-themed scrollbar (WebKit) */
+  .lesson-content-body.lesson-content-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .lesson-content-body.lesson-content-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .lesson-content-body.lesson-content-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(139, 92, 246, 0.4);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .lesson-content-body.lesson-content-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(139, 92, 246, 0.65);
+  }
+}
+
+/* Tablets and mobile: no fixed height, no internal scroll — content
+   expands naturally and the page scrolls as a whole (no nested scroll). */
+@media (max-width: 768px) {
+  .lesson-content-body.lesson-content-scroll {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+/* ==========================================================================
+   RICH LESSON CONTENT (CKEditor 5) — typography and media for the sanitized
+   HTML now stored in lessons.full_content. Legacy plain-text lessons only
+   ever produce <p>/<br>/<ul>/<ol>/<li>, all covered below too, so this
+   block is safe for both old and new content alike. No rule here assumes
+   a fixed content width — everything scales with the container so nothing
+   causes horizontal scroll on any breakpoint. */
+
+.lesson-content-body { word-wrap: break-word; overflow-wrap: break-word; }
+
+.lesson-content-body p { margin: 0 0 1em; line-height: 1.75; }
+
+.lesson-content-body h1,
+.lesson-content-body h2,
+.lesson-content-body h3,
+.lesson-content-body h4,
+.lesson-content-body h5,
+.lesson-content-body h6 {
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin: 1.4em 0 0.6em;
+}
+.lesson-content-body h1:first-child,
+.lesson-content-body h2:first-child,
+.lesson-content-body h3:first-child { margin-top: 0; }
+
+.lesson-content-body h1 { font-size: 1.8rem; }
+.lesson-content-body h2 { font-size: 1.5rem; }
+.lesson-content-body h3 { font-size: 1.25rem; }
+.lesson-content-body h4 { font-size: 1.1rem; }
+.lesson-content-body h5 { font-size: 1rem; }
+.lesson-content-body h6 { font-size: 0.9rem; color: var(--text-muted); }
+
+.lesson-content-body ul,
+.lesson-content-body ol {
+  margin: 0 0 1em;
+  padding-left: 1.4em;
+  line-height: 1.75;
+}
+.lesson-content-body li { margin-bottom: 0.35em; }
+
+.lesson-content-body strong { font-weight: 700; color: var(--text); }
+.lesson-content-body em { font-style: italic; }
+.lesson-content-body u { text-decoration: underline; }
+.lesson-content-body s,
+.lesson-content-body strike,
+.lesson-content-body del { text-decoration: line-through; opacity: 0.75; }
+
+.lesson-content-body a {
+  color: var(--primary-bright);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.lesson-content-body a:hover { color: var(--primary); }
+
+.lesson-content-body blockquote {
+  margin: 1.2em 0;
+  padding: 0.6em 1.2em;
+  border-left: 3px solid var(--primary);
+  background: var(--bg-card2, rgba(139, 92, 246, 0.06));
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--text-dim, var(--text-muted));
+  font-style: italic;
+}
+
+.lesson-content-body hr {
+  border: none;
+  border-top: 1.5px solid var(--border);
+  margin: 2em 0;
+}
+
+/* Images — always responsive, never wider than their container, and
+   centered by default. Centering lives on this general rule (not just
+   figure.image img) as a safety net for any image saved before the
+   editor's image.insert.type:'block' fix — CKEditor can insert images as
+   bare, unwrapped, unclassed inline <img> tags depending on cursor
+   context, which no figure-scoped selector can ever target. */
+.lesson-content-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.lesson-content-body figure {
+  margin: 1.4em 0;
+  max-width: 100%;
+}
+.lesson-content-body figure.image {
+  text-align: center;
+}
+.lesson-content-body figure.image.image-style-side {
+  float: right;
+  max-width: 50%;
+  margin-left: 1.2em;
+}
+@media (max-width: 600px) {
+  /* Never let a side-floated image force horizontal scroll on small screens */
+  .lesson-content-body figure.image.image-style-side {
+    float: none;
+    max-width: 100%;
+    margin-left: 0;
+  }
+}
+.lesson-content-body figcaption {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+/* Uploaded MP4 video + YouTube/Vimeo embeds — both wrapped in
+   <figure class="media"> by the admin editor; force a responsive
+   16:9 box for iframes so embeds never overflow on mobile. */
+.lesson-content-body figure.media {
+  margin: 1.4em 0;
+  max-width: 100%;
+}
+.lesson-content-body video {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  display: block;
+  background: #000;
+}
+.lesson-content-body figure.media iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-width: 100%;
+  border: none;
+  border-radius: var(--radius);
+  display: block;
+}
+
+/* Tables — horizontally scrollable on narrow screens instead of breaking
+   page layout, never causing page-level horizontal scroll. */
+.lesson-content-body .table-scroll-wrap,
+.lesson-content-body table {
+  max-width: 100%;
+}
+.lesson-content-body table {
+  border-collapse: collapse;
+  margin: 1.4em 0;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.lesson-content-body table tr { }
+.lesson-content-body table td,
+.lesson-content-body table th {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  white-space: normal;
+}
+.lesson-content-body table th {
+  background: var(--bg-card2, rgba(139, 92, 246, 0.08));
+  font-weight: 700;
+  text-align: left;
+}
+
+/* Code blocks — syntax-highlight-ready container, wraps instead of
+   overflowing on mobile. */
+.lesson-content-body pre {
+  background: #0d0a17;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 1.2em 0;
+  max-width: 100%;
+}
+.lesson-content-body pre code {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #d4d4f7;
+  white-space: pre;
+  background: none;
+  padding: 0;
+}
+.lesson-content-body :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-card2, rgba(139, 92, 246, 0.1));
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}

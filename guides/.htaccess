@@ -1,0 +1,8 @@
+Options -Indexes
+RewriteEngine On
+
+# /guides/4/lesson/13  →  /guides/lesson.php?guide_id=4&id=13
+# This handles the URL when Apache is processing from inside the /guides/ directory.
+# RewriteBase is intentionally omitted — InfinityFree works better without it here.
+
+RewriteRule ^([0-9]+)/lesson/([0-9]+)/?$ lesson.php?guide_id=$1&id=$2 [L,QSA]

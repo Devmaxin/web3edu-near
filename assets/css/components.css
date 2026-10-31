@@ -1,0 +1,374 @@
+/* ==========================================================================
+   WEB3EDU V2 — COMPONENT LIBRARY
+   Depends on tokens.css being loaded first.
+   ========================================================================== */
+
+/* ---- Reset / base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 var(--space-3);
+  letter-spacing: -0.02em;
+}
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+p  { color: var(--text-secondary); margin: 0 0 var(--space-4); }
+a  { color: inherit; text-decoration: none; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-5); }
+
+/* --------------------------------------------------------------------------
+   SIGNATURE ELEMENT — chain rule divider
+   A thin line with small nodes; used as a section divider and under the
+   active nav/tab item. Not decorative sequence numbers — this is a rule.
+   -------------------------------------------------------------------------- */
+.chain-divider {
+  --node: 6px;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--border-strong) 0, var(--border-strong) 28px,
+    transparent 28px, transparent 40px
+  );
+  position: relative;
+  margin: var(--space-6) 0;
+}
+.chain-divider::before,
+.chain-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: var(--node); height: var(--node);
+  border-radius: 50%;
+  background: var(--accent-bright);
+  box-shadow: 0 0 8px var(--accent-bright);
+}
+.chain-divider::before { left: 0; }
+.chain-divider::after { right: 0; }
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease), background var(--duration-fast) var(--ease);
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: var(--text-on-accent);
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:hover { filter: brightness(1.08); }
+
+.btn-secondary {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover { background: var(--surface-hover); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { color: var(--text-primary); background: var(--surface); }
+
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 0.5rem 1rem; font-size: var(--text-xs); }
+.btn-lg { padding: 1rem 2rem; font-size: var(--text-base); }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ---- Cards ---- */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  transition: box-shadow var(--duration-base) var(--ease), transform var(--duration-base) var(--ease);
+}
+.card-interactive:hover {
+  box-shadow: var(--shadow-raised);
+  transform: translateY(-2px);
+}
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+
+/* ---- Inputs ---- */
+.field { margin-bottom: var(--space-4); }
+.field label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+.input, .select, .textarea {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  transition: border-color var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease);
+}
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.input::placeholder { color: var(--text-muted); }
+.field-hint { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-1); }
+.field-error { font-size: var(--text-xs); color: var(--danger); margin-top: var(--space-1); }
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+}
+.badge-accent  { background: var(--accent-soft); color: var(--accent-bright); }
+.badge-success { background: var(--success-soft); color: var(--success); }
+.badge-warning { background: var(--warning-soft); color: var(--warning); }
+.badge-danger  { background: var(--danger-soft); color: var(--danger); }
+
+/* ---- Alerts ---- */
+.alert {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--text-sm);
+}
+.alert-success { border-color: var(--success); background: var(--success-soft); }
+.alert-warning { border-color: var(--warning); background: var(--warning-soft); }
+.alert-danger  { border-color: var(--danger); background: var(--danger-soft); }
+
+/* ---- Modals ---- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5, 3, 12, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+  padding: var(--space-6);
+  max-width: 480px;
+  width: calc(100% - var(--space-5) * 2);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4); }
+.modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: var(--text-lg); }
+
+/* ---- Dropdowns ---- */
+.dropdown { position: relative; display: inline-block; }
+.dropdown-menu {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+  min-width: 200px;
+  padding: var(--space-2);
+  z-index: 100;
+}
+.dropdown-item {
+  display: block; width: 100%; text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: none; border: none;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.dropdown-item:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+/* ---- Empty state (shared: Learn, Guide, Dashboard, Admin) ---- */
+.learn-empty {
+  text-align: center; padding: var(--space-8) var(--space-5);
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-lg);
+  color: var(--text-muted);
+}
+
+/* ---- Section scaffolding (shared: Home, Learn, Guide, Dashboard) ---- */
+.page-header { padding: var(--space-7) 0 var(--space-5); }
+.page-header-title { font-size: clamp(2rem, 5vw, var(--text-4xl)); margin-bottom: var(--space-2); }
+.gradient-text { background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.page-header-subtitle { color: var(--text-secondary); font-size: var(--text-lg); max-width: 620px; }
+.section { padding: var(--space-8) 0; }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-3); }
+.section-label { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-bright); margin-bottom: var(--space-2); }
+.section-title { margin-bottom: 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+
+/* ---- Content cards (lessons / guides) ---- */
+.content-card { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+.content-card-thumb { aspect-ratio: 16/9; background: var(--surface-raised); position: relative; overflow: hidden; }
+.content-card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--duration-slow) var(--ease); }
+.content-card:hover .content-card-thumb img { transform: scale(1.05); }
+.content-card-badge { position: absolute; top: var(--space-3); left: var(--space-3); }
+.content-card-body { padding: var(--space-4); flex: 1; display: flex; flex-direction: column; }
+.content-card-meta { display: flex; gap: var(--space-3); font-size: var(--text-xs); color: var(--text-muted); margin: var(--space-2) 0 var(--space-4); }
+.content-card-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+
+/* ---- Feature grid ---- */
+.feature-card { text-align: center; }
+.feature-icon {
+  width: 48px; height: 48px; margin: 0 auto var(--space-3);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent-bright);
+}
+
+/* ---- Chat bubbles (shared: AI Tutor page + sitewide popup widget) ---- */
+.ai-msg { max-width: 78%; font-size: var(--text-sm); line-height: 1.55; padding: 0.7rem 1rem; border-radius: var(--radius-md); white-space: pre-wrap; word-wrap: break-word; }
+.ai-msg-user { align-self: flex-end; background: var(--accent-gradient); color: #fff; border-bottom-right-radius: 4px; }
+.ai-msg-assistant { align-self: flex-start; background: var(--surface-raised); border: 1px solid var(--border); color: var(--text-primary); border-bottom-left-radius: 4px; }
+.ai-msg-typing { display: inline-flex; gap: 4px; align-items: center; padding: 4px 0; }
+.ai-msg-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-bright); animation: ai-typing-bounce 1.2s infinite ease-in-out; }
+.ai-msg-typing span:nth-child(2) { animation-delay: 0.15s; }
+.ai-msg-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ai-typing-bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+.ai-input-row {
+  display: flex; gap: var(--space-2); align-items: flex-end;
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+}
+.ai-input-row textarea {
+  flex: 1; background: none; border: none; resize: none; color: var(--text-primary);
+  font-family: var(--font-body); font-size: var(--text-base); line-height: 1.5;
+  max-height: 120px; padding: 0.5rem 0;
+}
+.ai-input-row textarea:focus { outline: none; }
+.ai-input-row textarea:disabled { opacity: 0.5; }
+.ai-send-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: none; flex-shrink: 0;
+  background: var(--accent-gradient); color: #fff; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform var(--duration-fast) var(--ease);
+}
+.ai-send-btn:hover:not(:disabled) { transform: scale(1.08); }
+.ai-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---- Bookmark button (shared) ---- */
+.bookmark-btn {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: var(--surface-raised); border: 1px solid var(--border);
+  color: var(--text-secondary); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all var(--duration-fast) var(--ease);
+}
+.bookmark-btn:hover { border-color: var(--accent); color: var(--accent-bright); }
+.bookmark-btn.active { background: var(--accent-gradient); color: #fff; border-color: transparent; }
+
+/* ---- Pagination ---- */
+.pagination { display: flex; gap: var(--space-2); align-items: center; }
+.page-btn {
+  min-width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  border: 1px solid transparent;
+}
+.page-btn.active { background: var(--accent-gradient); color: #fff; }
+.page-btn:hover:not(.active) { border-color: var(--border-strong); }
+
+/* ---- Pill toggle (Guide / Lessons, etc.) ---- */
+.pill-toggle {
+  display: inline-flex;
+  background: var(--surface-raised);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  gap: 4px;
+}
+.pill-toggle button, .pill-toggle a {
+  border: none; background: none; cursor: pointer;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
+}
+.pill-toggle button.active, .pill-toggle a.active { background: var(--accent-gradient); color: #fff; }
+
+/* ---- Progress bar (shared: Learn, Dashboard, Guide pages) ---- */
+.progress-track {
+  width: 100%; height: 6px; border-radius: var(--radius-pill);
+  background: var(--surface-raised); overflow: hidden; margin: var(--space-2) 0;
+}
+.progress-fill { height: 100%; background: var(--accent-gradient); border-radius: var(--radius-pill); transition: width var(--duration-slow) var(--ease); }
+
+/* ---- Stat chip (dashboard numbers) ---- */
+.stat-chip {
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  text-align: center;
+}
+.stat-chip .value {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+.stat-chip .label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---- Shared responsive grid collapse (Home, Learn, Guide, Dashboard, Airdrops) ---- */
+@media (max-width: 860px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}

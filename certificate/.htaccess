@@ -1,0 +1,8 @@
+Options -Indexes
+RewriteEngine On
+
+# /certificate/verify?id=WEB3-2026-000012  ->  /certificate/verify.php?id=WEB3-2026-000012
+# (works either way since verify.php exists directly; this rewrite just keeps
+# the extension-less URL from the spec working if it's ever linked without .php)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^verify/?$ verify.php [L,QSA]

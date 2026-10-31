@@ -1,0 +1,161 @@
+/* ============================================================
+   Career Paths — Welcome/Switch Modal + Learn page integration
+   ============================================================ */
+
+.cp-modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(8, 6, 20, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-4);
+  opacity: 0; transition: opacity var(--duration-base) var(--ease);
+}
+.cp-modal-overlay.is-visible { opacity: 1; }
+.cp-modal-overlay[hidden] { display: none; }
+
+.cp-modal {
+  position: relative;
+  width: 100%; max-width: 640px;
+  max-height: 88vh; overflow-y: auto;
+  background: var(--bg-card, #15121f);
+  border: 1px solid var(--border-strong, rgba(255,255,255,0.1));
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: var(--shadow-raised, 0 24px 60px rgba(0,0,0,0.5));
+  padding: var(--space-7) var(--space-6);
+  transform: translateY(12px) scale(0.98);
+  transition: transform var(--duration-base) var(--ease);
+}
+.cp-modal-overlay.is-visible .cp-modal { transform: translateY(0) scale(1); }
+
+.cp-modal-close {
+  position: absolute; top: var(--space-4); right: var(--space-4);
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg-elevated, rgba(255,255,255,0.06));
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  color: var(--text-muted); cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--duration-fast) var(--ease);
+}
+.cp-modal-close:hover { background: var(--bg-elevated); color: #fff; }
+
+.cp-modal-title {
+  text-align: center; font-family: var(--font-display, inherit);
+  font-size: var(--text-2xl, 1.6rem); margin: 0 0 var(--space-2);
+}
+.cp-modal-subtitle {
+  text-align: center; color: var(--text-muted); margin: 0 0 var(--space-6);
+  line-height: 1.5;
+}
+
+.cp-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+@media (max-width: 560px) { .cp-card-grid { grid-template-columns: 1fr; } }
+
+.cp-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  text-align: left;
+  background: var(--bg-card2, rgba(255,255,255,0.03));
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: var(--radius-lg, 14px);
+  padding: var(--space-4);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease), background var(--duration-fast) var(--ease);
+  font-family: inherit; color: inherit;
+}
+.cp-card:hover, .cp-card:focus-visible {
+  border-color: var(--cp-color, var(--primary-bright));
+  background: rgba(255,255,255,0.05);
+  transform: translateY(-2px);
+  outline: none;
+}
+.cp-card.is-selected {
+  border-color: var(--cp-color, var(--primary-bright));
+  box-shadow: 0 0 0 2px var(--cp-color, var(--primary-bright)) inset;
+}
+.cp-card-icon { font-size: 26px; line-height: 1; }
+.cp-card-name { font-weight: 700; font-size: var(--text-base, 0.95rem); }
+.cp-card-desc { font-size: var(--text-xs, 0.78rem); color: var(--text-muted); line-height: 1.4; }
+
+.cp-skip-link {
+  display: block; margin: var(--space-5) auto 0; background: none; border: none;
+  color: var(--text-muted); font-size: var(--text-sm, 0.85rem); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.cp-skip-link:hover { color: #fff; }
+
+/* Step 2 — building animation */
+.cp-building { text-align: center; padding: var(--space-6) 0; }
+.cp-spinner {
+  width: 52px; height: 52px; margin: 0 auto var(--space-6);
+  border-radius: 50%;
+  border: 3px solid var(--border, rgba(255,255,255,0.1));
+  border-top-color: var(--primary-bright, #a78bfa);
+  animation: cpSpin 0.9s linear infinite;
+}
+@keyframes cpSpin { to { transform: rotate(360deg); } }
+
+.cp-building-list { list-style: none; margin: 0; padding: 0; display: inline-flex; flex-direction: column; gap: 12px; text-align: left; }
+.cp-building-list li {
+  opacity: 0.25; font-size: var(--text-sm, 0.9rem); color: var(--text-muted);
+  transition: opacity var(--duration-base) var(--ease), color var(--duration-base) var(--ease);
+  position: relative; padding-left: 26px;
+}
+.cp-building-list li::before {
+  content: ''; position: absolute; left: 0; top: 2px; width: 16px; height: 16px;
+  border-radius: 50%; border: 2px solid var(--border, rgba(255,255,255,0.15));
+}
+.cp-building-list li.is-active { opacity: 1; color: #fff; }
+.cp-building-list li.is-done { opacity: 0.85; color: var(--success, #4ade80); }
+.cp-building-list li.is-done::before {
+  content: '✓'; border-color: var(--success, #4ade80); color: var(--success, #4ade80);
+  font-size: 11px; display: flex; align-items: center; justify-content: center;
+}
+
+/* Step 3 — ready */
+.cp-ready { text-align: center; padding: var(--space-6) 0; }
+.cp-ready-check {
+  width: 64px; height: 64px; margin: 0 auto var(--space-4);
+  border-radius: 50%; background: var(--success-soft, rgba(74,222,128,0.15));
+  color: var(--success, #4ade80); font-size: 30px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  animation: cpPop 0.4s var(--ease);
+}
+@keyframes cpPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.cp-start-btn { margin-top: var(--space-3); }
+
+/* ============================================================
+   Learn page — "Your Learning Path" section
+   ============================================================ */
+.lp-section { margin-bottom: var(--space-8); }
+.lp-card {
+  background: linear-gradient(145deg, rgba(139,92,246,0.08), rgba(255,255,255,0.02));
+  border: 1px solid var(--border-strong, rgba(255,255,255,0.1));
+  border-radius: var(--radius-xl, 18px);
+  padding: var(--space-6);
+}
+.lp-card-header {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  flex-wrap: wrap; margin-bottom: var(--space-5);
+}
+.lp-path-badge { display: flex; align-items: center; gap: 10px; }
+.lp-path-icon { font-size: 26px; }
+.lp-path-name { font-size: var(--text-lg, 1.15rem); font-weight: 700; margin: 0; }
+.lp-path-stage { font-size: var(--text-xs, 0.78rem); color: var(--text-muted); margin-top: 2px; }
+.lp-change-btn {
+  font-size: var(--text-xs, 0.78rem); padding: 6px 14px; border-radius: var(--radius-pill, 999px);
+  border: 1px solid var(--border, rgba(255,255,255,0.12)); background: transparent; color: var(--text-muted);
+  cursor: pointer; transition: all var(--duration-fast) var(--ease); white-space: nowrap;
+}
+.lp-change-btn:hover { color: #fff; border-color: var(--primary-bright); }
+
+.lp-progress-row { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+.lp-progress-row .progress-track { flex: 1; }
+.lp-progress-pct { font-family: var(--font-mono); font-size: var(--text-xs, 0.78rem); color: var(--text-muted); white-space: nowrap; }
+
+.lp-empty { text-align: center; padding: var(--space-6) var(--space-4); }
+.lp-empty p { color: var(--text-muted); margin: var(--space-2) 0 var(--space-4); }
+
+.lp-guide-library-heading { margin: var(--space-8) 0 var(--space-4); font-size: var(--text-lg, 1.15rem); font-weight: 700; }

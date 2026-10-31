@@ -1,0 +1,21 @@
+# Deny ALL direct HTTP access to this directory — it holds SQL schema and
+# migration files that should only ever be run manually via phpMyAdmin/CLI,
+# never served or downloaded over HTTP. No PHP files remain here (the old
+# seed-admin.php was removed in a prior security pass), so there is nothing
+# in this directory that application code needs to reach by URL at all.
+#
+# Same Apache directive style already proven working in this project's
+# uploads/.htaccess and secrets/.htaccess (Order/Deny, Apache 2.2-style).
+Order allow,deny
+Deny from all
+
+# Belt-and-braces for Apache 2.4-style configs, in case InfinityFree's stack
+# honors this syntax instead of (or in addition to) the block above — having
+# both present is harmless on either version and costs nothing if one is
+# simply ignored by the server.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Also stop directory listing, matching every other .htaccess in this project.
+Options -Indexes

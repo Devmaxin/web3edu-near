@@ -1,0 +1,288 @@
+/* ==========================================================================
+   WEB3EDU — MOBILE AUDIT PASS (320px – 768px)
+   ==========================================================================
+   Loaded last (see includes/header.php) so these rules win the cascade
+   over main.css and any page-specific stylesheet. Every rule below is
+   gated behind a max-width media query — nothing here changes anything
+   at 900px and above, so the desktop experience is untouched.
+
+   Sections:
+     1. Global (all pages)
+     2. Home Hero
+     3. Generic page headings (Dashboard / Learn / Profile)
+     4. Dashboard
+     5. Learn + Bookmarks (guide rows)
+     6. Profile / Settings / Security
+     7. Premium (pricing + comparison table)
+     8. Notifications / Certificates / Bookmarks (page shell + whitespace)
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL
+   -------------------------------------------------------------------------- */
+
+/* iOS Safari zooms the whole page in when a focused input has a font-size
+   under 16px. The Lessons/Videos search field was set to 0.88rem (~14px). */
+@media (max-width: 768px) {
+  .search-input { font-size: 16px; }
+}
+
+/* Any <table> not already given its own scroll wrapper stays readable
+   instead of forcing the page wide. Extends the existing 639px rule
+   in main.css up to the 768px boundary this audit targets. */
+@media (max-width: 768px) {
+  table:not(.admin-table) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+}
+
+/* Respect notches / home-indicator areas for anything pinned to the
+   bottom of the screen. env() falls back to 0 on devices without a
+   safe area, so this is a no-op everywhere else. */
+@media (max-width: 640px) {
+  .ai-fab {
+    bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  }
+  /* .flash-message is intentionally NOT included here: it's anchored from
+     the TOP (top: 76px, set in main.css), not the bottom. Pairing a `top`
+     with a `bottom` on a fixed element with no explicit height forces the
+     browser to stretch it to fill the entire span between them — this is
+     exactly what caused the flash message to render as a near-full-screen
+     box on mobile. Safe-area padding only matters for bottom-anchored
+     elements like .ai-fab above. */
+}
+
+
+/* --------------------------------------------------------------------------
+   2. HOME HERO
+   Desktop hero (>=900px) is untouched — home.css still controls it there.
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .hero { padding: var(--space-7) 0 var(--space-6); }
+
+  .hero-title {
+    font-size: clamp(1.65rem, 7vw, 2.15rem);
+    line-height: 1.22;
+    margin-bottom: var(--space-3);
+  }
+
+  /* The rotating headline was fixed to a single line (white-space: nowrap),
+     which let admin-authored headlines run off the edge of the screen on
+     narrow phones. Letting it wrap keeps every headline on-screen. */
+  .hero-rotator { min-height: 2.5em; }
+  .hero-rotator-item {
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.22;
+  }
+
+  .hero-badge { margin-bottom: var(--space-4); font-size: 0.72rem; }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: var(--space-5);
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-title { font-size: clamp(1.5rem, 7.5vw, 1.85rem); }
+}
+
+
+/* --------------------------------------------------------------------------
+   3. GENERIC PAGE HEADINGS
+   Dashboard ("Welcome back, …"), Profile ("Welcome, …") and Learn
+   ("Pick up where you left off") all use a bare <h1> with no class,
+   which inherited the 2.25rem default and had no mobile rule at all.
+   Headings that already have their own class (.hero-title,
+   .page-header-title, .auth-title, or an inline font-size) are more
+   specific and are unaffected by this rule.
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  h1 { font-size: 1.5rem; line-height: 1.25; }
+}
+
+
+/* --------------------------------------------------------------------------
+   4. DASHBOARD
+   -------------------------------------------------------------------------- */
+
+/* Stat chips (Total/Free/Premium lessons, Active airdrops) forced to a
+   single column by main.css's grid-4 rule, making the page needlessly
+   tall. 2-up reads better and keeps each number comfortably sized.
+   Scoped to .stat-grid (added in dashboard.php) so the unrelated
+   4-up feature grid on the homepage is unaffected. */
+@media (max-width: 640px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+  }
+}
+@media (max-width: 380px) {
+  .stat-chip { padding: var(--space-3); }
+  .stat-chip .value { font-size: 1.5rem; }
+}
+
+
+/* --------------------------------------------------------------------------
+   5. LEARN + BOOKMARKS — guide rows
+   .guide-row is shared by learn.php (Guide list) and bookmarks.php
+   (Guides tab). At narrow widths the thumbnail, title, bookmark button
+   and "Start/Continue Learning" link were all fighting for the same
+   line, leaving the action link cramped against the bookmark button.
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .guide-row {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .guide-row-thumb {
+    width: 44px;
+    height: 44px;
+    font-size: var(--text-base);
+  }
+  .guide-row .bookmark-btn { order: 2; }
+  .guide-row-action {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   6. PROFILE / SETTINGS / SECURITY
+   -------------------------------------------------------------------------- */
+
+/* The tabs used width: fit-content + fixed padding at every viewport
+   size, so at narrow widths the row could run close to (or past) the
+   edges, tabs weren't equal width, and nothing forced the label text
+   to sit vertically centered once flex stretched the row's height.
+   Equal-width flex tabs fix all four at once and can never overflow,
+   since each tab is always exactly 1/3 of the available width.
+   min-height: 44px matches the standard mobile touch-target guideline
+   (was 40px) and the slightly larger gap keeps the three pills from
+   reading as one fused bar at the widths where they're tightest. */
+@media (max-width: 640px) {
+  .profile-tabs {
+    width: 100%;
+    max-width: 100%;
+    gap: 6px;
+  }
+  .profile-tabs a {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 44px;
+    padding: 0.5rem 0.5rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 360px) {
+  .profile-tabs a { font-size: 0.78rem; padding: 0.5rem 0.3rem; }
+}
+
+/* Vertical rhythm: the hero, tabs and the tab panel card previously
+   relied only on each component's own bottom padding/margin, so the
+   gaps between them weren't intentional — they were whatever leftover
+   spacing happened to line up. Setting one clear top margin on the
+   tabs and reducing the hero's own bottom padding a touch gives a
+   single, consistent gap ahead of every section instead of the
+   before/after paddings occasionally stacking into an uneven one. */
+@media (max-width: 640px) {
+  .profile-hero { padding-bottom: var(--space-4); }
+  .profile-tabs { margin-top: var(--space-2); margin-bottom: var(--space-5); }
+}
+
+/* Card padding: 24px on every side (the desktop value) leaves visibly
+   less usable width than height once the container's own 24px side
+   padding stacks on top of it at 320–390px. Trimming the card's
+   horizontal padding slightly while keeping its vertical padding
+   gives form fields and the avatar grid real breathing room without
+   moving anything closer to the actual screen edge (the container's
+   padding still guarantees that). */
+@media (max-width: 480px) {
+  .profile-tabs ~ .card {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+/* Forms (Edit profile / Change password): fields felt cramped against
+   each other and the submit button had no breathing room above it or
+   reason to stand out as the primary action on a narrow screen where
+   there's nothing beside it to balance a content-width button. */
+@media (max-width: 640px) {
+  .profile-tabs ~ .card form .field { margin-bottom: var(--space-5); }
+  .profile-tabs ~ .card form > .btn-primary {
+    width: 100%;
+    margin-top: var(--space-2);
+    min-height: 46px;
+  }
+}
+
+/* Avatar grid: bigger tap target per avatar and a touch more breathing
+   room between rows so the grid doesn't read as one dense block. */
+@media (max-width: 480px) {
+  .avatar-grid { gap: var(--space-3) var(--space-2); }
+  .avatar-label { padding: var(--space-2) var(--space-1); }
+}
+
+/* Settings rows (Membership / Member since / Sign-in method / Upgrade /
+   Log out): give the row itself a touch more vertical room and make
+   sure its action button meets the 44px touch-target guideline instead
+   of inheriting .btn-sm's compact desktop sizing. */
+@media (max-width: 480px) {
+  .settings-row { padding: var(--space-4) var(--space-4); row-gap: var(--space-2); }
+  .settings-row .btn { min-height: 44px; }
+}
+
+
+/* --------------------------------------------------------------------------
+   7. PREMIUM
+   Pricing cards already collapse to one column via the shared .grid-3
+   rule in main.css; this makes that intent explicit and local to the
+   page that needs it, and adds a touch more breathing room.
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .pricing-layout,
+  .grid-3:has(.pricing-card) {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .pricing-card { padding: var(--space-5) var(--space-4); }
+}
+
+
+/* --------------------------------------------------------------------------
+   8. NOTIFICATIONS / CERTIFICATES / BOOKMARKS — page shell + whitespace
+   The Guides/Lessons/Other sections on Bookmarks each carry a 48px
+   bottom margin (fine on desktop), and the empty-state box itself uses
+   64px of vertical padding. On mobile — especially for a new user with
+   nothing bookmarked yet — that stacks into a very tall page of almost
+   nothing. Desktop spacing (>=641px) is untouched.
+   -------------------------------------------------------------------------- */
+.bm-section { margin-bottom: var(--space-7); }
+
+@media (max-width: 640px) {
+  .bm-section { margin-bottom: var(--space-5); }
+  .learn-empty { padding: var(--space-6) var(--space-4); }
+}
+@media (max-width: 480px) {
+  .page-header-subtitle { font-size: 0.9rem; }
+
+  /* "Mark all read" sits beside the "Notifications" title; give the
+     button room to sit under the heading instead of squeezing it. */
+  .page-header .btn-sm { flex-shrink: 0; }
+}

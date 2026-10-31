@@ -1,0 +1,25 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgr1" cx="50%" cy="40%" r="75%">
+      <stop offset="0%" stop-color="#0e0a1a"/>
+      <stop offset="100%" stop-color="#050810"/>
+    </radialGradient>
+    <filter id="gl1">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="200" height="200" rx="20" fill="url(#bgr1)"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#a855f7" stroke-width="1" opacity="0.2"/>
+  <circle cx="100" cy="100" r="68" fill="none" stroke="#a855f7" stroke-width="0.5" opacity="0.1"/>
+  <ellipse cx="100" cy="82" rx="38" ry="42" fill="#0e0a1a" stroke="#a855f7" stroke-width="1.5" filter="url(#gl1)"/>
+  <circle cx="86" cy="76" r="10" fill="#a855f7" opacity="0.9"/><circle cx="114" cy="76" r="10" fill="#a855f7" opacity="0.9"/>
+  <rect x="88" y="96" width="24" height="3" rx="1.5" fill="#a855f7" opacity="0.7"/>
+  <path d="M42 165 Q62 138 100 134 Q138 138 158 165 L162 185 Q100 172 38 185 Z" fill="#a855f7" opacity="0.55"/>
+  <ellipse cx="100" cy="134" rx="22" ry="9" fill="#a855f7" opacity="0.25"/>
+  <line x1="28" y1="52" x2="55" y2="52" stroke="#a855f7" stroke-width="1" opacity="0.35"/>
+  <line x1="145" y1="52" x2="172" y2="52" stroke="#a855f7" stroke-width="1" opacity="0.35"/>
+  <circle cx="28" cy="52" r="2.5" fill="#a855f7" opacity="0.5"/>
+  <circle cx="172" cy="52" r="2.5" fill="#a855f7" opacity="0.5"/>
+  <text x="100" y="196" text-anchor="middle" font-family="monospace" font-size="10" font-weight="bold" fill="#a855f7" opacity="0.65">CY-02</text>
+</svg>

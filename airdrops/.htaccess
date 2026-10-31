@@ -1,0 +1,7 @@
+Options -Indexes
+RewriteEngine On
+
+# /airdrops/SLUG  →  guide.php?slug=SLUG
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ guide.php?slug=$1 [L,QSA]

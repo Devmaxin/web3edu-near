@@ -1,0 +1,27 @@
+.rm-progress-bar { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+.rm-progress-bar .progress-track { flex: 1; }
+
+.rm-continue {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  margin-bottom: var(--space-6); flex-wrap: wrap;
+  border: 1px solid var(--border-strong, rgba(255,255,255,0.1));
+  background: linear-gradient(145deg, rgba(139,92,246,0.1), rgba(255,255,255,0.02));
+}
+
+.rm-milestone-header { margin: var(--space-7) 0 var(--space-3); }
+.rm-milestone-header h2 { font-size: var(--text-lg, 1.1rem); margin: 0; }
+.rm-milestone-header p { margin: 4px 0 0; color: var(--text-muted); font-size: var(--text-sm, 0.85rem); }
+
+.rm-guide--locked { opacity: 0.5; }
+.rm-guide--current { border-color: var(--primary-bright, #a78bfa); }
+.rm-guide--completed .guide-row-thumb { background: var(--success-soft, rgba(74,222,128,0.15)); color: var(--success, #4ade80); }
+
+.rm-optional-tag, .rm-current-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.03em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: var(--radius-pill, 999px);
+  margin-left: 8px; vertical-align: middle;
+}
+.rm-optional-tag { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+.rm-current-tag { background: rgba(139,92,246,0.18); color: var(--primary-bright, #a78bfa); }
+
+.rm-locked-label { font-size: var(--text-xs, 0.78rem); color: var(--text-muted); white-space: nowrap; padding-right: var(--space-2); }

@@ -1,0 +1,26 @@
+# Deny ALL direct HTTP access to this directory. Every file here is a
+# PHP function/class library or HTML partial meant only to be
+# require_once'd by another page — none are designed to be requested
+# directly. This is defense-in-depth: PHP files included server-side by
+# other pages are completely unaffected by this rule (PHP's require/
+# require_once reads files from disk directly and never goes through
+# Apache's HTTP request handling, so normal application behavior is
+# unchanged) — this only blocks a visitor's browser from ever requesting
+# one of these files by its own URL.
+#
+# Same Apache directive style already proven working in this project's
+# uploads/.htaccess, secrets/.htaccess, and database/.htaccess (Order/
+# Deny, Apache 2.2-style).
+Order allow,deny
+Deny from all
+
+# Belt-and-braces for Apache 2.4-style configs, in case InfinityFree's stack
+# honors this syntax instead of (or in addition to) the block above — having
+# both present is harmless on either version and costs nothing if one is
+# simply ignored by the server.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Also stop directory listing, matching every other .htaccess in this project.
+Options -Indexes

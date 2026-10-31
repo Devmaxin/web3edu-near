@@ -1,0 +1,56 @@
+Web3Edu Phase 1F — security hardening fixes (verified, not yet deployed)
+
+WHAT'S IN THIS PACKAGE (10 files: 8 updated, 2 new)
+
+  includes/bounties.php            UPDATED — cross-bounty IDOR fix in
+                                    announceBountyWinners() and
+                                    setBountySubmissionFeedback().
+  bounty-host-dashboard.php        UPDATED — passes $activeBountyId into
+                                    the feedback fix; adds requireCsrfGet()
+                                    + csrfLink() to the judging/archive
+                                    actions and their links.
+  admin/bounty-submissions.php     UPDATED — updated to match the new
+                                    setBountySubmissionFeedback() signature
+                                    (looks up the submission's own
+                                    bounty_id so admin's platform-wide
+                                    access keeps working unchanged).
+  admin/settings.php               UPDATED — requireCsrf() added to both
+                                    POST handlers; csrfField() added to
+                                    both forms.
+  cron/bounty-cron.php             UPDATED — hash_equals() instead of !==.
+  cron/email-cron.php              UPDATED — same.
+  cron/subscription-cron.php       UPDATED — same.
+  cron/process_analytics_reports.php  UPDATED — same.
+  database/.htaccess               NEW — denies all direct HTTP access to
+                                    the SQL/migration files.
+  includes/.htaccess                NEW — denies all direct HTTP access to
+                                    the PHP include library (defense in
+                                    depth; does not affect require_once).
+
+DEPLOY
+  Order doesn't matter much here (no cross-file dependency like the
+  secrets/ migration had) — upload all 10 in one pass. The two new
+  .htaccess files should land in the same upload so the protection isn't
+  briefly absent.
+
+STAGING TESTS TO RUN (see the full Phase 1F report for the complete list)
+  - Host A can still select legitimate same-bounty winners normally.
+  - Submitting a winner_submission_id that belongs to a DIFFERENT bounty
+    is silently rejected: no status change, no certificate, no XP, no
+    notification/email for that submission.
+  - Same check for feedback: a host cannot set feedback on another
+    bounty's submission; legitimate same-bounty feedback still saves.
+  - admin/bounty-submissions.php's feedback save still works for any
+    submission regardless of bounty (admin is platform-wide by design).
+  - admin/settings.php: save fails with a missing/invalid CSRF token,
+    succeeds with a valid one; same for the test-email form.
+  - bounty-host-dashboard.php: "Close Bounty" / "Archive" links still
+    work normally when clicked from the dashboard itself; a bare/stale
+    link without a valid csrf_token is rejected.
+  - Each cron endpoint still accepts its correct key and rejects a wrong
+    one.
+  - Request database/ and includes/ directly over HTTP — both should be
+    blocked (no file listing, no file content returned).
+
+No secrets, credentials, migrations, or Stellar code are touched by
+anything in this package.

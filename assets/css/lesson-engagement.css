@@ -1,0 +1,31 @@
+/* ============================================================
+   Lesson Engagement — Notes, Highlights, Related Content
+   Shared identically across guides/lesson.php and learn/lesson.php
+   ============================================================ */
+
+.hl-toolbar {
+  position: absolute; z-index: 50; display: flex; gap: 4px;
+  background: var(--bg-elevated, #1a1625);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill, 999px);
+  padding: 5px; box-shadow: var(--shadow-raised, 0 8px 24px rgba(0,0,0,0.4));
+}
+.hl-toolbar button {
+  width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; transition: transform var(--duration-fast, 0.15s) ease;
+}
+.hl-toolbar button:hover { transform: scale(1.15); }
+
+.lesson-engagement-card { padding: 18px; margin: 18px 0; }
+.lesson-engagement-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
+.lesson-engagement-title { font-size: 0.85rem; font-weight: 700; margin: 0; }
+.lesson-engagement-title span { font-weight: 400; color: var(--text-muted); }
+.lesson-engagement-status { font-size: 0.7rem; color: var(--text-muted); min-width: 52px; text-align: right; }
+
+.related-content-section { max-width: 900px; margin: 0 auto; padding: 0 20px 40px; }
+.related-content-heading { font-size: 0.95rem; font-weight: 700; margin: 24px 0 12px; }
+.related-content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.related-content-card { padding: 14px; font-size: 0.82rem; font-weight: 600; color: inherit; transition: transform var(--duration-fast,0.15s) ease, border-color var(--duration-fast,0.15s) ease; }
+.related-content-card:hover { transform: translateY(-2px); border-color: var(--primary-bright, var(--primary)); }
+
+mark.lesson-highlight { border-radius: 3px; padding: 0 1px; }

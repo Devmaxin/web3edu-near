@@ -1,0 +1,273 @@
+/* ==========================================================================
+   WEB3EDU V2 — AI STUDY CARD
+   CTA banner + 3D-flip flashcard modal. Shared by /learn/lesson.php and
+   /guides/lesson.php via includes/ai_study_card.php + assets/js/study-card.js.
+
+   NOTE: this stylesheet did not exist before — that was the root cause of
+   every study-card rendering bug (unstyled button, overlay rendering
+   inline instead of as a modal, no flip transform, an unsized/unstyled
+   countdown <svg> painting as a large black circle, etc). Everything
+   below is new; nothing here replaces or overrides another file.
+   ========================================================================== */
+
+/* ---- CTA banner (sits inline in the lesson page) ---- */
+.ai-sc-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin: var(--space-6) 0;
+}
+.ai-sc-section-text h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+.ai-sc-section-text p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.ai-sc-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  padding: 11px 22px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-gradient);
+  color: var(--text-on-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease);
+}
+.ai-sc-generate-btn:hover  { transform: translateY(-2px); box-shadow: var(--shadow-raised); }
+.ai-sc-generate-btn:active { transform: translateY(0); }
+
+/* ---- Modal overlay ---- */
+.ai-sc-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 3, 12, 0.72);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  padding: var(--space-5);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease);
+}
+.ai-sc-overlay.show { display: flex; }
+.ai-sc-overlay.in   { opacity: 1; }
+
+/* ---- 3D flip scene ---- */
+.ai-sc-scene {
+  width: 100%;
+  max-width: 360px;
+  perspective: 1400px;
+  transform: scale(0.92) translateY(12px);
+  transition: transform var(--duration-base) var(--ease);
+}
+.ai-sc-overlay.in .ai-sc-scene { transform: scale(1) translateY(0); }
+
+.ai-sc-card {
+  position: relative;
+  width: 100%;
+  height: 420px;
+}
+
+.ai-sc-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease), background var(--duration-fast) var(--ease);
+}
+.ai-sc-close:hover { color: var(--text-primary); background: var(--surface-hover); }
+
+.ai-sc-flip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform var(--duration-slow) var(--ease);
+}
+.ai-sc-flip.flipped { transform: rotateY(180deg); }
+
+.ai-sc-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-raised);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.ai-sc-front { transform: rotateY(0deg); }
+.ai-sc-back  {
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  padding-top: var(--space-6);
+}
+
+.ai-sc-icon { font-size: 2.5rem; line-height: 1; }
+.ai-sc-face h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+.ai-sc-hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  max-width: 240px;
+}
+.ai-sc-flip-label {
+  margin-top: var(--space-4);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-bright);
+}
+
+/* ---- Loading state ---- */
+.ai-sc-loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+.ai-sc-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-bright);
+  animation: ai-sc-spin 0.8s linear infinite;
+}
+@keyframes ai-sc-spin { to { transform: rotate(360deg); } }
+
+/* ---- Error state ---- */
+.ai-sc-error {
+  display: none;
+  font-size: var(--text-sm);
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid rgba(244, 63, 94, 0.28);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}
+/* Technical detail line (raw provider/exception message) shown under the
+   friendly error text — smaller, muted, monospace so it visually reads as
+   a log line rather than part of the message itself. */
+.ai-sc-error-detail {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(244, 63, 94, 0.2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+/* ---- Back face: lesson summary ---- */
+.ai-sc-back h4 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+}
+.ai-sc-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+.ai-sc-bullets li {
+  position: relative;
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.ai-sc-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+}
+
+/* ---- Countdown ring (root cause of the black-circle bug: this element
+   had no explicit size, fill, or stroke — an un-styled inline <svg> with a
+   1:1 viewBox renders as a large, default-black square/circle) ---- */
+.ai-sc-countdown {
+  display: none;
+  margin-top: var(--space-4);
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+.ai-sc-countdown svg { width: 36px; height: 36px; display: block; transform: rotate(-90deg); }
+.ai-sc-countdown .track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 3;
+}
+.ai-sc-countdown .progress {
+  fill: none;
+  stroke: var(--accent-bright);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+  .ai-sc-section { flex-direction: column; align-items: stretch; text-align: center; }
+  .ai-sc-generate-btn { justify-content: center; }
+  .ai-sc-scene { max-width: 100%; }
+  .ai-sc-card { height: 380px; }
+}

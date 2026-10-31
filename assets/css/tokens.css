@@ -1,0 +1,116 @@
+/* ==========================================================================
+   WEB3EDU V2 — DESIGN TOKENS
+   Palette: deep violet-black canvas, indigo/violet surfaces, a bright
+   violet-magenta accent gradient. Grounded in the approved redesign mockups.
+
+   Type system:
+   - Display  : "Space Grotesk"  — bold, geometric, used for headlines only
+   - Body     : "Inter"          — everyday reading text, UI labels
+   - Data/Mono: "JetBrains Mono" — stats, XP counters, certificate codes,
+                anything that reads as a ledger entry (nods to the on-chain
+                subject matter without being literal about it)
+
+   Signature element: the "chain rule" — a thin horizontal line with small
+   circular nodes at intervals (see .chain-divider in components.css).
+   Used sparingly as a section divider and under the active nav/tab item.
+   ========================================================================== */
+
+:root {
+  /* ---- Color: surfaces ---- */
+  --bg:              #0A0714;
+  --bg-elevated:     #0F0B1E;
+  --surface:         #17102B;
+  --surface-raised:  #1F1638;
+  --surface-hover:   #261D45;
+  --border:          rgba(168, 139, 250, 0.16);
+  --border-strong:   rgba(168, 139, 250, 0.32);
+
+  /* ---- Color: accents ---- */
+  --accent:          #7C3AED;
+  --accent-bright:   #A855F7;
+  --accent-magenta:  #C026D3;
+  --accent-gradient: linear-gradient(135deg, #4C1D95 0%, #7C3AED 55%, #C026D3 100%);
+  --accent-soft:     rgba(124, 58, 237, 0.14);
+
+  /* ---- Color: text ---- */
+  --text-primary:    #F5F3FF;
+  --text-secondary:  #B4A9D6;
+  --text-muted:      #7C7196;
+  --text-on-accent:  #FFFFFF;
+
+  /* ---- Color: semantic ---- */
+  --success:         #22C55E;
+  --success-soft:    rgba(34, 197, 94, 0.14);
+  --warning:         #F59E0B;
+  --warning-soft:    rgba(245, 158, 11, 0.14);
+  --danger:          #F43F5E;
+  --danger-soft:     rgba(244, 63, 94, 0.14);
+
+  /* ---- Typography ---- */
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body:    'Inter', -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SFMono-Regular', monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.375rem;
+  --text-2xl:  1.75rem;
+  --text-3xl:  2.25rem;
+  --text-4xl:  3rem;
+  --text-5xl:  3.75rem;
+
+  /* ---- Spacing scale ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ---- Radii ---- */
+  --radius-sm:   10px;
+  --radius-md:   16px;
+  --radius-lg:   24px;
+  --radius-pill: 999px;
+
+  /* ---- Shadows (dark theme: glow rather than drop-shadow) ---- */
+  --shadow-card:  0 0 0 1px var(--border), 0 20px 40px -24px rgba(124, 58, 237, 0.35);
+  --shadow-raised: 0 0 0 1px var(--border-strong), 0 24px 48px -20px rgba(124, 58, 237, 0.45);
+  --shadow-glow:  0 0 24px rgba(168, 139, 250, 0.35);
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 450ms;
+}
+
+/* Light theme overrides (Theme Toggle target) */
+[data-theme="light"] {
+  --bg:              #FAF9FC;
+  --bg-elevated:     #FFFFFF;
+  --surface:         #FFFFFF;
+  --surface-raised:  #F3F0FA;
+  --surface-hover:   #EAE4F7;
+  --border:          rgba(124, 58, 237, 0.14);
+  --border-strong:   rgba(124, 58, 237, 0.28);
+  --text-primary:    #1A1330;
+  --text-secondary:  #564C77;
+  --text-muted:      #8A81A3;
+  --shadow-card:  0 0 0 1px var(--border), 0 16px 32px -24px rgba(124, 58, 237, 0.2);
+  --shadow-raised: 0 0 0 1px var(--border-strong), 0 20px 40px -20px rgba(124, 58, 237, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

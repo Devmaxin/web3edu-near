@@ -1,0 +1,6 @@
+Options -Indexes
+# Only allow POST requests to API endpoints
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
