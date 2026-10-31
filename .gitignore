@@ -1,0 +1,66 @@
+# ============================================================
+# Web3Edu NEAR Hackathon — .gitignore
+# ============================================================
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+*.env
+*.local
+config/secrets.php
+secrets/
+
+# --- Credentials & keys ---
+*.key
+*.pem
+*.pem.*
+*.secret
+wallet-credentials.json
+near-credentials.json
+keystore/
+
+# --- PHP ---
+vendor/
+composer.lock
+*.php.bak
+*.php.bkp
+
+# --- Node.js / esbuild ---
+node_modules/
+dist/
+build/
+*.bundle.js
+.esbuildcache
+
+# --- Rust / cargo ---
+target/
+*.rs.bak
+
+# --- IDE & OS ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/
+storage/logs/
+
+# --- Temporary / cache ---
+tmp/
+temp/
+.cache/
+
+# --- Database dumps and backups (ignored) ---
+dumps/
+backups/
+*.dump.sql
+*.backup.sql
+*.db
+*.sqlite

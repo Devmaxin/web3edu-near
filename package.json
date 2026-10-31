@@ -1,0 +1,12 @@
+{
+  "name": "web3edu-near-wallet-bundle",
+  "version": "0.1.0",
+  "description": "NEAR wallet connector bundle for Web3Edu NEAR hackathon (vanilla JS + esbuild)",
+  "private": true,
+  "scripts": {
+    "build": "esbuild wallet/js/wallet.js --bundle --outfile=frontend/js/wallet.bundle.js --minify"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}
