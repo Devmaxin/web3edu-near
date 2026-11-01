@@ -15,9 +15,9 @@
 //! No personally identifying information (names, emails, grades, passwords,
 //! private learning records, or other personal data) is stored on-chain.
 
-use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{LookupMap, UnorderedMap, UnorderedSet};
-use near_sdk::{env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault};
+use near_sdk::{env, near, AccountId, BorshStorageKey, PanicOnDefault};
+use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
 
 /// A single on-chain credential record.
 ///
@@ -60,8 +60,8 @@ enum StorageKey {
     LearnerCredentialsInner { account_id: AccountId },
 }
 
-#[near_bindgen]
-#[derive(BorshSerialize, BorshDeserialize, PanicOnDefault)]
+#[near(contract_state)]
+#[derive(PanicOnDefault)]
 pub struct Contract {
     /// Authorized issuer account. Only this account can issue or revoke.
     issuer: AccountId,
@@ -73,7 +73,7 @@ pub struct Contract {
     next_credential_id: u64,
 }
 
-#[near_bindgen]
+#[near]
 impl Contract {
     /// Initialize the contract with an authorized issuer account.
     /// Can only be called once (on deployment).
@@ -199,7 +199,7 @@ impl Contract {
             None => return Vec::new(),
         };
 
-        let mut all: Vec<String> = learner_creds.iter().collect();
+        let mut all: Vec<String> = learner_creds.iter().collect::<Vec<String>>();
         all.sort();
 
         let start = from_index.unwrap_or(0) as usize;

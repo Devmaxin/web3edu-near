@@ -21,6 +21,8 @@ fn non_issuer_account() -> AccountId {
 }
 
 /// Setup context with issuer as predecessor and set current block timestamp.
+/// Requires `near-sdk` `unit-testing` feature (provides mock blockchain env
+/// via `near-vm-runner`). Needs `dlltool.exe`/MinGW to compile on Windows.
 fn setup_context(predecessor: AccountId) {
     let mut builder = VMContextBuilder::new();
     builder
