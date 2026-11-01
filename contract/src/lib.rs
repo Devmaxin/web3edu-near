@@ -44,7 +44,7 @@ pub struct Credential {
 }
 
 /// Public verification status of a credential.
-#[derive(BorshSerialize, BorshDeserialize, Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(BorshSerialize, BorshDeserialize, Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum CredentialStatus {
     Valid,
     Revoked,

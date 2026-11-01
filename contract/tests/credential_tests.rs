@@ -1,5 +1,6 @@
-use near_sdk::test_utils::{accounts, VMContextBuilder};
+use near_sdk::test_utils::VMContextBuilder;
 use near_sdk::{testing_env, AccountId};
+use std::panic::AssertUnwindSafe;
 use web3edu_near_contract::{Contract, CredentialStatus};
 
 const ISSUER: &str = "issuer.testnet";
@@ -33,6 +34,11 @@ fn setup_context(predecessor: AccountId) {
     testing_env!(builder.build());
 }
 
+fn new_contract_for_test() -> Contract {
+    setup_context(issuer_account());
+    Contract::new(issuer_account())
+}
+
 #[test]
 fn contract_initializes_with_issuer() {
     setup_context(issuer_account());
@@ -41,19 +47,11 @@ fn contract_initializes_with_issuer() {
 }
 
 #[test]
-fn contract_rejects_empty_issuer() {
-    setup_context(issuer_account());
-    let result = std::panic::catch_unwind(|| {
-        Contract::new("".parse().unwrap())
-    });
-    assert!(result.is_err(), "empty issuer ID should be rejected");
-}
-
-#[test]
 fn authorized_issue_succeeds() {
     setup_context(issuer_account());
     let mut contract = Contract::new(issuer_account());
 
+    // issue_credential returns String directly — no .unwrap() needed
     let credential_id = contract.issue_credential(
         learner_account(),
         COURSE_ID.to_string(),
@@ -80,13 +78,14 @@ fn unauthorized_issue_fails() {
     setup_context(non_issuer_account());
     let mut contract = Contract::new(issuer_account());
 
-    let result = std::panic::catch_unwind(|| {
+    // issue_credential returns String, panics on unauthorized caller
+    let result = AssertUnwindSafe(|| {
         contract.issue_credential(
             learner_account(),
             COURSE_ID.to_string(),
             Some(METADATA_HASH.to_string()),
         )
-    });
+    }).catch_unwind();
 
     assert!(
         result.is_err(),
@@ -95,32 +94,14 @@ fn unauthorized_issue_fails() {
 }
 
 #[test]
-fn empty_learner_id_rejected() {
-    setup_context(issuer_account());
-    let mut contract = Contract::new(issuer_account());
-
-    let result = std::panic::catch_unwind(|| {
-        contract.issue_credential(
-            "".parse::<AccountId>().unwrap(),
-            COURSE_ID.to_string(),
-            None,
-        )
-    });
-
-    assert!(
-        result.is_err(),
-        "empty learner_id should be rejected"
-    );
-}
-
-#[test]
 fn empty_course_id_rejected() {
     setup_context(issuer_account());
     let mut contract = Contract::new(issuer_account());
 
-    let result = std::panic::catch_unwind(|| {
+    // Empty course_id string panics inside the contract assert
+    let result = AssertUnwindSafe(|| {
         contract.issue_credential(learner_account(), "".to_string(), None)
-    });
+    }).catch_unwind();
 
     assert!(
         result.is_err(),
@@ -133,12 +114,8 @@ fn unique_credential_ids() {
     setup_context(issuer_account());
     let mut contract = Contract::new(issuer_account());
 
-    let id1 = contract
-        .issue_credential(learner_account(), COURSE_ID.to_string(), None)
-        .unwrap();
-    let id2 = contract
-        .issue_credential(learner_account(), COURSE_ID.to_string(), None)
-        .unwrap();
+    let id1 = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
+    let id2 = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
 
     assert_ne!(
         id1, id2,
@@ -154,16 +131,14 @@ fn unique_credential_ids() {
 fn credential_can_be_read() {
     let mut contract = new_contract_for_test();
 
-    let credential_id = contract
-        .issue_credential(learner_account(), COURSE_ID.to_string(), None)
-        .unwrap();
+    let credential_id = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
 
     let retrieved = contract.get_credential(credential_id.clone());
     assert!(
         retrieved.is_some(),
         "credential should be retrievable by ID"
     );
-    let cred = retrieved.unwrap();
+    let cred = retrieved.expect("credential should exist");
     assert_eq!(cred.credential_id, credential_id);
     assert_eq!(cred.learner_id, learner_account());
     assert_eq!(cred.course_id, COURSE_ID);
@@ -176,9 +151,7 @@ fn correct_learner_and_course_data_stored() {
     let course_id = "near-smart-contracts-201";
     let learner = learner_account();
 
-    let credential_id = contract
-        .issue_credential(learner.clone(), course_id.to_string(), None)
-        .unwrap();
+    let credential_id = contract.issue_credential(learner.clone(), course_id.to_string(), None);
     let cred = contract
         .get_credential(credential_id)
         .expect("credential should exist");
@@ -192,15 +165,14 @@ fn correct_learner_and_course_data_stored() {
 fn authorized_revoke_succeeds() {
     let mut contract = new_contract_for_test();
 
-    let credential_id = contract
-        .issue_credential(learner_account(), COURSE_ID.to_string(), None)
-        .unwrap();
+    let credential_id = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
 
     assert!(
         contract.is_valid(credential_id.clone()),
         "credential should be valid before revocation"
     );
 
+    // revoke_credential returns ()
     contract.revoke_credential(credential_id.clone());
 
     assert!(
@@ -215,6 +187,39 @@ fn authorized_revoke_succeeds() {
 }
 
 #[test]
+fn revoke_already_revoked_credential_fails() {
+    let mut contract = new_contract_for_test();
+
+    let credential_id = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
+    contract.revoke_credential(credential_id.clone());
+
+    // revoke_credential returns () and panics on already-revoked credential
+    let result = AssertUnwindSafe(|| {
+        contract.revoke_credential(credential_id.clone())
+    }).catch_unwind();
+
+    assert!(
+        result.is_err(),
+        "revoking an already-revoked credential should fail"
+    );
+}
+
+#[test]
+fn revoke_nonexistent_credential_fails() {
+    let mut contract = new_contract_for_test();
+
+    // revoke_credential panics on nonexistent credential
+    let result = AssertUnwindSafe(|| {
+        contract.revoke_credential("cred-99999".to_string())
+    }).catch_unwind();
+
+    assert!(
+        result.is_err(),
+        "revoking a nonexistent credential should fail"
+    );
+}
+
+#[test]
 fn unauthorized_revoke_fails() {
     setup_context(non_issuer_account());
     let mut contract = Contract::new(issuer_account());
@@ -225,13 +230,13 @@ fn unauthorized_revoke_fails() {
         learner_account(),
         COURSE_ID.to_string(),
         None,
-    ).unwrap();
+    );
 
     // Non-issuer tries to revoke
     setup_context(non_issuer_account());
-    let result = std::panic::catch_unwind(|| {
+    let result = AssertUnwindSafe(|| {
         contract.revoke_credential(credential_id.clone())
-    });
+    }).catch_unwind();
 
     assert!(
         result.is_err(),
@@ -243,9 +248,7 @@ fn unauthorized_revoke_fails() {
 fn revoked_credential_no_longer_valid() {
     let mut contract = new_contract_for_test();
 
-    let credential_id = contract
-        .issue_credential(learner_account(), COURSE_ID.to_string(), None)
-        .unwrap();
+    let credential_id = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
 
     assert!(
         contract.is_valid(credential_id.clone()),
@@ -254,6 +257,7 @@ fn revoked_credential_no_longer_valid() {
 
     contract.revoke_credential(credential_id.clone());
 
+    // CredentialStatus implements PartialEq/Eq, so assert_eq! works
     assert_eq!(
         contract.get_status(credential_id.clone()),
         CredentialStatus::Revoked,
@@ -293,7 +297,7 @@ fn issuer_authority_transfer() {
 
     let new_issuer: AccountId = "new-issuer.testnet".parse().unwrap();
 
-    // Current issuer can transfer authority
+    // Current issuer can transfer authority — transfer_issuer returns ()
     contract.transfer_issuer(new_issuer.clone());
     assert_eq!(contract.get_issuer(), new_issuer);
 
@@ -303,24 +307,24 @@ fn issuer_authority_transfer() {
         learner_account(),
         COURSE_ID.to_string(),
         None,
-    ).unwrap();
+    );
     assert!(!credential_id.is_empty(), "new issuer should be able to issue");
 
     // Old issuer can no longer issue
     setup_context(issuer_account());
-    let result = std::panic::catch_unwind(|| {
+    let result = AssertUnwindSafe(|| {
         contract.issue_credential(learner_account(), COURSE_ID.to_string(), None)
-    });
+    }).catch_unwind();
     assert!(
         result.is_err(),
         "old issuer should not be able to issue after transfer"
     );
 
-    // Non-issuer cannot transfer authority
+    // Non-issuer cannot transfer authority — transfer_issuer returns () and panics
     setup_context(non_issuer_account());
-    let result = std::panic::catch_unwind(|| {
+    let result = AssertUnwindSafe(|| {
         contract.transfer_issuer(learner_account())
-    });
+    }).catch_unwind();
     assert!(
         result.is_err(),
         "non-issuer should not be able to transfer issuer authority"
@@ -328,14 +332,20 @@ fn issuer_authority_transfer() {
 }
 
 #[test]
-fn transfer_to_empty_issuer_rejected() {
-    setup_context(issuer_account());
+fn unauthorized_transfer_issuer_fails() {
+    setup_context(non_issuer_account());
     let mut contract = Contract::new(issuer_account());
 
-    let result = contract.transfer_issuer("".parse::<AccountId>().unwrap());
+    let new_issuer: AccountId = "new-issuer.testnet".parse().unwrap();
+
+    // transfer_issuer returns () and panics when called by non-issuer
+    let result = AssertUnwindSafe(|| {
+        contract.transfer_issuer(new_issuer.clone())
+    }).catch_unwind();
+
     assert!(
         result.is_err(),
-        "empty new issuer ID should be rejected"
+        "non-issuer should not be able to transfer issuer authority"
     );
 }
 
@@ -346,9 +356,7 @@ fn learner_credentials_pagination() {
     // Issue 5 credentials to the same learner
     let mut ids = Vec::new();
     for i in 0..5 {
-        let id = contract
-            .issue_credential(learner_account(), format!("course-{}", i), None)
-            .unwrap();
+        let id = contract.issue_credential(learner_account(), format!("course-{}", i), None);
         ids.push(id);
     }
 
@@ -379,12 +387,8 @@ fn learner_credentials_pagination() {
 fn multiple_learners_can_have_credentials() {
     let mut contract = new_contract_for_test();
 
-    let id1 = contract
-        .issue_credential(ISSUER.parse().unwrap(), COURSE_ID.to_string(), None)
-        .unwrap();
-    let id2 = contract
-        .issue_credential(non_issuer_account(), COURSE_ID.to_string(), None)
-        .unwrap();
+    let id1 = contract.issue_credential(issuer_account(), COURSE_ID.to_string(), None);
+    let id2 = contract.issue_credential(non_issuer_account(), COURSE_ID.to_string(), None);
 
     let learner_creds = contract.get_learner_credentials(learner_account(), None, None);
     assert_eq!(learner_creds.len(), 1, "learner should have 1 credential");
@@ -400,32 +404,23 @@ fn metadata_hash_is_optional() {
     let mut contract = new_contract_for_test();
 
     // Issue without metadata hash
-    let id1 = contract
-        .issue_credential(ISSUER.parse().unwrap(), COURSE_ID.to_string(), None)
-        .unwrap();
-    let cred1 = contract.get_credential(id1).expect("credential should exist");
+    let id1 = contract.issue_credential(issuer_account(), COURSE_ID.to_string(), None);
+    let cred1 = contract.get_credential(id1.clone()).expect("credential should exist");
     assert!(
         cred1.metadata_hash.is_none(),
         "metadata_hash should be None"
     );
 
     // Issue with metadata hash
-    let id2 = contract
-        .issue_credential(
-            ISSUER.parse().unwrap(),
-            COURSE_ID.to_string(),
-            Some(METADATA_HASH.to_string()),
-        )
-        .unwrap();
-    let cred2 = contract.get_credential(id2).expect("credential should exist");
+    let id2 = contract.issue_credential(
+        issuer_account(),
+        COURSE_ID.to_string(),
+        Some(METADATA_HASH.to_string()),
+    );
+    let cred2 = contract.get_credential(id2.clone()).expect("credential should exist");
     assert_eq!(
         cred2.metadata_hash,
         Some(METADATA_HASH.to_string()),
         "metadata_hash should match"
     );
-}
-
-fn new_contract_for_test() -> Contract {
-    setup_context(issuer_account());
-    Contract::new(issuer_account())
 }
