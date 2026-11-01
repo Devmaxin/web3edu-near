@@ -8,6 +8,9 @@ $pageTitle = 'Login';
 $extraCss  = [SITE_URL . '/assets/css/auth.css'];
 $errors    = [];
 
+// Generate CSRF token for AJAX-based NEAR login
+csrfToken();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'email_login') {
     $email    = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');

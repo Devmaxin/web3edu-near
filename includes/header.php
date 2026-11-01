@@ -43,6 +43,11 @@ $navLinks = [
 
 <!-- v2 design system -->
 <script>window.SITE_URL = <?= json_encode(SITE_URL) ?>;</script>
+<?php
+// Ensure CSRF token is available for AJAX requests (NEAR wallet login, etc.)
+csrfToken();
+?>
+<meta name="csrf_token" content="<?= htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/tokens.css">
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/components.css">
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/layout.css">

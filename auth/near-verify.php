@@ -104,6 +104,7 @@ Web3Edu\Near\Auth\NearAuth::clearRateLimit($action);
 // ------------------------------------------------------------------
 // Find or create user based on action
 // ------------------------------------------------------------------
+$walletAlreadyLinked = false;
 
 // Check if wallet is already linked
 $stmt = $db->prepare("SELECT user_id FROM user_wallets WHERE near_account_id = ?");
@@ -113,6 +114,7 @@ $existingWallet = $stmt->fetch();
 if ($existingWallet) {
     // Wallet already linked to a user
     $userId = (int)$existingWallet['user_id'];
+    $walletAlreadyLinked = true;
 
     if ($action === 'register') {
         // Wallet already exists — user should log in instead
@@ -178,21 +180,23 @@ if ($existingWallet) {
 }
 
 // ------------------------------------------------------------------
-// Create wallet link
+// Create wallet link (only if not already linked)
 // ------------------------------------------------------------------
 $isPrimary = false;
-$stmt = $db->prepare("SELECT COUNT(*) FROM user_wallets WHERE user_id = ?");
-$stmt->execute([$userId]);
-$existingCount = (int)$stmt->fetchColumn();
-if ($existingCount === 0) {
-    $isPrimary = true; // First wallet becomes primary
-}
+if (!$walletAlreadyLinked) {
+    $stmt = $db->prepare("SELECT COUNT(*) FROM user_wallets WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $existingCount = (int)$stmt->fetchColumn();
+    if ($existingCount === 0) {
+        $isPrimary = true; // First wallet becomes primary
+    }
 
-$stmt = $db->prepare("
-    INSERT INTO user_wallets (user_id, near_account_id, public_key, is_primary)
-    VALUES (?, ?, ?, ?)
-");
-$stmt->execute([$userId, $accountId, $publicKey, $isPrimary ? 1 : 0]);
+    $stmt = $db->prepare("
+        INSERT INTO user_wallets (user_id, near_account_id, public_key, is_primary)
+        VALUES (?, ?, ?, ?)
+    ");
+    $stmt->execute([$userId, $accountId, $publicKey, $isPrimary ? 1 : 0]);
+}
 
 // ------------------------------------------------------------------
 // Establish PHP session
