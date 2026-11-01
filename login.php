@@ -96,15 +96,77 @@ require_once __DIR__ . '/includes/header.php';
       <button type="submit" class="btn btn-primary" style="width:100%">Sign in</button>
     </form>
 
+    <div class="auth-divider"><span>or continue with NEAR wallet</span></div>
+
+    <button id="nearLoginBtn" class="btn near-btn" style="width:100%;background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright);margin-bottom:var(--space-3)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+      Connect NEAR Wallet
+    </button>
+
     <div class="auth-footer">Don't have an account? <a href="<?= SITE_URL ?>/register.php">Create one free</a></div>
   </div>
 </div>
 
+<script src="<?= SITE_URL ?>/frontend/js/wallet.bundle.js"></script>
 <script>
 function togglePwd(fieldId, btn) {
   const f = document.getElementById(fieldId);
   f.type = f.type === 'password' ? 'text' : 'password';
 }
+
+document.getElementById('nearLoginBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('nearLoginBtn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Connecting…';
+
+  try {
+    // Step 1: Request challenge
+    const challenge = await Web3EduNear.requestChallenge('login');
+
+    // Step 2: Connect wallet
+    const walletInfo = await Web3EduNear.connectWallet();
+    if (!walletInfo) {
+      throw new Error('No wallet connected');
+    }
+
+    // Step 3: Sign message (NEP-413)
+    const nonce = challenge.nonce;
+    const signed = await Web3EduNear.signMessage(
+      'Log in to Web3Edu',
+      nonce,
+      window.location.origin
+    );
+
+    // Step 4: Submit signature for verification
+    const result = await Web3EduNear.submitSignature(
+      challenge.challenge_id,
+      walletInfo.accountId,
+      walletInfo.publicKey,
+      signed.signature,
+      {
+        message: 'Log in to Web3Edu',
+        nonce: challenge.nonce,
+        recipient: challenge.recipient,
+        callbackUrl: window.location.origin,
+      }
+    );
+
+    if (result.success && result.is_new) {
+      // New wallet-only user redirected to onboarding
+      window.location.href = '<?= SITE_URL ?>/onboarding.php';
+    } else if (result.success) {
+      window.location.href = '<?= SITE_URL ?>/dashboard.php';
+    }
+  } catch (err) {
+    console.error('NEAR login error:', err);
+    alert(err.message || 'NEAR login failed. Please try again.');
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -4,7 +4,10 @@
   "description": "NEAR wallet connector bundle for Web3Edu NEAR hackathon (vanilla JS + esbuild)",
   "private": true,
   "scripts": {
-    "build": "esbuild wallet/js/wallet.js --bundle --outfile=frontend/js/wallet.bundle.js --minify"
+    "build": "esbuild wallet/js/near-connector.js --bundle --outfile=frontend/js/wallet.bundle.js --minify"
+  },
+  "dependencies": {
+    "@hot-labs/near-connect": "^0.1.0"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"

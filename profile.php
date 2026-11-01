@@ -12,6 +12,14 @@ $success = null;
 $avatars = getAvatarList();
 $notifPrefs = getUserNotificationPreferences((int)$user['id']);
 
+// Fetch linked NEAR wallets
+$nearWallets = [];
+if (isLoggedIn()) {
+    $stmt = $db->prepare("SELECT id, near_account_id, public_key, is_primary, created_at FROM user_wallets WHERE user_id = ? ORDER BY is_primary DESC, created_at ASC");
+    $stmt->execute([$user['id']]);
+    $nearWallets = $stmt->fetchAll();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -65,6 +73,133 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = 'Password changed successfully.';
         }
         $tab = 'security';
+    }
+
+    // --- NEAR Wallet Management ---
+
+    if ($action === 'link_near_wallet') {
+        if (!isLoggedIn()) {
+            $errors[] = 'Not logged in.';
+            $tab = 'security';
+        } else {
+            $nearAccountId = trim($_POST['near_account_id'] ?? '');
+            $publicKey     = trim($_POST['public_key'] ?? '');
+            $signature     = trim($_POST['signature'] ?? '');
+            $challengeId   = trim($_POST['challenge_id'] ?? '');
+            $signedPayload = json_decode($_POST['signed_payload'] ?? '{}', true);
+
+            if (!$nearAccountId || !$publicKey || !$signature || !$challengeId || !$signedPayload) {
+                $errors[] = 'Missing wallet linking data.';
+            } else {
+                // Verify the challenge
+                $challenge = Web3Edu\Near\Auth\NearAuth::consumeChallenge($challengeId);
+                if (!$challenge || $challenge['action'] !== 'link') {
+                    $errors[] = 'Invalid or expired linking challenge.';
+                } else {
+                    // Verify NEP-413 signature
+                    $valid = Web3Edu\Near\Auth\NearAuth::verifyNep413Signature(
+                        $challenge,
+                        $nearAccountId,
+                        $publicKey,
+                        $signature,
+                        $signedPayload
+                    );
+
+                    if (!$valid) {
+                        $errors[] = 'Invalid wallet signature.';
+                    } else {
+                        // Check if wallet already linked to another user
+                        $stmt = $db->prepare("SELECT user_id FROM user_wallets WHERE near_account_id = ?");
+                        $stmt->execute([$nearAccountId]);
+                        $existing = $stmt->fetch();
+                        if ($existing && (int)$existing['user_id'] !== (int)$user['id']) {
+                            $errors[] = 'This NEAR wallet is already linked to another account.';
+                        } else {
+                            // Check if already linked to current user
+                            if ($existing) {
+                                $errors[] = 'This NEAR wallet is already linked to your account.';
+                            } else {
+                                // Determine if primary
+                                $stmt = $db->prepare("SELECT COUNT(*) FROM user_wallets WHERE user_id = ?");
+                                $stmt->execute([$user['id']]);
+                                $count = (int)$stmt->fetchColumn();
+                                $isPrimary = $count === 0 ? 1 : 0;
+
+                                $db->prepare("
+                                    INSERT INTO user_wallets (user_id, near_account_id, public_key, is_primary)
+                                    VALUES (?, ?, ?, ?)
+                                ")->execute([$user['id'], $nearAccountId, $publicKey, $isPrimary]);
+
+                                $success = 'NEAR wallet linked successfully.';
+                            }
+                        }
+                    }
+                }
+            }
+            $tab = 'security';
+        }
+    }
+
+    if ($action === 'unlink_near_wallet') {
+        if (!isLoggedIn()) {
+            $errors[] = 'Not logged in.';
+            $tab = 'security';
+        } else {
+            $walletId = intval($_POST['wallet_id'] ?? 0);
+            if (!$walletId) {
+                $errors[] = 'Invalid wallet.';
+            } else {
+                $stmt = $db->prepare("SELECT user_id, is_primary FROM user_wallets WHERE id = ?");
+                $stmt->execute([$walletId]);
+                $wallet = $stmt->fetch();
+
+                if (!$wallet || (int)$wallet['user_id'] !== (int)$user['id']) {
+                    $errors[] = 'Wallet not found or not owned by you.';
+                } else {
+                    $wasPrimary = (int)$wallet['is_primary'] === 1;
+                    $db->prepare("DELETE FROM user_wallets WHERE id = ?")->execute([$walletId]);
+
+                    // If we removed the primary, promote another wallet to primary
+                    if ($wasPrimary) {
+                        $stmt = $db->prepare("SELECT id FROM user_wallets WHERE user_id = ? ORDER BY created_at ASC LIMIT 1");
+                        $stmt->execute([$user['id']]);
+                        $next = $stmt->fetch();
+                        if ($next) {
+                            $db->prepare("UPDATE user_wallets SET is_primary = 1 WHERE id = ?")->execute([(int)$next['id']]);
+                        }
+                    }
+
+                    $success = 'NEAR wallet unlinked.';
+                }
+            }
+            $tab = 'security';
+        }
+    }
+
+    if ($action === 'set_primary_near_wallet') {
+        if (!isLoggedIn()) {
+            $errors[] = 'Not logged in.';
+            $tab = 'security';
+        } else {
+            $walletId = intval($_POST['wallet_id'] ?? 0);
+            if (!$walletId) {
+                $errors[] = 'Invalid wallet.';
+            } else {
+                // Verify ownership
+                $stmt = $db->prepare("SELECT id FROM user_wallets WHERE id = ? AND user_id = ?");
+                $stmt->execute([$walletId, $user['id']]);
+                if (!$stmt->fetch()) {
+                    $errors[] = 'Wallet not found or not owned by you.';
+                } else {
+                    // Unset all primaries for this user
+                    $db->prepare("UPDATE user_wallets SET is_primary = 0 WHERE user_id = ?")->execute([$user['id']]);
+                    // Set new primary
+                    $db->prepare("UPDATE user_wallets SET is_primary = 1 WHERE id = ?")->execute([$walletId]);
+                    $success = 'Primary wallet updated.';
+                }
+            }
+            $tab = 'security';
+        }
     }
 }
 
@@ -226,7 +361,146 @@ require_once __DIR__ . '/includes/header.php';
         </form>
       <?php endif; ?>
     </div>
+
+    <div class="card" style="max-width:600px;margin:var(--space-5) auto 0">
+      <h2 style="font-size:var(--text-lg);margin-bottom:var(--space-4)">Connected NEAR Wallets</h2>
+      <p class="field-hint" style="margin:0 0 var(--space-4)">Link your NEAR wallet to sign in without a password. You can link multiple wallets.</p>
+
+      <?php if (empty($nearWallets)): ?>
+        <div class="alert alert-info" style="margin-bottom:var(--space-4)">No NEAR wallet linked yet.</div>
+        <button id="nearLinkBtn" class="btn near-btn" style="background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          Link NEAR Wallet
+        </button>
+      <?php else: ?>
+        <div style="margin-bottom:var(--space-4)">
+          <?php foreach ($nearWallets as $wallet): ?>
+          <div style="display:flex;align-items:center;gap:12px;padding:var(--space-3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:var(--space-2);background:<?= $wallet['is_primary'] ? 'var(--primary-soft)' : 'transparent' ?>">
+            <span style="font-family:monospace;font-size:var(--text-sm);color:var(--text-secondary);flex:1"><?= htmlspecialchars($wallet['near_account_id']) ?></span>
+            <?php if ($wallet['is_primary']): ?>
+              <span class="badge badge-accent" style="font-size:var(--text-xs)">Primary</span>
+            <?php endif; ?>
+            <div style="display:flex;gap:6px">
+              <?php if (!$wallet['is_primary']): ?>
+              <button onclick="setPrimaryNearWallet(<?= (int)$wallet['id'] ?>)" class="btn btn-ghost btn-sm" style="font-size:var(--text-xs)">Set Primary</button>
+              <?php endif; ?>
+              <button onclick="unlinkNearWallet(<?= (int)$wallet['id'] ?>)" class="btn btn-danger btn-sm" style="font-size:var(--text-xs)">Unlink</button>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <button id="nearLinkBtn" class="btn near-btn" style="background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          Link Another Wallet
+        </button>
+      <?php endif; ?>
+    </div>
   <?php endif; ?>
 </div>
+
+<script src="<?= SITE_URL ?>/frontend/js/wallet.bundle.js"></script>
+<script>
+async function linkNearWallet() {
+  const btn = document.getElementById('nearLinkBtn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Connecting…';
+
+  try {
+    // Step 1: Request link challenge
+    const challenge = await Web3EduNear.requestChallenge('link');
+
+    // Step 2: Connect wallet
+    const walletInfo = await Web3EduNear.connectWallet();
+    if (!walletInfo) {
+      throw new Error('No wallet connected');
+    }
+
+    // Step 3: Sign message
+    const nonce = challenge.nonce;
+    const signed = await Web3EduNear.signMessage(
+      'Link NEAR wallet to Web3Edu account',
+      nonce,
+      window.location.origin
+    );
+
+    // Step 4: Submit signature
+    const result = await Web3EduNear.submitSignature(
+      challenge.challenge_id,
+      walletInfo.accountId,
+      walletInfo.publicKey,
+      signed.signature,
+      {
+        message: 'Link NEAR wallet to Web3Edu account',
+        nonce: challenge.nonce,
+        recipient: challenge.recipient,
+        callbackUrl: window.location.origin,
+      },
+      {
+        near_account_id: walletInfo.accountId,
+        public_key: walletInfo.publicKey,
+        signature: signed.signature,
+        challenge_id: challenge.challenge_id,
+        signed_payload: JSON.stringify({
+          message: 'Link NEAR wallet to Web3Edu account',
+          nonce: challenge.nonce,
+          recipient: challenge.recipient,
+          callbackUrl: window.location.origin,
+        }),
+      }
+    );
+
+    if (result.success) {
+      window.location.reload();
+    }
+  } catch (err) {
+    console.error('NEAR link error:', err);
+    alert(err.message || 'Failed to link NEAR wallet.');
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+async function setPrimaryNearWallet(walletId) {
+  try {
+    const response = await fetch('<?= SITE_URL ?>/profile.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'action=set_primary_near_wallet&wallet_id=' + walletId + '&<?= csrfLink() ?>'
+    });
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      alert('Failed to set primary wallet.');
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+async function unlinkNearWallet(walletId) {
+  if (!confirm('Are you sure you want to unlink this NEAR wallet?')) return;
+  try {
+    const response = await fetch('<?= SITE_URL ?>/profile.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'action=unlink_near_wallet&wallet_id=' + walletId + '&<?= csrfLink() ?>'
+    });
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      alert('Failed to unlink wallet.');
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+document.getElementById('nearLinkBtn').addEventListener('click', linkNearWallet);
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
