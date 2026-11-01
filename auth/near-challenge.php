@@ -33,9 +33,17 @@ if (!$input) {
 $action = $input['action'] ?? '';
 $userId = $input['user_id'] ?? null;
 
+// Rate limiting check (active enforcement)
+if (Web3Edu\Near\Auth\NearAuth::isRateLimited($action)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'error' => 'Too many attempts. Please wait and try again.']);
+    exit;
+}
+
 // For 'link' action, user must be logged in
 if ($action === 'link') {
     if (!isLoggedIn()) {
+        Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($action);
         http_response_code(401);
         echo json_encode(['success' => false, 'error' => 'Not logged in']);
         exit;
@@ -54,6 +62,7 @@ try {
         'expires_at' => $challenge['expires_at'],
     ]);
 } catch (Exception $e) {
+    Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($action);
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Failed to create challenge']);
     exit;

@@ -6,14 +6,19 @@
  * authentication. All functions are safe to call multiple times.
  *
  * NEP-413 signing:
- *   digest = sha256( borsh(u32 644) ‖ borsh({message, nonce, recipient, callbackUrl?}) )
+ *   digest = sha256( borsh(u32 2147484061) ‖ borsh({message, nonce, recipient, callbackUrl?}) )
  *   signature = Ed25519_sign(digest, secret_key)
+ *
+ * Where 2147484061 = 2^31 + 413 (the NEP-413 domain separator).
  *
  * Verification:
  *   1. Reconstruct the Borsh-serialized payload
  *   2. Compute sha256(prefix ‖ payload)
  *   3. Verify Ed25519 signature against the signer's public key
  *   4. Confirm the public key is authorized for the claimed NEAR account
+ *      - Named accounts: RPC view_access_key must confirm the key
+ *      - Implicit accounts: account_id must equal lowercase hex of public key bytes
+ *   5. All RPC failures fail closed (return false)
  *
  * Requires PHP sodium extension (confirmed available).
  */
@@ -26,8 +31,8 @@ use Exception;
 
 class NearAuth
 {
-    /** NEP-413 domain separator: u32 644 (231 + 413) in little-endian Borsh */
-    private const NEP413_PREFIX = "\x4c\x02\x00\x00";
+    /** NEP-413 domain separator: u32 (2^31 + 413) in little-endian Borsh = 0x9D010080 */
+    private const NEP413_PREFIX = "\x9d\x01\x00\x80";
 
     /** Challenge expiration: 10 minutes */
     private const CHALLENGE_TTL_SECONDS = 600;
@@ -82,28 +87,41 @@ class NearAuth
     }
 
     /**
-     * Consume and verify a challenge. Returns the challenge row or null.
-     * The challenge is marked as used (consumed exactly once).
+     * Consume and verify a challenge atomically.
+     * Uses a conditional UPDATE (used = 0 → used = 1) so that concurrent
+     * requests cannot both consume the same challenge. Returns the challenge
+     * row or null if already used, expired, or not found.
      */
     public static function consumeChallenge(string $challengeId): ?array
     {
         $db = getDB();
 
-        // Find the challenge (use UTC_TIMESTAMP for consistent timezone)
+        // Atomic consume: only mark as used if it's still unused and not expired.
+        // The affected-row check guarantees exactly-once consumption even under
+        // concurrent requests.
         $stmt = $db->prepare("
-            SELECT * FROM near_auth_challenges
-            WHERE challenge_id = ? AND used = 0 AND expires_at > UTC_TIMESTAMP()
+            UPDATE near_auth_challenges
+            SET used = 1
+            WHERE id = (
+                SELECT id FROM (
+                    SELECT id FROM near_auth_challenges
+                    WHERE challenge_id = ? AND used = 0 AND expires_at > UTC_TIMESTAMP()
+                    LIMIT 1
+                ) AS sub
+            ) AND used = 0
         ");
+        // NOTE: The outer AND used = 0 is redundant with the subquery but makes
+        // the intent explicit. MySQL will evaluate the subquery first.
         $stmt->execute([$challengeId]);
-        $challenge = $stmt->fetch();
 
-        if (!$challenge) {
-            return null;
+        if ($stmt->rowCount() === 0) {
+            return null; // Already used, expired, or not found
         }
 
-        // Mark as used (consume exactly once)
-        $db->prepare("UPDATE near_auth_challenges SET used = 1 WHERE id = ?")
-           ->execute([(int)$challenge['id']]);
+        // Fetch the challenge row (now marked as used)
+        $stmt = $db->prepare("SELECT * FROM near_auth_challenges WHERE challenge_id = ?");
+        $stmt->execute([$challengeId]);
+        $challenge = $stmt->fetch();
 
         return $challenge;
     }
@@ -124,10 +142,10 @@ class NearAuth
     /**
      * Verify a NEP-413 signature against the challenge.
      *
-     * @param array $challenge  Challenge row from near_auth_challenges
-     * @param string $accountId  NEAR account ID claimed by the client
-     * @param string $publicKey  Public key (ed25519:base58 or raw base58)
-     * @param string $signature  Base64-encoded Ed25519 signature
+     * @param array $challenge      Challenge row from near_auth_challenges
+     * @param string $accountId     NEAR account ID claimed by the client
+     * @param string $publicKey     Public key (ed25519:base58 or raw base58)
+     * @param string $signature     Base64-encoded Ed25519 signature
      * @param array $signedPayload  The payload that was signed {message, nonce, recipient, callbackUrl?}
      * @return bool
      * @throws Exception
@@ -139,52 +157,64 @@ class NearAuth
         string $signature,
         array $signedPayload
     ): bool {
-        // 1. Verify the nonce matches the challenge
+        // 1. Verify the nonce matches the challenge (exact string match)
         $receivedNonce = $signedPayload['nonce'] ?? '';
         if ($receivedNonce !== $challenge['nonce']) {
             return false;
         }
 
-        // 2. Verify the recipient matches
+        // 2. Verify the nonce decodes to exactly 32 bytes
+        $nonceBytes = base64_decode($receivedNonce, true);
+        if ($nonceBytes === false || strlen($nonceBytes) !== 32) {
+            return false;
+        }
+
+        // 3. Verify the recipient matches
         $receivedRecipient = $signedPayload['recipient'] ?? '';
         if ($receivedRecipient !== $challenge['recipient']) {
             return false;
         }
 
-        // 3. Reconstruct the signed message
+        // 4. Verify the action matches (challenge binds action server-side;
+        //    client cannot switch login/register/link by changing fields)
+        //    The challenge['action] was set at creation and cannot be altered
+        //    by the client. No client-submitted action field is trusted.
+
+        // 5. Reconstruct the signed message (Borsh serialization)
         $signedMessage = self::serializeNep413Payload($signedPayload);
         $prefix = self::NEP413_PREFIX;
         $digestInput = $prefix . $signedMessage;
         $digest = hash('sha256', $digestInput, true);
 
-        // 4. Decode the signature (base64 -> 64 bytes)
+        // 6. Decode the signature (base64 -> exactly 64 bytes for Ed25519)
         $sigBytes = base64_decode($signature, true);
         if ($sigBytes === false || strlen($sigBytes) !== 64) {
             return false;
         }
 
-        // 5. Decode the public key (ed25519:base58 -> 32 bytes)
+        // 7. Decode the public key (ed25519:base58 -> exactly 32 bytes)
         $pkBytes = self::decodeNearPublicKey($publicKey);
         if ($pkBytes === false || strlen($pkBytes) !== 32) {
             return false;
         }
 
-        // 6. Verify Ed25519 signature
-        $valid = sodium_crypto_sign_ed25519_verify($sigBytes, $digest, $pkBytes);
+        // 8. Verify Ed25519 signature cryptographically
+        $valid = sodium_crypto_sign_verify_detached($sigBytes, $digest, $pkBytes);
         if (!$valid) {
             return false;
         }
 
-        // 7. Verify the public key is authorized for the claimed NEAR account
-        // For implicit accounts (no access key), the signing key IS the account key.
-        // For named accounts, we check the full-access key on-chain via RPC.
-        return self::verifyAccountKey($accountId, $publicKey);
+        // 9. Verify the public key is authorized for the claimed NEAR account.
+        //    Fails closed: if authorization cannot be proven, return false.
+        return self::verifyAccountKey($accountId, $pkBytes);
     }
 
     /**
      * Borsh-serialize a NEP-413 payload.
      *
      * Payload structure: {message: string, nonce: string, recipient: string, callbackUrl?: string}
+     * The optional callbackUrl is included exactly when present (Some) or
+     * omitted as None when absent.
      */
     private static function serializeNep413Payload(array $payload): string
     {
@@ -199,7 +229,7 @@ class NearAuth
         // recipient (string)
         $out .= self::borshString($payload['recipient'] ?? '');
 
-        // callbackUrl (option string)
+        // callbackUrl (option string): 0x00 = None, 0x01 = Some + string
         $callbackUrl = $payload['callbackUrl'] ?? null;
         if ($callbackUrl === null) {
             $out .= "\x00"; // None
@@ -225,6 +255,7 @@ class NearAuth
     /**
      * Decode a NEAR public key to raw 32 bytes.
      * Accepts 'ed25519:base58' or raw base58.
+     * Returns false on malformed input.
      */
     private static function decodeNearPublicKey(string $publicKey): string|false
     {
@@ -233,13 +264,13 @@ class NearAuth
             $publicKey = substr($publicKey, 8);
         }
 
-        // Base58 decode
+        // Base58 decode (Bitcoin alphabet)
         $decoded = self::base58Decode($publicKey);
         if ($decoded === false) {
             return false;
         }
 
-        // NEAR public keys are 32 bytes (Ed25519)
+        // NEAR public keys are exactly 32 bytes (Ed25519)
         if (strlen($decoded) !== 32) {
             return false;
         }
@@ -248,32 +279,35 @@ class NearAuth
     }
 
     /**
-     * Base58 decode (Bitcoin alphabet).
+     * Base58 decode (Bitcoin alphabet: 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz).
+     * Returns false on invalid characters.
      */
     private static function base58Decode(string $input): string|false
     {
         $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-        $base = strlen($alphabet);
+        $base = strlen($alphabet); // 58
 
-        // Count leading zeros
+        if ($input === '') {
+            return false;
+        }
+
+        // Count leading zeros (character '1' in base58)
         $leadingZeros = 0;
         while ($leadingZeros < strlen($input) && $input[$leadingZeros] === '1') {
             $leadingZeros++;
         }
 
-        // Convert to big integer
-        $num = 0;
+        // Convert to big integer using bcmath
+        $num = '0';
         for ($i = 0; $i < strlen($input); $i++) {
             $pos = strpos($alphabet, $input[$i]);
             if ($pos === false) {
-                return false;
+                return false; // Invalid base58 character
             }
-            $num = bcmul($num, (string)$base) + $pos;
+            $num = bcadd(bcmul($num, (string)$base), (string)$pos);
         }
 
         // Convert to bytes
-        $hex = decbin($num); // not ideal for large numbers, but works for 32-byte keys
-        // Use bcmath for proper conversion
         $bytes = '';
         while (bccomp($num, '0', 0) > 0) {
             $mod = bcmod($num, '256');
@@ -291,14 +325,32 @@ class NearAuth
 
     /**
      * Verify that the public key is authorized for the claimed NEAR account.
-     * Queries the NEAR testnet RPC for the account's access keys.
+     *
+     * For named accounts (e.g. alice.testnet): queries the NEAR testnet RPC
+     * via view_access_key to confirm the public key is an authorized access key
+     * for that account. RPC failures fail closed (return false).
+     *
+     * For implicit accounts (account_id == lowercase hex of public key bytes):
+     * verifies the account ID matches exactly. No RPC needed.
+     *
+     * @param string $accountId NEAR account ID
+     * @param string $pkBytes   Raw 32-byte Ed25519 public key
+     * @return bool
      */
-    private static function verifyAccountKey(string $accountId, string $publicKey): bool
+    private static function verifyAccountKey(string $accountId, string $pkBytes): bool
     {
-        $pkHex = bin2hex(self::decodeNearPublicKey($publicKey));
-        if ($pkHex === false) {
-            return false;
+        // --- Implicit account check ---
+        // An implicit NEAR account ID is the lowercase hex encoding of its
+        // public key bytes (no access key needed).
+        $pkHex = strtolower(bin2hex($pkBytes));
+        if ($accountId === $pkHex) {
+            return true;
         }
+
+        // --- Named account check via RPC ---
+        // Query NEAR testnet for the account's access keys. The public key must
+        // be listed as an authorized access key for the account.
+        $pkHexUpper = strtoupper($pkHex); // NEAR RPC expects hex without 0x prefix, typically uppercase
 
         try {
             $ch = curl_init(self::NEAR_TESTNET_RPC);
@@ -312,7 +364,7 @@ class NearAuth
                         'request_type' => 'view_access_key',
                         'finality'     => 'final',
                         'account_id'   => $accountId,
-                        'public_key'   => $pkHex,
+                        'public_key'   => $pkHexUpper,
                     ],
                 ]),
                 CURLOPT_RETURNTRANSFER => true,
@@ -323,6 +375,7 @@ class NearAuth
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
+            // Network error or HTTP error → fail closed
             if ($response === false || $httpCode >= 400) {
                 return false;
             }
@@ -332,42 +385,94 @@ class NearAuth
                 return false;
             }
 
-            // If the key exists on the account, it's authorized
+            // Key exists on account → authorized
             return isset($data['result']['access_key']);
         } catch (Exception $e) {
+            // Any exception → fail closed
             return false;
         }
     }
 
     // ------------------------------------------------------------------
-    // Rate limiting
+    // Rate limiting (active enforcement)
     // ------------------------------------------------------------------
 
     /**
-     * Check if an IP is rate-limited for auth attempts.
+     * Get the client IP address.
      */
-    public static function isRateLimited(string $ip): bool
+    private static function getClientIp(): string
     {
+        $cfIp = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '';
+        if ($cfIp !== '' && filter_var($cfIp, FILTER_VALIDATE_IP)) {
+            return $cfIp;
+        }
+        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    }
+
+    /**
+     * Check if an IP is rate-limited for a given auth action.
+     * Returns true if the limit has been exceeded.
+     */
+    public static function isRateLimited(string $action): bool
+    {
+        if (!in_array($action, ['login', 'register', 'link'], true)) {
+            return false;
+        }
+
         $db = getDB();
-        $windowStart = date('Y-m-d H:i:s', time() - self::RATE_LIMIT_WINDOW_SECONDS);
+        $ip = self::getClientIp();
+        $windowStart = gmdate('Y-m-d H:i:s', time() - self::RATE_LIMIT_WINDOW_SECONDS);
 
         $stmt = $db->prepare("
-            SELECT COUNT(*) FROM near_auth_challenges
-            WHERE action = 'login' AND created_at > ? AND used = 0
+            SELECT attempt_count FROM near_rate_limits
+            WHERE ip_address = ? AND action = ? AND window_start > ?
         ");
-        // Note: We don't store IP in challenges table yet. For now, use a simple
-        // in-memory-ish approach via a separate rate_limit table or skip.
-        // Returning false (not rate-limited) for now; IP-based rate limiting
-        // can be added with a dedicated table.
-        return false;
+        $stmt->execute([$ip, $action, $windowStart]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            return false;
+        }
+
+        return (int)$row['attempt_count'] >= self::RATE_LIMIT_MAX;
     }
 
     /**
      * Record a failed auth attempt for rate limiting.
+     * Uses INSERT ... ON DUPLICATE KEY UPDATE for atomic increment.
      */
-    public static function recordFailedAttempt(string $ip, string $action = 'login'): void
+    public static function recordFailedAttempt(string $action): void
     {
-        // Best-effort; no dedicated rate_limit table yet.
-        // Challenges table could be extended, but for MVP we skip.
+        if (!in_array($action, ['login', 'register', 'link'], true)) {
+            return;
+        }
+
+        $db = getDB();
+        $ip = self::getClientIp();
+        // Compute window start as a clean integer timestamp
+        $windowStartTs = (int)(time() / self::RATE_LIMIT_WINDOW_SECONDS) * self::RATE_LIMIT_WINDOW_SECONDS;
+        $windowStart = gmdate('Y-m-d H:i:s', $windowStartTs);
+
+        $stmt = $db->prepare("
+            INSERT INTO near_rate_limits (ip_address, action, attempt_count, window_start)
+            VALUES (?, ?, 1, ?)
+            ON DUPLICATE KEY UPDATE attempt_count = attempt_count + 1
+        ");
+        $stmt->execute([$ip, $action, $windowStart]);
+    }
+
+    /**
+     * Clear rate limit entries for a successful auth (optional cleanup).
+     */
+    public static function clearRateLimit(string $action): void
+    {
+        if (!in_array($action, ['login', 'register', 'link'], true)) {
+            return;
+        }
+
+        $db = getDB();
+        $ip = self::getClientIp();
+        $db->prepare("DELETE FROM near_rate_limits WHERE ip_address = ? AND action = ?")
+           ->execute([$ip, $action]);
     }
 }

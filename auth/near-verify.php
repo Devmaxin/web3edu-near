@@ -50,11 +50,22 @@ if (!$challengeId || !$accountId || !$publicKey || !$signature || !$signedPayloa
     exit;
 }
 
-// Consume the challenge (exactly once)
+// Consume the challenge (exactly once, atomically)
 $challenge = Web3Edu\Near\Auth\NearAuth::consumeChallenge($challengeId);
 if (!$challenge) {
+    Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($input['action'] ?? 'login');
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Invalid, expired, or already-used challenge']);
+    exit;
+}
+
+// Rate limiting check (active enforcement) — check after consuming challenge
+// so we don't rate-limit based on an unconsumed challenge, but still enforce
+// limits on the verification endpoint.
+if (Web3Edu\Near\Auth\NearAuth::isRateLimited($challenge['action'])) {
+    Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($challenge['action']);
+    http_response_code(429);
+    echo json_encode(['success' => false, 'error' => 'Too many attempts. Please wait and try again.']);
     exit;
 }
 
@@ -68,12 +79,14 @@ try {
         $signedPayload
     );
 } catch (Exception $e) {
+    Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($challenge['action']);
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Signature verification error']);
     exit;
 }
 
 if (!$valid) {
+    Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($challenge['action']);
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Invalid signature']);
     exit;
@@ -84,6 +97,9 @@ $action = $challenge['action'];
 $db = getDB();
 $userId = null;
 $isNew = false;
+
+// Clear rate limit on successful verification
+Web3Edu\Near\Auth\NearAuth::clearRateLimit($action);
 
 // ------------------------------------------------------------------
 // Find or create user based on action

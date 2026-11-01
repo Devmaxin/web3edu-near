@@ -9,6 +9,7 @@
 -- 3. Unique constraint on `near_account_id` prevents one NEAR account from being
 --    linked to multiple Web3Edu users.
 -- 4. Create `near_auth_challenges` table for server-side NEP-413 challenge storage.
+-- 5. Create `near_rate_limits` table for IP-based rate limiting on auth endpoints.
 -- ============================================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -58,6 +59,20 @@ CREATE TABLE IF NOT EXISTS `near_auth_challenges` (
   KEY `idx_near_auth_challenges_expires` (`expires_at`),
   KEY `idx_near_auth_challenges_used` (`used`),
   CONSTRAINT `fk_near_auth_challenges_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 4. Create near_rate_limits table (IP-based rate limiting)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `near_rate_limits` (
+  `id`            INT NOT NULL AUTO_INCREMENT,
+  `ip_address`    VARCHAR(64) NOT NULL COMMENT 'client IP address',
+  `action`        ENUM('login', 'register', 'link') NOT NULL COMMENT 'auth action being rate limited',
+  `attempt_count` INT NOT NULL DEFAULT 0 COMMENT 'number of attempts in current window',
+  `window_start`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'start of current rate limit window',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_rate_limit` (`ip_address`, `action`, `window_start`),
+  KEY `idx_rate_limits_ip_action` (`ip_address`, `action`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
