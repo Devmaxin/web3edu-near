@@ -1,15 +1,23 @@
 //! Web3Edu NEAR — Credential Registry Smart Contract
 //!
-//! A minimal, secure credential registry for on-chain learning credentials.
+//! A minimal, secure credential registry for on-chain learning credentials,
+//! implemented using near-sdk and deployed to NEAR testnet.
 //!
-//! This is a self-contained Rust implementation using only the standard library.
-//! For NEAR testnet deployment, this logic would be ported to `near-sdk`:
-//! - `Contract` → `#[near_bindgen]` struct with `near_sdk::collections`
-//! - Caller ID → `near_sdk::env::predecessor_account_id()`
-//! - Timestamp → `near_sdk::env::block_timestamp()`
-//! - Serialization → `near_sdk::borsh`
+//! Only minimal, non-sensitive data is stored on-chain:
+//! - credential_id: unique identifier (auto-generated)
+//! - learner_id: NEAR account ID of the learner
+//! - course_id: course or skill identifier (string)
+//! - issuer_id: NEAR account ID of the issuing authority
+//! - issued_at: block timestamp when issued
+//! - metadata_hash: optional off-chain commitment (e.g. IPFS CID hash)
+//! - revoked: whether the credential has been revoked
+//!
+//! No personally identifying information (names, emails, grades, passwords,
+//! private learning records, or other personal data) is stored on-chain.
 
-use std::collections::{BTreeSet, HashMap};
+use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
+use near_sdk::collections::{LookupMap, UnorderedMap, UnorderedSet};
+use near_sdk::{env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault};
 
 /// A single on-chain credential record.
 ///
@@ -24,103 +32,61 @@ use std::collections::{BTreeSet, HashMap};
 ///
 /// No personally identifying information (names, emails, grades, passwords,
 /// private learning records, or other personal data) is stored on-chain.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(BorshSerialize, BorshDeserialize, Clone, PartialEq, Eq, Debug, serde::Serialize, serde::Deserialize)]
 pub struct Credential {
     pub credential_id: String,
-    pub learner_id: String,
+    pub learner_id: AccountId,
     pub course_id: String,
-    pub issuer_id: String,
+    pub issuer_id: AccountId,
     pub issued_at: u64,
     pub metadata_hash: Option<String>,
     pub revoked: bool,
 }
 
 /// Public verification status of a credential.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(BorshSerialize, BorshDeserialize, Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub enum CredentialStatus {
     Valid,
     Revoked,
     NotFound,
 }
 
-/// Errors returned by contract methods.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum ContractError {
-    AlreadyInitialized,
-    InvalidIssuer,
-    NotIssuer,
-    NotFound,
-    AlreadyRevoked,
-    InvalidLearner,
-    InvalidCourse,
-    InvalidNewIssuer,
+#[derive(BorshSerialize, BorshStorageKey)]
+enum StorageKey {
+    Credentials,
+    LearnerCredentials,
+    /// Inner prefix for per-learner credential sets. The account_id field
+    /// ensures each learner gets a unique storage prefix.
+    LearnerCredentialsInner { account_id: AccountId },
 }
 
-impl std::fmt::Display for ContractError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ContractError::AlreadyInitialized => write!(f, "Contract already initialized"),
-            ContractError::InvalidIssuer => write!(f, "Invalid issuer account ID"),
-            ContractError::NotIssuer => {
-                write!(f, "Only the authorized issuer can perform this action")
-            }
-            ContractError::NotFound => write!(f, "Credential not found"),
-            ContractError::AlreadyRevoked => {
-                write!(f, "Credential is already revoked")
-            }
-            ContractError::InvalidLearner => write!(f, "Learner ID must not be empty"),
-            ContractError::InvalidCourse => write!(f, "Course ID must not be empty"),
-            ContractError::InvalidNewIssuer => {
-                write!(f, "New issuer ID must not be empty")
-            }
-        }
-    }
-}
-
-impl std::error::Error for ContractError {}
-
-/// The credential registry contract.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[near_bindgen]
+#[derive(BorshSerialize, BorshDeserialize, PanicOnDefault)]
 pub struct Contract {
     /// Authorized issuer account. Only this account can issue or revoke.
-    issuer: String,
+    issuer: AccountId,
     /// credential_id -> Credential
-    credentials: HashMap<String, Credential>,
+    credentials: LookupMap<String, Credential>,
     /// learner_id -> set of credential_ids issued to that learner
-    learner_credentials: HashMap<String, BTreeSet<String>>,
+    learner_credentials: UnorderedMap<AccountId, UnorderedSet<String>>,
     /// Monotonic counter for generating unique credential IDs.
     next_credential_id: u64,
 }
 
-impl Default for Contract {
-    fn default() -> Self {
-        Self {
-            issuer: String::new(),
-            credentials: HashMap::new(),
-            learner_credentials: HashMap::new(),
-            next_credential_id: 0,
-        }
-    }
-}
-
+#[near_bindgen]
 impl Contract {
     /// Initialize the contract with an authorized issuer account.
     /// Can only be called once (on deployment).
-    pub fn new(issuer_id: &str) -> Result<Self, ContractError> {
-        if issuer_id.is_empty() {
-            return Err(ContractError::InvalidIssuer);
-        }
-        Ok(Self {
-            issuer: issuer_id.to_string(),
-            credentials: HashMap::new(),
-            learner_credentials: HashMap::new(),
+    #[init]
+    pub fn new(issuer_id: AccountId) -> Self {
+        assert!(!env::state_exists(), "Contract already initialized");
+        assert!(!issuer_id.as_str().is_empty(), "ERR_INVALID_ISSUER");
+        Self {
+            issuer: issuer_id,
+            credentials: LookupMap::new(StorageKey::Credentials),
+            learner_credentials: UnorderedMap::new(StorageKey::LearnerCredentials),
             next_credential_id: 0,
-        })
-    }
-
-    /// Check if the contract has been initialized (issuer is non-empty).
-    pub fn is_initialized(&self) -> bool {
-        !self.issuer.is_empty()
+        }
     }
 
     /// Issue a new credential.
@@ -128,69 +94,75 @@ impl Contract {
     /// Only the authorized issuer can call this method.
     ///
     /// # Arguments
-    /// * `caller` - The account ID of the caller (must be the issuer)
     /// * `learner_id` - NEAR account ID of the learner receiving the credential
     /// * `course_id` - Course or skill identifier (free-form string)
     /// * `metadata_hash` - Optional off-chain commitment (e.g. IPFS CID hash)
     ///
     /// Returns the auto-generated credential ID.
+    ///
+    /// # Errors
+    /// Panics if called by a non-issuer, or if learner_id/course_id is empty.
     pub fn issue_credential(
         &mut self,
-        caller: &str,
-        learner_id: &str,
-        course_id: &str,
-        metadata_hash: Option<&str>,
-    ) -> Result<String, ContractError> {
-        if caller != self.issuer {
-            return Err(ContractError::NotIssuer);
-        }
-        if learner_id.is_empty() {
-            return Err(ContractError::InvalidLearner);
-        }
-        if course_id.is_empty() {
-            return Err(ContractError::InvalidCourse);
-        }
+        learner_id: AccountId,
+        course_id: String,
+        metadata_hash: Option<String>,
+    ) -> String {
+        assert_eq!(
+            env::predecessor_account_id(),
+            self.issuer,
+            "ERR_NOT_ISSUER: only the authorized issuer can issue credentials"
+        );
+        assert!(
+            !learner_id.as_str().is_empty(),
+            "ERR_INVALID_LEARNER: learner_id must not be empty"
+        );
+        assert!(
+            !course_id.is_empty(),
+            "ERR_INVALID_COURSE: course_id must not be empty"
+        );
 
         let credential_id = format!("cred-{}", self.next_credential_id);
         self.next_credential_id += 1;
 
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_nanos() as u64;
-
         let credential = Credential {
             credential_id: credential_id.clone(),
-            learner_id: learner_id.to_string(),
-            course_id: course_id.to_string(),
+            learner_id: learner_id.clone(),
+            course_id,
             issuer_id: self.issuer.clone(),
-            issued_at: now,
-            metadata_hash: metadata_hash.map(|s| s.to_string()),
+            issued_at: env::block_timestamp(),
+            metadata_hash,
             revoked: false,
         };
 
-        self.credentials
-            .insert(credential_id.clone(), credential);
+        self.credentials.insert(&credential_id, &credential);
 
         // Track the credential under the learner's set
+        let mut learner_creds = self
+            .learner_credentials
+            .get(&learner_id)
+            .unwrap_or_else(|| {
+                UnorderedSet::new(StorageKey::LearnerCredentialsInner {
+                    account_id: learner_id.clone(),
+                })
+            });
+        learner_creds.insert(&credential_id);
         self.learner_credentials
-            .entry(learner_id.to_string())
-            .or_insert_with(BTreeSet::new)
-            .insert(credential_id.clone());
+            .insert(&learner_id, &learner_creds);
 
-        Ok(credential_id)
+        credential_id
     }
 
     /// Retrieve a credential by its ID.
     ///
     /// Returns the full `Credential` record if found, `None` otherwise.
-    pub fn get_credential(&self, credential_id: &str) -> Option<&Credential> {
-        self.credentials.get(credential_id)
+    pub fn get_credential(&self, credential_id: String) -> Option<Credential> {
+        self.credentials.get(&credential_id)
     }
 
     /// Check whether a credential exists and is currently valid (not revoked).
-    pub fn is_valid(&self, credential_id: &str) -> bool {
-        match self.credentials.get(credential_id) {
+    pub fn is_valid(&self, credential_id: String) -> bool {
+        match self.credentials.get(&credential_id) {
             Some(c) => !c.revoked,
             None => false,
         }
@@ -199,8 +171,8 @@ impl Contract {
     /// Get the verification status of a credential.
     ///
     /// Returns `Valid`, `Revoked`, or `NotFound`.
-    pub fn get_status(&self, credential_id: &str) -> CredentialStatus {
-        match self.credentials.get(credential_id) {
+    pub fn get_status(&self, credential_id: String) -> CredentialStatus {
+        match self.credentials.get(&credential_id) {
             Some(c) if c.revoked => CredentialStatus::Revoked,
             Some(_) => CredentialStatus::Valid,
             None => CredentialStatus::NotFound,
@@ -218,16 +190,16 @@ impl Contract {
     /// Returns an empty vector if the learner has no credentials.
     pub fn get_learner_credentials(
         &self,
-        learner_id: &str,
+        learner_id: AccountId,
         from_index: Option<u64>,
         limit: Option<u64>,
     ) -> Vec<String> {
-        let learner_creds = match self.learner_credentials.get(learner_id) {
+        let learner_creds = match self.learner_credentials.get(&learner_id) {
             Some(s) => s,
             None => return Vec::new(),
         };
 
-        let mut all: Vec<String> = learner_creds.iter().cloned().collect();
+        let mut all: Vec<String> = learner_creds.iter().collect();
         all.sort();
 
         let start = from_index.unwrap_or(0) as usize;
@@ -250,34 +222,32 @@ impl Contract {
     /// Revocation is permanent for that credential ID.
     ///
     /// # Errors
-    /// Returns `NotIssuer` if called by a non-issuer,
-    /// `NotFound` if the credential doesn't exist,
-    /// `AlreadyRevoked` if the credential is already revoked.
-    pub fn revoke_credential(
-        &mut self,
-        caller: &str,
-        credential_id: &str,
-    ) -> Result<(), ContractError> {
-        if caller != self.issuer {
-            return Err(ContractError::NotIssuer);
-        }
+    /// Panics if called by a non-issuer, if the credential doesn't exist,
+    /// or if the credential is already revoked.
+    pub fn revoke_credential(&mut self, credential_id: String) {
+        assert_eq!(
+            env::predecessor_account_id(),
+            self.issuer,
+            "ERR_NOT_ISSUER: only the authorized issuer can revoke credentials"
+        );
 
-        let credential = self
+        let mut credential = self
             .credentials
-            .get_mut(credential_id)
-            .ok_or(ContractError::NotFound)?;
+            .get(&credential_id)
+            .expect("ERR_NOT_FOUND: credential does not exist");
 
-        if credential.revoked {
-            return Err(ContractError::AlreadyRevoked);
-        }
+        assert!(
+            !credential.revoked,
+            "ERR_ALREADY_REVOKED: credential is already revoked"
+        );
 
         credential.revoked = true;
-        Ok(())
+        self.credentials.insert(&credential_id, &credential);
     }
 
     /// Get the current authorized issuer account ID.
-    pub fn get_issuer(&self) -> &str {
-        &self.issuer
+    pub fn get_issuer(&self) -> AccountId {
+        self.issuer.clone()
     }
 
     /// Transfer issuer authority to a new account.
@@ -285,37 +255,20 @@ impl Contract {
     /// Only the current issuer can call this method.
     ///
     /// # Arguments
-    /// * `caller` - The account ID of the caller (must be the current issuer)
     /// * `new_issuer_id` - NEAR account ID of the new issuer
     ///
     /// # Errors
-    /// Returns `NotIssuer` if called by a non-issuer,
-    /// `InvalidNewIssuer` if new_issuer_id is empty.
-    pub fn transfer_issuer(
-        &mut self,
-        caller: &str,
-        new_issuer_id: &str,
-    ) -> Result<(), ContractError> {
-        if caller != self.issuer {
-            return Err(ContractError::NotIssuer);
-        }
-        if new_issuer_id.is_empty() {
-            return Err(ContractError::InvalidNewIssuer);
-        }
-        self.issuer = new_issuer_id.to_string();
-        Ok(())
-    }
-
-    /// Get the total number of credentials issued.
-    pub fn credential_count(&self) -> u64 {
-        self.credentials.len() as u64
-    }
-
-    /// Get the total number of revoked credentials.
-    pub fn revoked_count(&self) -> u64 {
-        self.credentials
-            .values()
-            .filter(|c| c.revoked)
-            .count() as u64
+    /// Panics if called by a non-issuer, or if new_issuer_id is empty.
+    pub fn transfer_issuer(&mut self, new_issuer_id: AccountId) {
+        assert_eq!(
+            env::predecessor_account_id(),
+            self.issuer,
+            "ERR_NOT_ISSUER: only the current issuer can transfer authority"
+        );
+        assert!(
+            !new_issuer_id.as_str().is_empty(),
+            "ERR_INVALID_ISSUER: new issuer ID must not be empty"
+        );
+        self.issuer = new_issuer_id;
     }
 }
