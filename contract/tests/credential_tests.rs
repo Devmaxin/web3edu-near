@@ -387,7 +387,7 @@ fn learner_credentials_pagination() {
 fn multiple_learners_can_have_credentials() {
     let mut contract = new_contract_for_test();
 
-    let id1 = contract.issue_credential(issuer_account(), COURSE_ID.to_string(), None);
+    let id1 = contract.issue_credential(learner_account(), COURSE_ID.to_string(), None);
     let id2 = contract.issue_credential(non_issuer_account(), COURSE_ID.to_string(), None);
 
     let learner_creds = contract.get_learner_credentials(learner_account(), None, None);
