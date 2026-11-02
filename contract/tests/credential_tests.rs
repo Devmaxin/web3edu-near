@@ -79,13 +79,13 @@ fn unauthorized_issue_fails() {
     let mut contract = Contract::new(issuer_account());
 
     // issue_credential returns String, panics on unauthorized caller
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.issue_credential(
             learner_account(),
             COURSE_ID.to_string(),
             Some(METADATA_HASH.to_string()),
         )
-    }).catch_unwind();
+    }));
 
     assert!(
         result.is_err(),
@@ -99,9 +99,9 @@ fn empty_course_id_rejected() {
     let mut contract = Contract::new(issuer_account());
 
     // Empty course_id string panics inside the contract assert
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.issue_credential(learner_account(), "".to_string(), None)
-    }).catch_unwind();
+    }));
 
     assert!(
         result.is_err(),
@@ -181,7 +181,7 @@ fn authorized_revoke_succeeds() {
     );
 
     let cred = contract
-        .get_credential(&credential_id)
+        .get_credential(credential_id.clone())
         .expect("credential should still exist");
     assert!(cred.revoked, "revoked flag should be true");
 }
@@ -194,9 +194,9 @@ fn revoke_already_revoked_credential_fails() {
     contract.revoke_credential(credential_id.clone());
 
     // revoke_credential returns () and panics on already-revoked credential
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.revoke_credential(credential_id.clone())
-    }).catch_unwind();
+    }));
 
     assert!(
         result.is_err(),
@@ -209,9 +209,9 @@ fn revoke_nonexistent_credential_fails() {
     let mut contract = new_contract_for_test();
 
     // revoke_credential panics on nonexistent credential
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.revoke_credential("cred-99999".to_string())
-    }).catch_unwind();
+    }));
 
     assert!(
         result.is_err(),
@@ -234,9 +234,9 @@ fn unauthorized_revoke_fails() {
 
     // Non-issuer tries to revoke
     setup_context(non_issuer_account());
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.revoke_credential(credential_id.clone())
-    }).catch_unwind();
+    }));
 
     assert!(
         result.is_err(),
@@ -312,9 +312,9 @@ fn issuer_authority_transfer() {
 
     // Old issuer can no longer issue
     setup_context(issuer_account());
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.issue_credential(learner_account(), COURSE_ID.to_string(), None)
-    }).catch_unwind();
+    }));
     assert!(
         result.is_err(),
         "old issuer should not be able to issue after transfer"
@@ -322,9 +322,9 @@ fn issuer_authority_transfer() {
 
     // Non-issuer cannot transfer authority — transfer_issuer returns () and panics
     setup_context(non_issuer_account());
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.transfer_issuer(learner_account())
-    }).catch_unwind();
+    }));
     assert!(
         result.is_err(),
         "non-issuer should not be able to transfer issuer authority"
@@ -339,9 +339,9 @@ fn unauthorized_transfer_issuer_fails() {
     let new_issuer: AccountId = "new-issuer.testnet".parse().unwrap();
 
     // transfer_issuer returns () and panics when called by non-issuer
-    let result = AssertUnwindSafe(|| {
+    let result = std::panic::catch_unwind(AssertUnwindSafe(|| {
         contract.transfer_issuer(new_issuer.clone())
-    }).catch_unwind();
+    }));
 
     assert!(
         result.is_err(),
