@@ -13,10 +13,10 @@
 
 declare(strict_types=1);
 
+define('DISABLE_INTERNAL_EMAIL_RUNNER', true);
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/csrf.php';
 
-$db = getDB();
 
 $credentialId = trim($_GET['id'] ?? $_GET['code'] ?? '');
 $pageTitle = 'Verify Credential';
@@ -37,7 +37,7 @@ if ($credentialId) {
             'finality' => 'final',
             'account_id' => $contractId,
             'method_name' => 'get_credential',
-            'args_base64' => base64_encode(json_encode(['certificate_id' => $credentialId])),
+           'args_base64' => base64_encode(json_encode(['credential_id' => $credentialId])),
         ],
     ]);
 
@@ -56,38 +56,38 @@ if ($credentialId) {
     if ($rpcResponse && $httpCode === 200) {
         $rpcData = json_decode($rpcResponse, true);
         if ($rpcData && !isset($rpcData['error']) && isset($rpcData['result'])) {
-            $result = $rpcData['result'];
-            $decoded = base64_decode($result, true);
-            if ($decoded !== false) {
-                $decodedStr = @mb_convert_encoding($decoded, 'UTF-8', 'UTF-8');
-                $certData = json_decode($decodedStr, true);
-                if ($certJson = $decodedStr) {
-                    $certData = json_decode($certJson, true);
-                }
+ $result = $rpcData['result']['result'] ?? null;
+
+if (is_array($result)) {
+    $decodedStr = implode('', array_map('chr', $result));
+    $nearCredential = json_decode($decodedStr, true);
+
+    if (is_array($nearCredential)) {
+        $issuedAt = isset($nearCredential['issued_at'])
+            ? date('Y-m-d H:i:s', (int) floor((float) $nearCredential['issued_at'] / 1000000000))
+            : null;
+
+        $certData = [
+            'certificate_code'  => $credentialId,
+            'user_id'           => $nearCredential['learner_id'] ?? 'Unknown',
+            'issuer_id'         => $nearCredential['issuer_id'] ?? 'Unknown',
+            'achievement_title' => $nearCredential['course'] ?? 'Certificate',
+            'type'              => 'Learning Path Completion',
+            'issued_at'         => $issuedAt,
+            'is_revoked'        => (bool) ($nearCredential['revoked'] ?? false),
+            'source'             => 'near',
+        ];
+    }
+}
             }
         }
-    }
 
     // Fallback: check local database (for testing without deployed contract)
-    if (!$certData) {
-        $stmt = $db->prepare("SELECT * FROM certificates WHERE certificate_code = ? LIMIT 1");
-        $stmt->execute([$credentialId]);
-        $localCert = $stmt->fetch();
-        if ($localCert) {
-            $certData = [
-                'certificate_code' => $cert['certificate_code'] ?? $cert['id'],
-                'user_id' => $cert['user_id'],
-                'issuer_id' => $cert['user_id'],
-                'achievement_title' => $cert['achievement_title'] ?? 'Certificate',
-                'issued_at' => $cert['issued_at'],
-                'is_revoked' => (int)$cert['is_revoked'],
-                'source' => 'local',
-            ];
-        }
-    }
+        // Local database fallback disabled for this NEAR-only verification test.
 }
 
 $pageTitle = 'Verify Credential';
+define('SKIP_MAINTENANCE_DB_CHECK', true);
 require_once __DIR__ . '/includes/header.php';
 ?>
 

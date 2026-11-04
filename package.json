@@ -7,7 +7,7 @@
     "build": "esbuild wallet/js/near-connector.js --bundle --outfile=frontend/js/wallet.bundle.js --minify"
   },
   "dependencies": {
-    "@hot-labs/near-connect": "^0.1.0"
+    "@hot-labs/near-connect": "^0.11.4"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"

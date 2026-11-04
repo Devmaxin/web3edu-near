@@ -82,11 +82,16 @@ async function disconnectWallet() {
 async function signMessage(message, nonce, callbackUrl = null) {
     const wallet = await getWallet();
 
-    const params = {
-        message,
-        recipient: CONFIG.recipient,
-        nonce,
-    };
+    const nonceBytes = Uint8Array.from(
+    atob(nonce),
+    char => char.charCodeAt(0)
+);
+
+const params = {
+    message,
+    recipient: CONFIG.recipient,
+    nonce: nonceBytes,
+};
 
     if (callbackUrl) {
         params.callbackUrl = callbackUrl;

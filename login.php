@@ -138,22 +138,20 @@ document.getElementById('nearLoginBtn').addEventListener('click', async () => {
     // Step 3: Sign message (NEP-413)
     const nonce = challenge.nonce;
     const signed = await Web3EduNear.signMessage(
-      'Log in to Web3Edu',
-      nonce,
-      window.location.origin
-    );
+  'Log in to Web3Edu',
+  nonce
+);
 
     // Step 4: Submit signature for verification
     const result = await Web3EduNear.submitSignature(
-      challenge.challenge_id,
-      walletInfo.accountId,
-      walletInfo.publicKey,
-      signed.signature,
+  challenge.challenge_id,
+  walletInfo.accountId,
+  signed.publicKey,
+  signed.signature,
       {
         message: 'Log in to Web3Edu',
         nonce: challenge.nonce,
         recipient: challenge.recipient,
-        callbackUrl: window.location.origin,
       }
     );
 

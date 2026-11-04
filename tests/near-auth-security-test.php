@@ -71,7 +71,11 @@ echo "  Implicit account ID: $implicitAccountId\n\n";
 function buildNep413Payload(array $payload): string {
     $out = '';
     $out .= borshString($payload['message'] ?? '');
-    $out .= borshString($payload['nonce'] ?? '');
+    $nonceBytes = base64_decode($payload['nonce'] ?? '', true);
+    if ($nonceBytes === false || strlen($nonceBytes) !== 32) {
+        throw new Exception('Invalid NEP-413 nonce');
+    }
+    $out .= $nonceBytes;
     $out .= borshString($payload['recipient'] ?? '');
     $callbackUrl = $payload['callbackUrl'] ?? null;
     if ($callbackUrl === null) {

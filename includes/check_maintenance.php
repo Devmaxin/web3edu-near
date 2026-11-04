@@ -20,6 +20,9 @@
 if (defined('MAINTENANCE_CHECK_DONE')) return;
 define('MAINTENANCE_CHECK_DONE', true);
 
+// NEAR verification is read-only and must work without MySQL.
+if (defined('SKIP_MAINTENANCE_DB_CHECK') && SKIP_MAINTENANCE_DB_CHECK) return;
+
 // ------------------------------------------------------------------
 // 1. Fast exit: maintenance mode is OFF — nothing to do.
 // ------------------------------------------------------------------

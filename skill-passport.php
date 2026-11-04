@@ -82,26 +82,41 @@ $nearWallets = $stmt->fetchAll();
 
 // Fetch credentials from NEAR smart contract via RPC
 $nearCredentials = [];
-$nearNetwork = getenv('NEAR_NETWORK') ?: 'testnet';
-$nearRpcUrl = 'https://test.rpc.fastnear.com'; // NEAR testnet RPC
+$nearCredentialIds = [];
 
-if ($nearAccountIdResolved) {
-    // Query NEAR contract for credentials issued to this account
-    // The contract stores credentials keyed by credential_id, so we need to query
-    // the contract's view method to get all credentials for a learner.
-    // Since NEAR doesn't support querying by arbitrary key, we use the
-    // get_learner_credentials view method which returns credential IDs for a learner.
-    
+$nearNetwork = getenv('NEAR_NETWORK') ?: 'testnet';
+$nearRpcUrl = 'https://test.rpc.fastnear.com';
+$nearContractId = getenv('NEAR_CONTRACT_ID') ?: '';
+
+if ($nearAccountIdResolved && $nearContractId) {
+
+    // Decode NEAR call_function result bytes into JSON.
+    $decodeNearResult = function ($rpcData) {
+        $result = $rpcData['result']['result'] ?? null;
+
+        if (!is_array($result)) {
+            return null;
+        }
+
+        $decodedStr = implode('', array_map('chr', $result));
+        return json_decode($decodedStr, true);
+    };
+
+    // Get credential IDs belonging to this learner.
     $rpcPayload = json_encode([
         'jsonrpc' => '2.0',
-        'id' => 'verify',
+        'id' => 'passport',
         'method' => 'query',
         'params' => [
             'request_type' => 'call_function',
             'finality' => 'final',
-            'account_id' => getenv('NEAR_CONTRACT_ID') ?: '', // Contract account ID
+            'account_id' => $nearContractId,
             'method_name' => 'get_learner_credentials',
-            'args_base64' => base64_encode(json_encode(['user_id' => $nearAccountIdResolved])),
+            'args_base64' => base64_encode(json_encode([
+                'learner_id' => $nearAccountIdResolved,
+                'from_index' => null,
+                'limit' => null,
+            ])),
         ],
     ]);
 
@@ -113,69 +128,76 @@ if ($nearAccountIdResolved) {
         CURLOPT_TIMEOUT => 10,
         CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
     ]);
+
     $rpcResponse = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     if ($rpcResponse && $httpCode === 200) {
         $rpcData = json_decode($rpcResponse, true);
-        if ($rpcData && !isset($rpcData['error']) && isset($rpcData['result'])) {
-            $result = $rpcData['result'];
-            // The result is base64-encoded Borsh-encoded data
-            // For simplicity, we decode base64 and parse as JSON if possible
-            $decoded = base64_decode($result, true);
-            if ($decoded !== false) {
-                $decodedStr = @gzinflate($decoded) ?: $decoded;
-                $decodedStr = @mb_convert_encoding($decodedStr, 'UTF-8', 'UTF-8');
-                $decodedJson = json_decode($decodedStr, true);
-                if ($decodedJson && is_array($decodedJson)) {
-                    $nearCredentialIds = $decodedJson;
-                }
+
+        if ($rpcData && !isset($rpcData['error'])) {
+            $decodedIds = $decodeNearResult($rpcData);
+
+            if (is_array($decodedIds)) {
+                $nearCredentialIds = $decodedIds;
             }
         }
     }
 
-    // If we have credential IDs, fetch details for each
-    if (!empty($nearCredentialIds) && is_array($nearCredentialIds)) {
-        foreach ($nearCredentialIds as $certId) {
-            $rpcPayload2 = json_encode([
-                'jsonrpc' => '2.0',
-                'id' => 'verify',
-                'method' => 'query',
-                'params' => [
-                    'request_type' => 'call_function',
-                    'finality' => 'final',
-                    'account_id' => getenv('NEAR_CONTRACT_ID') ?: '',
-                    'method_name' => 'get_credential',
-                    'args_base64' => base64_encode(json_encode(['certificate_id' => $certId])),
-                ],
-            ]);
+    // Fetch the details of each credential.
+    foreach ($nearCredentialIds as $certId) {
+        $rpcPayload2 = json_encode([
+            'jsonrpc' => '2.0',
+            'id' => 'passport',
+            'method' => 'query',
+            'params' => [
+                'request_type' => 'call_function',
+                'finality' => 'final',
+                'account_id' => $nearContractId,
+                'method_name' => 'get_credential',
+                'args_base64' => base64_encode(json_encode([
+                    'credential_id' => $certId,
+                ])),
+            ],
+        ]);
 
-            $ch2 = curl_init($nearRpcUrl);
-            curl_setopt_array($ch2, [
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => $rpcPayload2,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 10,
-                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            ]);
-            $rpcResponse2 = curl_exec($ch2);
-            $httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-            curl_close($ch2);
+        $ch2 = curl_init($nearRpcUrl);
+        curl_setopt_array($ch2, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $rpcPayload2,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        ]);
 
-            if ($rpcResponse2 && $httpCode2 === 200) {
-                $rpcData2 = json_decode($rpcResponse2, true);
-                if ($rpcData2 && !isset($rpcData2['error']) && isset($rpcData2['result'])) {
-                    $certData = $rpcData2['result'];
-                    $decoded2 = base64_decode($certData, true);
-                    if ($decoded2 !== false) {
-                        $decodedStr2 = @mb_convert_encoding($decoded2, 'UTF-8', 'UTF-8');
-                        $certJson = json_decode($decodedStr2, true);
-                        if ($certJson && is_array($certJson)) {
-                            $certJson['certificate_code'] = $certId;
-                            $nearCredentials[] = $certJson;
-                        }
-                    }
+        $rpcResponse2 = curl_exec($ch2);
+        $httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+        curl_close($ch2);
+
+        if ($rpcResponse2 && $httpCode2 === 200) {
+            $rpcData2 = json_decode($rpcResponse2, true);
+
+            if ($rpcData2 && !isset($rpcData2['error'])) {
+                $certJson = $decodeNearResult($rpcData2);
+
+                if (is_array($certJson) && !empty($certJson['credential_id'])) {
+                    $issuedAt = isset($certJson['issued_at'])
+                        ? date(
+                            'Y-m-d H:i:s',
+                            (int) floor((float) $certJson['issued_at'] / 1000000000)
+                        )
+                        : null;
+
+                    $nearCredentials[] = [
+                        'certificate_code' => $certJson['credential_id'],
+                        'user_id' => $certJson['learner_id'] ?? '',
+                        'issuer_id' => $certJson['issuer_id'] ?? '',
+                        'achievement_title' => $certJson['course_id'] ?? 'Certificate',
+                        'issued_at' => $issuedAt,
+                        'is_revoked' => (bool) ($certJson['revoked'] ?? false),
+                        'source' => 'near',
+                    ];
                 }
             }
         }

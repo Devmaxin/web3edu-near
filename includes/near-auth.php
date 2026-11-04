@@ -198,15 +198,13 @@ class NearAuth
             return false;
         }
 
-        // 8. Verify Ed25519 signature cryptographically
-        $valid = sodium_crypto_sign_verify_detached($sigBytes, $digest, $pkBytes);
-        if (!$valid) {
-            return false;
-        }
+       // 8. Verify Ed25519 signature cryptographically
+if (!sodium_crypto_sign_verify_detached($sigBytes, $digest, $pkBytes)) {
+    return false;
+}
 
-        // 9. Verify the public key is authorized for the claimed NEAR account.
-        //    Fails closed: if authorization cannot be proven, return false.
-        return self::verifyAccountKey($accountId, $pkBytes);
+// 9. Verify the public key is authorized for the claimed NEAR account.
+return self::verifyAccountKey($accountId, $pkBytes, $publicKey);
     }
 
     /**
@@ -223,8 +221,12 @@ class NearAuth
         // message (string)
         $out .= self::borshString($payload['message'] ?? '');
 
-        // nonce (string)
-        $out .= self::borshString($payload['nonce'] ?? '');
+        // nonce (fixed 32-byte array, not a Borsh string)
+        $nonceBytes = base64_decode($payload['nonce'] ?? '', true);
+        if ($nonceBytes === false || strlen($nonceBytes) !== 32) {
+            throw new Exception('Invalid NEP-413 nonce');
+        }
+        $out .= $nonceBytes;
 
         // recipient (string)
         $out .= self::borshString($payload['recipient'] ?? '');
@@ -337,12 +339,15 @@ class NearAuth
      * @param string $pkBytes   Raw 32-byte Ed25519 public key
      * @return bool
      */
-    private static function verifyAccountKey(string $accountId, string $pkBytes): bool
+    private static function verifyAccountKey(string $accountId, string $pkBytes, string $publicKey): bool
     {
         // --- Implicit account check ---
         // An implicit NEAR account ID is the lowercase hex encoding of its
         // public key bytes (no access key needed).
         $pkHex = strtolower(bin2hex($pkBytes));
+        $rpcPublicKey = str_starts_with($publicKey, 'ed25519:')
+    ? $publicKey
+    : 'ed25519:' . $publicKey;
         if ($accountId === $pkHex) {
             return true;
         }
@@ -350,7 +355,7 @@ class NearAuth
         // --- Named account check via RPC ---
         // Query NEAR testnet for the account's access keys. The public key must
         // be listed as an authorized access key for the account.
-        $pkHexUpper = strtoupper($pkHex); // NEAR RPC expects hex without 0x prefix, typically uppercase
+    
 
         try {
             $ch = curl_init(self::NEAR_TESTNET_RPC);
@@ -364,7 +369,7 @@ class NearAuth
                         'request_type' => 'view_access_key',
                         'finality'     => 'final',
                         'account_id'   => $accountId,
-                        'public_key'   => $pkHexUpper,
+                        'public_key'   => $rpcPublicKey,
                     ],
                 ]),
                 CURLOPT_RETURNTRANSFER => true,

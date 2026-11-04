@@ -113,7 +113,7 @@ define('ANALYTICS_REPORT_RUNNER_ENABLED', true);
 
 // Site
 define('SITE_NAME', 'Web3edu');
-define('SITE_URL', 'http://localhost:8000');
+define('SITE_URL', rtrim(getenv('SITE_URL') ?: 'http://localhost:8000', '/'));
 define('SITE_TAGLINE', 'Learn Blockchain. Build the Future.');
 
 // Google OAuth 2.0 Authorization Code Flow
