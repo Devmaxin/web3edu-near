@@ -37,7 +37,7 @@ $navLinks = [
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . ' — Web3Edu' : 'Web3Edu — Learn Web3 & Blockchain' ?></title>
+<title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . ' — Web3Edu NEAR' : 'Web3Edu NEAR — Learn Web3. Build on NEAR.' ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
@@ -86,12 +86,19 @@ csrfToken();
      max-width query, so desktop (>=900px) is never affected. -->
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/mobile-fixes.css">
 </head>
-<body>
+<body class="page-enter">
 
 <header class="site-nav" id="siteHeader">
   <div class="container site-nav-inner">
     <a href="<?= SITE_URL ?>/index.php" class="site-logo">
-      <img src="<?= SITE_URL ?>/assets/images/logo-wordmark.png" alt="Web3Edu" class="site-logo-word">
+      <span class="site-logo-mark" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </span>
+      <span class="site-logo-word">Web3Edu<span class="logo-accent"> NEAR</span></span>
     </a>
 
     <nav class="site-nav-links" id="mainNav">
@@ -117,9 +124,13 @@ csrfToken();
       </button>
 
       <?php if ($currentUser):
-        $unreadStmt = getDB()->prepare("SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0");
-        $unreadStmt->execute([$currentUser['id']]);
-        $unreadCount = (int)$unreadStmt->fetchColumn();
+        try {
+            $unreadStmt = getDB()->prepare("SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0");
+            $unreadStmt->execute([$currentUser['id']]);
+            $unreadCount = (int)$unreadStmt->fetchColumn();
+        } catch (\Throwable $e) {
+            $unreadCount = 0;
+        }
       ?>
         <div class="dropdown" id="notifDropdown">
           <button class="icon-btn notif-btn" id="notifBtnTrigger" aria-label="Notifications<?= $unreadCount > 0 ? ", {$unreadCount} unread" : '' ?>" aria-haspopup="true" aria-expanded="false">
@@ -136,12 +147,12 @@ csrfToken();
               <?php if ($unreadCount > 0): ?>
               <form method="POST" action="<?= SITE_URL ?>/notifications.php" style="margin:0">
                 <input type="hidden" name="action" value="mark_all_read">
-                <button type="submit" style="background:none;border:none;color:var(--primary-bright);font-size:0.72rem;font-weight:600;cursor:pointer;padding:0">Mark all read</button>
+                <button type="submit" style="background:none;border:none;color:var(--accent-bright);font-size:0.72rem;font-weight:600;cursor:pointer;padding:0">Mark all read</button>
               </form>
               <?php endif; ?>
             </div>
             <div id="notifPreviewList" style="padding:6px"></div>
-            <a href="<?= SITE_URL ?>/notifications.php" class="dropdown-item" style="text-align:center;font-size:0.8rem;color:var(--primary-bright);border-top:1px solid var(--border)">View All →</a>
+            <a href="<?= SITE_URL ?>/notifications.php" class="dropdown-item" style="text-align:center;font-size:0.8rem;color:var(--accent-bright);border-top:1px solid var(--border)">View All →</a>
           </div>
         </div>
         <script>
@@ -170,8 +181,8 @@ csrfToken();
                             // (previously this linked straight to n.link and never did).
                             const readUrl = window.SITE_URL + '/notifications.php?read=' + n.id + '&link=' + encodeURIComponent(n.link);
                             return `
-                            <a href="${esc(readUrl)}" style="display:block;padding:8px 10px;border-radius:8px;font-size:0.82rem;color:inherit;${n.is_read ? '' : 'background:rgba(139,92,246,0.08)'}">
-                                <div style="font-weight:600;${n.is_read ? '' : 'color:var(--primary-bright)'}">${esc(n.title)}</div>
+                            <a href="${esc(readUrl)}" style="display:block;padding:8px 10px;border-radius:8px;font-size:0.82rem;color:inherit;${n.is_read ? '' : 'background:rgba(11,121,88,0.08)'}">
+                                <div style="font-weight:600;${n.is_read ? '' : 'color:var(--accent-bright)'}">${esc(n.title)}</div>
                                 <div style="color:var(--text-muted);font-size:0.72rem;margin-top:2px">${esc(n.time_ago)}</div>
                             </a>`;
                         }).join('');
@@ -194,7 +205,12 @@ csrfToken();
             <a class="dropdown-item" href="<?= SITE_URL ?>/profile.php">Profile</a>
             <a class="dropdown-item" href="<?= SITE_URL ?>/bounty-profile.php">My Bounty Profile</a>
             <?php
-              $__navHost = getBountyHost((int)$currentUser['id']);
+              $__navHost = null;
+              try {
+                  $__navHost = getBountyHost((int)$currentUser['id']);
+              } catch (\Throwable $e) {
+                  $__navHost = null;
+              }
               if ($__navHost): ?>
                 <a class="dropdown-item" href="<?= SITE_URL ?>/host-profile.php">My Host Profile</a>
                 <?php if ($__navHost['status'] === 'approved'): ?>

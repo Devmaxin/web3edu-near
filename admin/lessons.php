@@ -135,7 +135,7 @@ $lessons = $db->query("SELECT * FROM lessons ORDER BY sort_order ASC, created_at
 ?>
 
 <?php if (isset($_GET['deleted'])): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem;display:flex;align-items:center;gap:8px">
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem;display:flex;align-items:center;gap:8px">
   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
   Lesson deleted successfully.
 </div>
@@ -298,7 +298,7 @@ $lessons = $db->query("SELECT * FROM lessons ORDER BY sort_order ASC, created_at
 <?php endif; ?>
 
 <?php if ($success): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem">
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem">
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><polyline points="20 6 9 17 4 12"/></svg>
   <?= sanitize($success) ?>
 </div>

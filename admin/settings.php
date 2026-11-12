@@ -203,14 +203,14 @@ foreach (notificationEventCatalog() as $catKey => $category) {
 </h1>
 
 <?php if ($testResult): ?>
-<div style="background:<?= $testResult['success'] ? 'rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac' : 'rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5' ?>;
+<div style="background:<?= $testResult['success'] ? 'rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);color:#0B7958' : 'rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5' ?>;
      border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:0.9rem">
     <?= $testResult['success'] ? 'Test email sent successfully.' : 'Test email failed: ' . sanitize($testResult['error'] ?? 'Unknown error') ?>
 </div>
 <?php endif; ?>
 
 <?php if ($saved): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac;
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);color:#0B7958;
      border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:10px;font-size:0.9rem">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">

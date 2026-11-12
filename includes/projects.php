@@ -76,15 +76,22 @@ function duplicateProject(int $projectId): ?int {
 // ============================================================================
 
 function getGuideProjects(int $guideId): array {
-    $stmt = getDB()->prepare("
-        SELECT gp.*, p.title, p.project_type, p.estimated_duration
-        FROM guide_projects gp
-        INNER JOIN projects p ON p.id = gp.project_id AND p.deleted_at IS NULL
-        WHERE gp.guide_id = ? AND gp.is_visible = 1
-        ORDER BY gp.display_order ASC, gp.id ASC
-    ");
-    $stmt->execute([$guideId]);
-    return $stmt->fetchAll();
+    try {
+        $stmt = getDB()->prepare("
+            SELECT gp.*, p.title, p.project_type, p.estimated_duration
+            FROM guide_projects gp
+            INNER JOIN projects p ON p.id = gp.project_id AND p.deleted_at IS NULL
+            WHERE gp.guide_id = ? AND gp.is_visible = 1
+            ORDER BY gp.display_order ASC, gp.id ASC
+        ");
+        $stmt->execute([$guideId]);
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        if ($e->getCode() === '42S02') {
+            return [];
+        }
+        throw $e;
+    }
 }
 
 function getGuideProjectsAdmin(int $guideId): array {

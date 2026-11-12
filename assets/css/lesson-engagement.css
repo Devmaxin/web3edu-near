@@ -26,6 +26,6 @@
 .related-content-heading { font-size: 0.95rem; font-weight: 700; margin: 24px 0 12px; }
 .related-content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
 .related-content-card { padding: 14px; font-size: 0.82rem; font-weight: 600; color: inherit; transition: transform var(--duration-fast,0.15s) ease, border-color var(--duration-fast,0.15s) ease; }
-.related-content-card:hover { transform: translateY(-2px); border-color: var(--primary-bright, var(--primary)); }
+.related-content-card:hover { transform: translateY(-2px); border-color: var(--accent-bright); }
 
 mark.lesson-highlight { border-radius: 3px; padding: 0 1px; }

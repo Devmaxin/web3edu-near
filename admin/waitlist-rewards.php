@@ -132,7 +132,7 @@ require_once __DIR__ . '/header.php';
 ?>
 <style>
 .wlr-badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:700;white-space:nowrap;border:1px solid var(--border)}
-.wlr-credited{background:rgba(34,197,94,.15);color:#22c55e;border-color:rgba(34,197,94,.4)}
+.wlr-credited{background:rgba(11,121,88,.15);color:#0B7958;border-color:rgba(11,121,88,.4)}
 .wlr-ready{background:rgba(99,102,241,.16);color:var(--primary-bright);border-color:rgba(99,102,241,.45)}
 .wlr-waiting{background:rgba(148,163,184,.14);color:var(--text-muted)}
 .wlr-excluded{background:rgba(248,113,113,.14);color:#f87171;border-color:rgba(248,113,113,.4)}

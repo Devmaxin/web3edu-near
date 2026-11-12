@@ -176,10 +176,10 @@ $exceptionCount = count($exceptionUsers);
                 padding:8px 18px;border-radius:20px;font-size:0.78rem;font-weight:700;
                 <?= $maintenanceOn
                     ? 'background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.3);color:#fca5a5'
-                    : 'background:rgba(34,197,94,0.1);border:1.5px solid rgba(34,197,94,0.3);color:#86efac' ?>">
+                    : 'background:rgba(11,121,88,0.1);border:1.5px solid rgba(11,121,88,0.3);color:#0B7958' ?>">
         <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;
                      animation:<?= $maintenanceOn ? 'blink' : 'none' ?> 1.4s step-start infinite;
-                     background:<?= $maintenanceOn ? '#f87171' : '#4ade80' ?>"></span>
+                     background:<?= $maintenanceOn ? '#f87171' : '#0B7958' ?>"></span>
         <?= $maintenanceOn ? 'MAINTENANCE ON' : 'SITE LIVE' ?>
     </div>
 </div>
@@ -190,9 +190,9 @@ $exceptionCount = count($exceptionUsers);
 
 <!-- ── Alerts ─────────────────────────────────────────────────── -->
 <?php if ($notice): ?>
-<div style="background:<?= $notice['type']==='success'?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)' ?>;
-     border:1px solid <?= $notice['type']==='success'?'rgba(34,197,94,0.3)':'rgba(239,68,68,0.3)' ?>;
-     color:<?= $notice['type']==='success'?'#86efac':'#fca5a5' ?>;
+<div style="background:<?= $notice['type']==='success'?'rgba(11,121,88,0.1)':'rgba(239,68,68,0.1)' ?>;
+     border:1px solid <?= $notice['type']==='success'?'rgba(11,121,88,0.3)':'rgba(239,68,68,0.3)' ?>;
+     color:<?= $notice['type']==='success'?'#0B7958':'#fca5a5' ?>;
      border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:0.9rem">
     <?= $notice['msg'] ?>
 </div>
@@ -250,7 +250,7 @@ $exceptionCount = count($exceptionUsers);
             <div style="color:var(--text-muted);font-size:0.8rem;margin-top:2px">
                 <?= $maintenanceOn
                     ? 'Site is <strong style="color:#f87171">under maintenance</strong>. Only admins and exception users can access it.'
-                    : 'Site is <strong style="color:#4ade80">live</strong>. All users can access it normally.' ?>
+                    : 'Site is <strong style="color:#0B7958">live</strong>. All users can access it normally.' ?>
             </div>
         </div>
     </div>
@@ -312,11 +312,11 @@ $exceptionCount = count($exceptionUsers);
                 <input type="hidden" name="csrf" value="<?= sanitize($csrf) ?>">
                 <button type="submit" style="
                     padding:10px 22px;border-radius:10px;font-size:0.88rem;font-weight:700;
-                    cursor:pointer;border:1.5px solid rgba(34,197,94,0.4);
-                    background:rgba(34,197,94,0.1);color:#86efac;
+                    cursor:pointer;border:1.5px solid rgba(11,121,88,0.4);
+                    background:rgba(11,121,88,0.1);color:#0B7958;
                     transition:all 0.2s;display:flex;align-items:center;gap:8px"
-                    onmouseover="this.style.background='rgba(34,197,94,0.22)';this.style.borderColor='rgba(34,197,94,0.6)'"
-                    onmouseout="this.style.background='rgba(34,197,94,0.1)';this.style.borderColor='rgba(34,197,94,0.4)'">
+                    onmouseover="this.style.background='rgba(11,121,88,0.22)';this.style.borderColor='rgba(11,121,88,0.6)'"
+                    onmouseout="this.style.background='rgba(11,121,88,0.1)';this.style.borderColor='rgba(11,121,88,0.4)'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"/>
@@ -571,7 +571,7 @@ $exceptionCount = count($exceptionUsers);
     </div>
     <div style="display:grid;gap:10px;font-size:0.83rem;color:var(--text-muted);line-height:1.65">
         <div style="display:flex;gap:10px">
-            <span style="color:#4ade80;flex-shrink:0;font-weight:700">✓</span>
+            <span style="color:#0B7958;flex-shrink:0;font-weight:700">✓</span>
             <span><strong style="color:var(--text)">Maintenance OFF</strong> — all users access the site normally.</span>
         </div>
         <div style="display:flex;gap:10px">

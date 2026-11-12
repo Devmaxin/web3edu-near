@@ -57,9 +57,9 @@ VALUES ('onboarding_complete', 'Onboarding Completed', 10, 1);
 -- 3. badges: First Step (registration badge)
 -- ---------------------------------------------------------------------------
 INSERT IGNORE INTO `badges`
-  (`badge_key`, `name`, `description`, `icon`, `required_lessons`, `required_career_paths`, `required_projects`, `required_certificates`, `xp_reward`, `is_active`)
+  (`badge_key`, `name`, `description`, `icon`, `required_lessons`, `xp_reward`, `is_active`)
 VALUES
-  ('first_step', 'First Step', 'Completed your Web3Edu onboarding.', '🎉', 0, 0, 0, 0, 0, 1);
+  ('first_step', 'First Step', 'Completed your Web3Edu onboarding.', '🎉', 0, 0, 1);
 
 -- ---------------------------------------------------------------------------
 -- 4. users.streak_freeze_count

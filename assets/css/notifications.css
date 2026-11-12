@@ -36,7 +36,7 @@
 
 .notif-card.is-unread {
   background: var(--accent-soft);
-  border-color: rgba(168, 139, 250, 0.28);
+  border-color: rgba(11,121,88,0.28);
 }
 
 .notif-card.is-unread:hover {
@@ -60,7 +60,6 @@
 .notif-icon.notif-icon-success { background: var(--success-soft); color: var(--success); }
 .notif-icon.notif-icon-warning { background: var(--warning-soft); color: var(--warning); }
 .notif-icon.notif-icon-danger  { background: var(--danger-soft);  color: var(--danger); }
-.notif-icon.notif-icon-magenta { background: rgba(192, 38, 212, 0.14); color: var(--accent-magenta); }
 .notif-icon.notif-icon-neutral { background: var(--surface-raised); color: var(--text-secondary); }
 
 /* ---- Body ---- */

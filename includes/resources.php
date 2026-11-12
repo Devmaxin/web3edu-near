@@ -27,14 +27,21 @@ function getResource(int $id): ?array {
 
 /** Resources attached to a specific lesson/guide/project/career path, in display order. */
 function getLinkedResources(string $type, int $id): array {
-    $stmt = getDB()->prepare("
-        SELECT r.*, rl.display_order FROM resource_links rl
-        INNER JOIN resources r ON r.id = rl.resource_id AND r.is_active = 1 AND r.deleted_at IS NULL
-        WHERE rl.linkable_type = ? AND rl.linkable_id = ?
-        ORDER BY rl.display_order ASC, r.title ASC
-    ");
-    $stmt->execute([$type, $id]);
-    return $stmt->fetchAll();
+    try {
+        $stmt = getDB()->prepare("
+            SELECT r.*, rl.display_order FROM resource_links rl
+            INNER JOIN resources r ON r.id = rl.resource_id AND r.is_active = 1 AND r.deleted_at IS NULL
+            WHERE rl.linkable_type = ? AND rl.linkable_id = ?
+            ORDER BY rl.display_order ASC, r.title ASC
+        ");
+        $stmt->execute([$type, $id]);
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        if ($e->getCode() === '42S02') {
+            return [];
+        }
+        throw $e;
+    }
 }
 
 function attachResource(int $resourceId, string $type, int $id): bool {

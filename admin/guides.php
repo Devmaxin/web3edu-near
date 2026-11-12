@@ -201,7 +201,7 @@ $allGuides = $db->query("
     <td style="font-weight:600"><?= sanitize($g['title']) ?></td>
     <td>
         <span style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;
-            <?= $g['difficulty']==='Beginner'?'background:rgba(34,197,94,0.12);color:#86efac'
+            <?= $g['difficulty']==='Beginner'?'background:rgba(11,121,88,0.12);color:#0B7958'
                :($g['difficulty']==='Advanced'?'background:rgba(239,68,68,0.12);color:#f87171'
                :'background:rgba(245,158,11,0.12);color:#fbbf24') ?>">
             <?= sanitize($g['difficulty'] ?? 'Beginner') ?>
@@ -214,7 +214,7 @@ $allGuides = $db->query("
     </td>
     <td>
         <span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;
-            <?= $g['is_active']?'background:rgba(34,197,94,0.12);color:#86efac':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>">
+            <?= $g['is_active']?'background:rgba(11,121,88,0.12);color:#0B7958':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>">
             <?= $g['is_active'] ? 'Active' : 'Hidden' ?>
         </span>
     </td>

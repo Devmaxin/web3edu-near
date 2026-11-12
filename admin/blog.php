@@ -66,7 +66,7 @@ $posts = $db->query("SELECT * FROM blog_posts ORDER BY created_at DESC")->fetchA
 ?>
 
 <?php if (isset($_GET['deleted'])): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Post deleted.</div>
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Post deleted.</div>
 <?php endif; ?>
 
 <?php if ($action === 'list'): ?>
@@ -100,7 +100,7 @@ $posts = $db->query("SELECT * FROM blog_posts ORDER BY created_at DESC")->fetchA
       <td style="font-weight:600;font-size:0.875rem"><?= sanitize($p['title']) ?></td>
       <td style="text-align:center">
         <?php if ($p['is_published']): ?>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B7958" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         <?php else: ?>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
         <?php endif; ?>
@@ -149,7 +149,7 @@ $posts = $db->query("SELECT * FROM blog_posts ORDER BY created_at DESC")->fetchA
 </div>
 <?php endif; ?>
 <?php if ($success): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> <?= sanitize($success) ?></div>
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> <?= sanitize($success) ?></div>
 <?php endif; ?>
 
 <form method="POST" enctype="multipart/form-data" style="display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:flex-start">
@@ -186,7 +186,7 @@ $posts = $db->query("SELECT * FROM blog_posts ORDER BY created_at DESC")->fetchA
     <div style="background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:22px;display:flex;flex-direction:column;gap:12px">
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.875rem">
         <input type="checkbox" name="is_published" <?= ($post['is_published']??0)?'checked':'' ?> style="width:16px;height:16px;accent-color:var(--primary)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#86efac"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#0B7958"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         Published (visible to users)
       </label>
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.875rem">

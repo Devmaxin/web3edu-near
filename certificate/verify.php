@@ -33,7 +33,7 @@ require_once __DIR__ . '/../includes/header.php';
 
   <?php else: ?>
     <?php
-      $status = 'valid'; $statusLabel = '✓ Valid'; $statusColor = '#22c55e';
+      $status = 'valid'; $statusLabel = '✓ Valid'; $statusColor = '#0B7958';
       if ($cert['is_revoked']) { $status = 'revoked'; $statusLabel = '✕ Revoked'; $statusColor = '#f87171'; }
       elseif ($cert['is_expired']) { $status = 'expired'; $statusLabel = '⚠ Expired'; $statusColor = '#fbbf24'; }
     ?>

@@ -118,7 +118,7 @@ if ($action === 'list') {
             <div><div style="color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;margin-bottom:2px">Status</div><div>
                 <span style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;<?php
                     echo match($sub['status']) {
-                        'active'    => 'background:rgba(34,197,94,0.15);color:#86efac',
+                        'active'    => 'background:rgba(11,121,88,0.15);color:#0B7958',
                         'expired'   => 'background:rgba(239,68,68,0.15);color:#fca5a5',
                         'cancelled' => 'background:rgba(148,148,163,0.15);color:var(--text-muted)',
                         default     => 'background:rgba(245,158,11,0.15);color:#fcd34d',
@@ -272,7 +272,7 @@ if ($action === 'list') {
         <td>
             <span style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;<?php
                 echo match($s['status']) {
-                    'active'    => 'background:rgba(34,197,94,0.15);color:#86efac',
+                    'active'    => 'background:rgba(11,121,88,0.15);color:#0B7958',
                     'expired'   => 'background:rgba(239,68,68,0.15);color:#fca5a5',
                     'cancelled' => 'background:rgba(148,148,163,0.15);color:var(--text-muted)',
                     default     => 'background:rgba(245,158,11,0.15);color:#fcd34d',

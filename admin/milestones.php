@@ -309,7 +309,7 @@ if ($editId) {
             <td><?= (int)$m['point_reward'] ?></td>
             <td style="font-size:0.78rem;color:var(--text-muted)"><?= sanitize($m['badge_name'] ?? '—') ?></td>
             <td><?= (int)$m['completion_count'] ?></td>
-            <td><span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $m['is_active']?'background:rgba(34,197,94,0.12);color:#86efac':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>"><?= $m['is_active']?'Active':'Inactive' ?></span></td>
+            <td><span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $m['is_active']?'background:rgba(11,121,88,0.12);color:#0B7958':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>"><?= $m['is_active']?'Active':'Inactive' ?></span></td>
             <td style="display:flex;gap:6px">
                 <a href="?id=<?= $m['id'] ?>" class="btn-ghost btn-sm">Edit</a>
                 <form method="POST" style="display:inline"><input type="hidden" name="action" value="toggle_milestone"><input type="hidden" name="id" value="<?= $m['id'] ?>"><button class="btn-ghost btn-sm"><?= $m['is_active']?'Deactivate':'Activate' ?></button></form>

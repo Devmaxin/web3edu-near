@@ -45,7 +45,7 @@ unset($g);
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<section class="learn-hero container">
+<section class="learn-hero container" data-reveal>
   <div class="section-label" style="text-align:center">Structured learning</div>
   <h1 style="text-align:center">Pick up where you left off</h1>
   <p style="text-align:center;max-width:520px;margin:0 auto">Follow a guided path from zero to confident, or browse every lesson on the platform at your own pace.</p>
@@ -58,7 +58,7 @@ require_once __DIR__ . '/includes/header.php';
   </div>
 </section>
 
-<section class="container lp-section">
+<section class="container lp-section" data-reveal>
   <?php
     $currentStageTitle = null;
     if ($roadmap) {

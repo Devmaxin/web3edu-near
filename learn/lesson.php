@@ -111,9 +111,9 @@ function ytThumbFallback(img, hq, mq) {
 </script>
 
 <!-- ── Lesson Hero ── -->
-<div class="lesson-hero" style="background:linear-gradient(180deg,rgba(139,92,246,0.07),transparent)">
+<div class="lesson-hero" style="background:linear-gradient(180deg,rgba(11,121,88,0.07),transparent)">
   <div class="container">
-    <a href="<?= SITE_URL ?>/learn.php" style="color:var(--text-muted);font-size:0.875rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:20px;transition:color 0.2s" onmouseover="this.style.color='var(--primary-bright)'" onmouseout="this.style.color='var(--text-muted)'">
+    <a href="<?= SITE_URL ?>/learn.php" style="color:var(--text-muted);font-size:0.875rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:20px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-bright)'" onmouseout="this.style.color='var(--text-muted)'">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Back to Lessons
     </a>
@@ -138,7 +138,7 @@ function ytThumbFallback(img, hq, mq) {
           </span>
           <?php endif; ?>
           <?php if (!empty($lesson['audio_url'])): ?>
-          <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--primary-bright);background:rgba(139,92,246,0.1);padding:4px 10px;border-radius:20px;border:1px solid rgba(139,92,246,0.25)">
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--accent-bright);background:rgba(11,121,88,0.1);padding:4px 10px;border-radius:20px;border:1px solid rgba(11,121,88,0.25)">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
             Audio
           </span>
@@ -186,14 +186,14 @@ function ytThumbFallback(img, hq, mq) {
           <!-- ── Custom Audio Player (desktop: full UI, mobile: compact button) ── -->
 
           <!-- DESKTOP full player — hidden on mobile via CSS -->
-          <div id="lessonAudioPlayer" class="audio-player-desktop" style="background:var(--bg-card);border:1.5px solid rgba(139,92,246,0.35);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:28px;box-shadow:0 0 24px rgba(139,92,246,0.08)">
+          <div id="lessonAudioPlayer" class="audio-player-desktop" style="background:var(--bg-card);border:1.5px solid rgba(11,121,88,0.35);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:28px;box-shadow:0 0 24px rgba(11,121,88,0.08)">
             <div style="display:flex;align-items:center;gap:16px">
               <!-- Play/Pause button -->
               <button id="audioPlayBtn"
                 onclick="toggleAudio()"
-                style="width:46px;height:46px;border-radius:50%;background:var(--primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;box-shadow:0 0 18px rgba(139,92,246,0.4)"
-                onmouseover="this.style.background='var(--primary-bright)';this.style.transform='scale(1.06)'"
-                onmouseout="this.style.background='var(--primary)';this.style.transform='scale(1)'">
+                style="width:46px;height:46px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;box-shadow:0 0 18px rgba(11,121,88,0.4)"
+                onmouseover="this.style.background='var(--accent-bright)';this.style.transform='scale(1.06)'"
+                onmouseout="this.style.background='var(--accent)';this.style.transform='scale(1)'">
                 <!-- Play icon (default) -->
                 <svg id="iconPlay" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <!-- Pause icon (hidden) -->
@@ -204,8 +204,8 @@ function ytThumbFallback(img, hq, mq) {
               <div style="flex:1;min-width:0">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
                   <div style="display:flex;align-items:center;gap:7px">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--primary-bright)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                    <span style="font-size:0.78rem;font-weight:700;color:var(--primary-bright);text-transform:uppercase;letter-spacing:0.05em">Audio Lesson</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    <span style="font-size:0.78rem;font-weight:700;color:var(--accent-bright);text-transform:uppercase;letter-spacing:0.05em">Audio Lesson</span>
                   </div>
                   <div style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono)">
                     <span id="audioCurrentTime">0:00</span> / <span id="audioDuration">--:--</span>
@@ -217,7 +217,7 @@ function ytThumbFallback(img, hq, mq) {
                      style="width:100%;height:5px;background:var(--border);border-radius:3px;cursor:pointer;position:relative;overflow:hidden"
                      onclick="seekAudio(event)">
                   <div id="audioProgressFill"
-                       style="height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary-bright));border-radius:3px;transition:width 0.15s linear;pointer-events:none"></div>
+                       style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-bright));border-radius:3px;transition:width 0.15s linear;pointer-events:none"></div>
                 </div>
 
                 <!-- Loading indicator -->
@@ -265,7 +265,7 @@ function ytThumbFallback(img, hq, mq) {
               onclick="ttsPlay()"
               style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:50px;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--text);transition:all 0.2s">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-              <span id="tts-play-label">🔊 Play Lesson</span>
+              <span id="tts-play-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect x="9" y="9" width="6" height="6"/><path d="M5 9v6l4-2z"/></svg> Play Lesson</span>
             </button>
             <button id="tts-stop-btn"
               class="tts-stop-btn"
@@ -277,7 +277,7 @@ function ytThumbFallback(img, hq, mq) {
             <span id="tts-status"
               class="tts-status-el"
               style="font-size:0.75rem;color:var(--text-muted)">
-              <span style="display:inline-block;width:6px;height:6px;background:var(--primary-bright);border-radius:50%;margin-right:5px;animation:ttsPulse 1s ease-in-out infinite"></span>
+              <span style="display:inline-block;width:6px;height:6px;background:var(--accent-bright);border-radius:50%;margin-right:5px;animation:ttsPulse 1s ease-in-out infinite"></span>
               Speaking…
             </span>
           </div>
@@ -295,7 +295,7 @@ function ytThumbFallback(img, hq, mq) {
             <?php $prevLocked = $prevLesson['access_level']==='premium' && !isPremium(); ?>
             <a href="<?= $prevLocked ? SITE_URL.'/upgrade.php' : SITE_URL.'/learn/lesson/'.$prevLesson['id'] ?>"
                style="flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;transition:all 0.2s;group"
-               onmouseover="this.style.borderColor='var(--primary)';this.style.background='var(--glow-soft)'"
+               onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--glow-soft)'"
                onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg-card)'">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex-shrink:0"><polyline points="15 18 9 12 15 6"/></svg>
               <div style="min-width:0">
@@ -309,10 +309,10 @@ function ytThumbFallback(img, hq, mq) {
             <?php $nextLocked = $nextLesson['access_level']==='premium' && !isPremium(); ?>
             <a href="<?= $nextLocked ? SITE_URL.'/upgrade.php' : SITE_URL.'/learn/lesson/'.$nextLesson['id'] ?>"
                style="flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:16px 20px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;transition:all 0.2s"
-               onmouseover="this.style.borderColor='var(--primary)';this.style.background='var(--glow-soft)'"
+               onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--glow-soft)'"
                onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg-card)'">
               <div style="min-width:0;text-align:right">
-                <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">Next <?= $nextLocked ? '🔒' : '' ?></div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">Next <?= $nextLocked ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' : '' ?></div>
                 <div style="font-size:0.88rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= sanitize($nextLesson['title']) ?></div>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
@@ -321,12 +321,12 @@ function ytThumbFallback(img, hq, mq) {
             <!-- Last lesson — back to all lessons -->
             <a href="<?= SITE_URL ?>/learn.php"
                style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 20px;background:var(--bg-card);border:1.5px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;transition:all 0.2s"
-               onmouseover="this.style.borderColor='var(--primary)';this.style.background='var(--glow-soft)'"
+               onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--glow-soft)'"
                onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg-card)'">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#86efac"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#0B7958"><polyline points="20 6 9 17 4 12"/></svg>
               <div>
                 <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:2px">You've finished!</div>
-                <div style="font-size:0.88rem;font-weight:600;color:#86efac">Browse all lessons</div>
+                <div style="font-size:0.88rem;font-weight:600;color:#0B7958">Browse all lessons</div>
               </div>
             </a>
             <?php endif; ?>
@@ -338,12 +338,12 @@ function ytThumbFallback(img, hq, mq) {
           <!-- ── LOCKED: Premium upgrade wall ── -->
           <?php if (!empty($lesson['audio_url'])): ?>
           <!-- Locked audio indicator -->
-          <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(139,92,246,0.06);border:1.5px solid rgba(139,92,246,0.2);border-radius:var(--radius-lg);margin-bottom:24px">
-            <div style="width:44px;height:44px;border-radius:50%;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-bright)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:rgba(11,121,88,0.06);border:1.5px solid rgba(11,121,88,0.2);border-radius:var(--radius-lg);margin-bottom:24px">
+            <div style="width:44px;height:44px;border-radius:50%;background:rgba(11,121,88,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
             <div>
-              <div style="font-size:0.85rem;font-weight:700;color:var(--primary-bright)">Audio narration included</div>
+              <div style="font-size:0.85rem;font-weight:700;color:var(--accent-bright)">Audio narration included</div>
               <div style="font-size:0.78rem;color:var(--text-muted)">Upgrade to unlock the audio lesson for this topic.</div>
             </div>
           </div>
@@ -362,7 +362,7 @@ function ytThumbFallback(img, hq, mq) {
                 '<?= youtubeThumbnailUrl($lesson['video_id'], 'mqdefault') ?>'
               )">
             <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-bright)"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-bright)"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <span style="color:#fff;font-size:0.9rem;font-weight:600">Premium video locked</span>
             </div>
           </div>
@@ -381,7 +381,7 @@ function ytThumbFallback(img, hq, mq) {
               </div>
             </div>
             <div class="lock-overlay">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-bright);margin-bottom:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-bright);margin-bottom:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <div class="lock-title">Premium Content Locked</div>
               <div class="lock-subtitle">Upgrade for full access to all <?= $db->query("SELECT COUNT(*) FROM lessons WHERE access_level='premium'")->fetchColumn() ?>+ premium lessons.</div>
               <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
@@ -406,10 +406,10 @@ function ytThumbFallback(img, hq, mq) {
           <?php $meta = [
             ['Category', sanitize($lesson['category'])],
             ['Duration',  sanitize($lesson['duration'] ?? '')],
-            ['Access',    $isPremiumLesson ? '<span style="color:#d8b4fe">⭐ Premium</span>' : '<span style="color:#86efac">✓ Free</span>'],
+            ['Access',    $isPremiumLesson ? '<span style="color:var(--accent-bright)">Premium</span>' : '<span style="color:var(--success)">Free</span>'],
             ['Format',    implode(' &nbsp;', array_filter([
               $hasVideo ? '<span style="color:#f87171">▶ Video</span>' : null,
-              !empty($lesson['audio_url']) ? '<span style="color:var(--primary-bright)">♫ Audio</span>' : null,
+              !empty($lesson['audio_url']) ? '<span style="color:var(--accent-bright)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Audio</span>' : null,
               (!$hasVideo && empty($lesson['audio_url'])) ? 'Text' : null,
             ]))],
             ['Added',     date('M j, Y', strtotime($lesson['created_at']))],
@@ -456,7 +456,7 @@ function ytThumbFallback(img, hq, mq) {
             </div>
             <div style="min-width:0">
               <div style="font-size:0.83rem;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= sanitize($r['title']) ?></div>
-              <div style="font-size:0.72rem;color:var(--text-muted)"><?= $r['duration'] ?><?= $rLocked?' 🔒':'' ?></div>
+              <div style="font-size:0.72rem;color:var(--text-muted)"><?= $r['duration'] ?><?= $rLocked?' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' :'' ?></div>
             </div>
           </a>
           <?php endforeach; ?>
@@ -575,17 +575,17 @@ function ytThumbFallback(img, hq, mq) {
     width: 40px;
     height: 40px;
     padding: 0;
-    background: var(--primary);
+    background: var(--accent);
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 14px rgba(139,92,246,0.4);
+    box-shadow: 0 0 14px rgba(11,121,88,0.4);
     transition: background 0.2s, transform 0.15s;
     flex-shrink: 0;
   }
 
   .audio-player-mobile button#audioPlayBtnMobile:active {
-    background: var(--primary-bright);
+    background: var(--accent-bright);
     transform: scale(0.92);
   }
 
@@ -622,7 +622,7 @@ function ytThumbFallback(img, hq, mq) {
     border: none;
     cursor: pointer;
     /* Solid violet — readable on dark AND light backgrounds */
-    background: #7c3aed;
+    background: #0B7958;
     color: #ffffff;
     font-size: 0.9rem;
     font-weight: 700;
@@ -632,9 +632,9 @@ function ytThumbFallback(img, hq, mq) {
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 #completeLessonBtn:hover:not(:disabled) {
-    background: #6d28d9;
+    background: #0B7958;
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(109,40,217,0.65), 0 0 0 2px rgba(255,255,255,0.18);
+    box-shadow: 0 8px 32px rgba(11,121,88,0.65), 0 0 0 2px rgba(255,255,255,0.18);
 }
 #completeLessonBtn:disabled { opacity: 0.7; cursor: not-allowed; }
 
@@ -645,9 +645,9 @@ function ytThumbFallback(img, hq, mq) {
     gap: 8px;
     padding: 11px 22px;
     border-radius: 50px;
-    background: rgba(34,197,94,0.15);
-    border: 1.5px solid rgba(34,197,94,0.4);
-    color: #86efac;
+    background: rgba(11,121,88,0.15);
+    border: 1.5px solid rgba(11,121,88,0.4);
+    color: #0B7958;
     font-size: 0.88rem;
     font-weight: 700;
     box-shadow: 0 4px 20px rgba(0,0,0,0.25);
@@ -666,13 +666,13 @@ function ytThumbFallback(img, hq, mq) {
 .gm-overlay.show { display: flex; }
 .gm-box {
     background: var(--bg-card);
-    border: 1.5px solid rgba(139,92,246,0.4);
+    border: 1.5px solid rgba(11,121,88,0.4);
     border-radius: var(--radius-lg);
     padding: 36px 28px;
     text-align: center;
     width: 100%;
     max-width: 380px;
-    box-shadow: 0 0 60px rgba(139,92,246,0.25);
+    box-shadow: 0 0 60px rgba(11,121,88,0.25);
     animation: gmPop 0.38s cubic-bezier(0.34,1.56,0.64,1);
 }
 @keyframes gmPop { from{transform:scale(0.65);opacity:0} to{transform:scale(1);opacity:1} }
@@ -692,8 +692,8 @@ function ytThumbFallback(img, hq, mq) {
     transition: border-color 0.15s, background 0.15s;
     line-height: 1.4;
 }
-.gm-quiz-opts label:hover { border-color: var(--primary); background: var(--glow-soft); }
-.gm-quiz-opts input[type=radio] { accent-color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+.gm-quiz-opts label:hover { border-color: var(--accent); background: var(--glow-soft); }
+.gm-quiz-opts input[type=radio] { accent-color: var(--accent); flex-shrink: 0; margin-top: 2px; }
 
 /* ── Badge modal icon ── */
 .gm-badge-icon {
@@ -757,11 +757,11 @@ function ytThumbFallback(img, hq, mq) {
 <div class="gm-overlay" id="badgeModal">
   <div class="gm-box">
     <span class="gm-badge-icon" id="bmIcon"></span>
-    <p style="color:var(--primary-bright);font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">Badge Earned!</p>
+    <p style="color:var(--accent-bright);font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">Badge Earned!</p>
     <h2 id="bmName" style="font-size:1.35rem;font-weight:800;margin-bottom:8px"></h2>
     <p id="bmDesc" style="color:var(--text-muted);font-size:0.875rem;margin-bottom:24px;line-height:1.5"></p>
-    <button onclick="closeBadgeModal()" style="width:100%;padding:12px;border:none;border-radius:var(--radius);background:#7c3aed;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;letter-spacing:0.02em">
-      Awesome! 🎉
+    <button onclick="closeBadgeModal()" style="width:100%;padding:12px;border:none;border-radius:var(--radius);background:#0B7958;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;letter-spacing:0.02em">
+      Awesome! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     </button>
   </div>
 </div>
@@ -771,7 +771,7 @@ function ytThumbFallback(img, hq, mq) {
   <div class="gm-box" style="max-width:460px;text-align:left">
     <!-- Header -->
     <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:2.2rem;margin-bottom:8px">🎉</div>
+      <div style="font-size:2.2rem;margin-bottom:8px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
       <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:6px">Section Complete!</h2>
       <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.5" id="quizUnlockSubtitle"></p>
     </div>
@@ -785,7 +785,7 @@ function ytThumbFallback(img, hq, mq) {
     <!-- Buttons -->
     <div id="quizModalBtns" style="display:flex;gap:10px;margin-top:16px">
       <button id="quizModalStartBtn" onclick="startQuizInModal()"
-        style="flex:1;padding:11px;border:none;border-radius:var(--radius);background:#7c3aed;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem">
+        style="flex:1;padding:11px;border:none;border-radius:var(--radius);background:#0B7958;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem">
         Start Quiz
       </button>
       <button onclick="skipQuiz()"
@@ -796,7 +796,7 @@ function ytThumbFallback(img, hq, mq) {
 
     <div id="quizModalSubmitRow" style="display:none;gap:10px;margin-top:16px">
       <button id="quizModalSubmitBtn" onclick="submitModalQuiz()"
-        style="width:100%;padding:12px;border:none;border-radius:var(--radius);background:#7c3aed;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem">
+        style="width:100%;padding:12px;border:none;border-radius:var(--radius);background:#0B7958;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem">
         Submit Quiz
       </button>
     </div>
@@ -806,11 +806,11 @@ function ytThumbFallback(img, hq, mq) {
 <!-- ── Quiz reminder modal (for skipped quizzes) ─────────────────────────── -->
 <div class="gm-overlay" id="quizReminderModal">
   <div class="gm-box">
-    <div style="font-size:2rem;margin-bottom:10px">⏰</div>
+    <div style="font-size:2rem;margin-bottom:10px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
     <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:8px">Quiz Ready</h2>
     <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:20px;line-height:1.5" id="quizReminderText"></p>
     <a id="quizReminderLink" href="<?= SITE_URL ?>/guide.php"
-       style="display:block;width:100%;padding:11px;border:none;border-radius:var(--radius);background:#7c3aed;color:#fff;font-weight:700;font-size:0.9rem;text-align:center;text-decoration:none;margin-bottom:8px">
+       style="display:block;width:100%;padding:11px;border:none;border-radius:var(--radius);background:#0B7958;color:#fff;font-weight:700;font-size:0.9rem;text-align:center;text-decoration:none;margin-bottom:8px">
       Continue Quiz →
     </a>
     <button onclick="document.getElementById('quizReminderModal').classList.remove('show')"
@@ -1050,8 +1050,8 @@ function submitModalQuiz() {
             document.getElementById('quizModalSubmitRow').style.display = 'none';
 
             if (d.passed) {
-                resultEl.style.cssText = 'display:block;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#86efac;padding:12px 14px;border-radius:var(--radius);font-size:0.875rem;font-weight:700;margin-bottom:14px';
-                resultEl.textContent = '🎉 You passed! Score: ' + d.score + '% (' + d.correct + '/' + d.total + ' correct)';
+                resultEl.style.cssText = 'display:block;background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.25);color:#0B7958;padding:12px 14px;border-radius:var(--radius);font-size:0.875rem;font-weight:700;margin-bottom:14px';
+                resultEl.textContent = 'You passed! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Score: ' + d.score + '% (' + d.correct + '/' + d.total + ' correct)';
                 // Close quiz modal, show badge
                 setTimeout(() => {
                     document.getElementById('quizUnlockModal').classList.remove('show');
@@ -1066,7 +1066,7 @@ function submitModalQuiz() {
                 // Show retry / continue buttons
                 const row = document.getElementById('quizModalSubmitRow');
                 row.style.display = 'flex';
-                row.innerHTML = '<button onclick="retryModalQuiz()" style="flex:1;padding:11px;border:none;border-radius:var(--radius);background:#7c3aed;color:#fff;font-weight:700;cursor:pointer;font-size:0.85rem">Retry Quiz</button>' +
+                row.innerHTML = '<button onclick="retryModalQuiz()" style="flex:1;padding:11px;border:none;border-radius:var(--radius);background:#0B7958;color:#fff;font-weight:700;cursor:pointer;font-size:0.85rem">Retry Quiz</button>' +
                     '<button onclick="document.getElementById(\'quizUnlockModal\').classList.remove(\'show\')" style="flex:1;padding:11px;border:1.5px solid var(--border);border-radius:var(--radius);background:none;color:var(--text-muted);font-weight:600;cursor:pointer;font-size:0.85rem">Continue Learning</button>';
             }
         })
@@ -1078,7 +1078,7 @@ function retryModalQuiz() {
     // Re-render quiz body
     startQuizInModal();
     document.getElementById('quizModalSubmitRow').innerHTML =
-        '<button id="quizModalSubmitBtn" onclick="submitModalQuiz()" style="width:100%;padding:12px;border:none;border-radius:var(--radius);background:#7c3aed;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem">Submit Quiz</button>';
+        '<button id="quizModalSubmitBtn" onclick="submitModalQuiz()" style="width:100%;padding:12px;border:none;border-radius:var(--radius);background:#0B7958;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem">Submit Quiz</button>';
     document.getElementById('quizModalSubmitRow').style.display = 'block';
 }
 
@@ -1088,7 +1088,7 @@ function escHtml(s) {
 }
 
 function launchConfetti() {
-    const colors = ['#a855f7','#7c3aed','#22d3ee','#86efac','#fbbf24','#f87171'];
+    const colors = ['#0B7958','#0B7958','#22d3ee','#0B7958','#fbbf24','#f87171'];
     for (let i = 0; i < 50; i++) {
         setTimeout(() => {
             const el = document.createElement('div');
@@ -1147,8 +1147,8 @@ function launchConfetti() {
             /* Sentence highlight */
             .tts-sentence { border-radius:3px; transition:background 0.15s; }
             .tts-sentence.tts-highlight {
-                background: rgba(139,92,246,0.22);
-                outline: 1px solid rgba(139,92,246,0.35);
+                background: rgba(11,121,88,0.22);
+                outline: 1px solid rgba(11,121,88,0.35);
             }
         `;
         document.head.appendChild(s);
@@ -1254,13 +1254,13 @@ function launchConfetti() {
         const c = document.getElementById('tts-controls');
         if (c) { c.classList.remove('tts-idle'); c.classList.add('tts-playing'); }
         const label = document.getElementById('tts-play-label');
-        if (label) label.textContent = '🔊 Playing…';
+        if (label) label.textContent = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="9" y="9" width="6" height="6"/><path d="M5 9v6l4-2z"/></svg> Playing…';
     }
     function setIdleUI() {
         const c = document.getElementById('tts-controls');
         if (c) { c.classList.remove('tts-playing'); c.classList.add('tts-idle'); }
         const label = document.getElementById('tts-play-label');
-        if (label) label.textContent = '🔊 Play Lesson';
+        if (label) label.textContent = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="9" y="9" width="6" height="6"/><path d="M5 9v6l4-2z"/></svg> Play Lesson';
     }
 
     // ── 8. Chunk player ───────────────────────────────────────────────────────

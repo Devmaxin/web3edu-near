@@ -53,8 +53,8 @@
     <div class="chain-divider"></div>
     <div class="site-footer-grid">
       <div class="site-footer-brand">
-        <div class="site-logo"><img src="<?= SITE_URL ?>/assets/images/logo-wordmark.png" alt="Web3Edu" class="site-logo-word"></div>
-        <p>Structured Web3 education, live airdrop guides, and an AI tutor that's read every lesson.</p>
+        <div class="site-logo"><span class="site-logo-mark" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span><span class="site-logo-word">Web3Edu<span class="logo-accent"> NEAR</span></span></div>
+        <p>Structured Web3 education on NEAR — lessons, quizzes, on-chain credentials, and an AI tutor that's read every lesson.</p>
       </div>
       <div class="site-footer-col">
         <h4>Platform</h4>
@@ -71,7 +71,7 @@
       </div>
     </div>
     <div class="site-footer-bottom">
-      &copy; <?= date('Y') ?> Web3Edu. All rights reserved.
+      &copy; <?= date('Y') ?> Web3Edu NEAR. All rights reserved.
     </div>
   </div>
 </footer>

@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name    = trim($_POST['name'] ?? '');
         $desc    = trim($_POST['description'] ?? '');
         $icon    = trim($_POST['icon'] ?? '');
-        $color   = trim($_POST['theme_color'] ?? '#8b5cf6');
+        $color   = trim($_POST['theme_color'] ?? '#0B7958');
         $order   = intval($_POST['display_order'] ?? 0);
         $active  = isset($_POST['is_active']) ? 1 : 0;
         $isFound = isset($_POST['is_foundation']) ? 1 : 0;
@@ -132,7 +132,7 @@ if ($action === 'list') {
     <td><?= $p['is_foundation'] ? '★' : '—' ?></td>
     <td style="font-size:0.8rem;color:var(--text-muted)"><?= sanitize($p['recommended_previous_name'] ?? '—') ?></td>
     <td>
-        <span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $p['is_active']?'background:rgba(34,197,94,0.12);color:#86efac':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>">
+        <span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $p['is_active']?'background:rgba(11,121,88,0.12);color:#0B7958':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>">
             <?= $p['is_active'] ? 'Active' : 'Inactive' ?>
         </span>
     </td>
@@ -178,7 +178,7 @@ if ($action === 'list') {
         </div>
         <div class="form-group">
             <label class="form-label">Theme Color</label>
-            <input type="color" name="theme_color" class="form-input" value="<?= sanitize($path['theme_color'] ?? '#8b5cf6') ?>">
+            <input type="color" name="theme_color" class="form-input" value="<?= sanitize($path['theme_color'] ?? '#0B7958') ?>">
         </div>
         <div class="form-group">
             <label class="form-label">Display Order</label>

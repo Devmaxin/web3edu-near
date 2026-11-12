@@ -139,8 +139,8 @@ $lastUpdated = 'May 30, 2026';
                         </thead>
                         <tbody>
                             <?php foreach ($cookies as $c):
-                                $colors = ['green'=>'rgba(34,197,94,0.12)','blue'=>'rgba(59,130,246,0.12)','purple'=>'rgba(139,92,246,0.12)'];
-                                $textColors = ['green'=>'#86efac','blue'=>'#93c5fd','purple'=>'var(--primary-bright)'];
+                                $colors = ['green'=>'rgba(11,121,88,0.12)','blue'=>'rgba(59,130,246,0.12)','purple'=>'rgba(139,92,246,0.12)'];
+                                $textColors = ['green'=>'#0B7958','blue'=>'#93c5fd','purple'=>'var(--primary-bright)'];
                             ?>
                             <tr style="border-bottom:1px solid var(--border)">
                                 <td data-label="Cookie Name" style="padding:12px 14px;font-family:var(--font-mono);font-size:0.8rem;color:var(--text);white-space:nowrap"><?= htmlspecialchars($c['name']) ?></td>
@@ -162,7 +162,7 @@ $lastUpdated = 'May 30, 2026';
                     <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:12px">
                         <?php
                         $legend = [
-                            ['Essential',    'rgba(34,197,94,0.12)',  '#86efac',  'Required for the site to work. Cannot be disabled.'],
+                            ['Essential',    'rgba(11,121,88,0.12)',  '#0B7958',  'Required for the site to work. Cannot be disabled.'],
                             ['Functional',   'rgba(59,130,246,0.12)', '#93c5fd',  'Enhances your experience but not strictly required.'],
                             ['Third-party',  'rgba(139,92,246,0.12)', 'var(--primary-bright)', 'Set by external services we integrate with.'],
                         ];

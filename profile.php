@@ -368,7 +368,7 @@ require_once __DIR__ . '/includes/header.php';
 
       <?php if (empty($nearWallets)): ?>
         <div class="alert alert-info" style="margin-bottom:var(--space-4)">No NEAR wallet linked yet.</div>
-        <button id="nearLinkBtn" class="btn near-btn" style="background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright)">
+        <button id="nearLinkBtn" class="btn near-btn" style="background:transparent;border:2px solid var(--accent-bright);color:var(--accent-bright)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
           </svg>
@@ -377,7 +377,7 @@ require_once __DIR__ . '/includes/header.php';
       <?php else: ?>
         <div style="margin-bottom:var(--space-4)">
           <?php foreach ($nearWallets as $wallet): ?>
-          <div style="display:flex;align-items:center;gap:12px;padding:var(--space-3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:var(--space-2);background:<?= $wallet['is_primary'] ? 'var(--primary-soft)' : 'transparent' ?>">
+          <div style="display:flex;align-items:center;gap:12px;padding:var(--space-3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:var(--space-2);background:<?= $wallet['is_primary'] ? 'var(--accent-soft)' : 'transparent' ?>">
             <span style="font-family:monospace;font-size:var(--text-sm);color:var(--text-secondary);flex:1"><?= htmlspecialchars($wallet['near_account_id']) ?></span>
             <?php if ($wallet['is_primary']): ?>
               <span class="badge badge-accent" style="font-size:var(--text-xs)">Primary</span>
@@ -391,7 +391,7 @@ require_once __DIR__ . '/includes/header.php';
           </div>
           <?php endforeach; ?>
         </div>
-        <button id="nearLinkBtn" class="btn near-btn" style="background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright)">
+        <button id="nearLinkBtn" class="btn near-btn" style="background:transparent;border:2px solid var(--accent-bright);color:var(--accent-bright)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
           </svg>

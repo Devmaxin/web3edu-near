@@ -27,7 +27,7 @@ $autoOpen = $autoOpen ?? false;
 
       <div class="cp-card-grid">
         <?php foreach ($careerPaths as $cp): ?>
-          <button type="button" class="cp-card" data-id="<?= (int)$cp['id'] ?>" style="--cp-color: <?= sanitize($cp['theme_color'] ?: '#8b5cf6') ?>">
+          <button type="button" class="cp-card" data-id="<?= (int)$cp['id'] ?>" style="--cp-color: <?= sanitize($cp['theme_color'] ?: '#0B7958') ?>">
             <span class="cp-card-icon"><?= sanitize($cp['icon'] ?: '⭐') ?></span>
             <span class="cp-card-name"><?= sanitize($cp['name']) ?></span>
             <?php if (!empty($cp['description'])): ?>

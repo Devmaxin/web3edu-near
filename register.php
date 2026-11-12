@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/waitlist_rewards.php';
 
 if (isLoggedIn()) { header('Location: ' . SITE_URL . '/index.php'); exit; }
 
-$pageTitle = 'Create your account';
+$pageTitle = 'Create account — Web3Edu NEAR';
 $extraCss  = [SITE_URL . '/assets/css/auth.css'];
 $errors    = [];
 $old       = ['email' => ''];
@@ -73,11 +73,18 @@ require_once __DIR__ . '/includes/header.php';
 <div class="auth-page">
   <div class="auth-card">
     <a href="<?= SITE_URL ?>/index.php" class="auth-logo">
-      <img src="<?= SITE_URL ?>/assets/images/logo-wordmark.png" alt="Web3Edu" class="auth-logo-img">
+      <span class="auth-logo-mark" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </span>
+      <span class="auth-logo-word">Web3Edu<span class="logo-accent"> NEAR</span></span>
     </a>
 
     <h1 class="auth-title">Create your account</h1>
-    <p class="auth-subtitle">Start learning Web3 for free — no card required.</p>
+    <p class="auth-subtitle">Start learning Web3 for free on NEAR — no card required.</p>
 
     <?php if (!empty($errors)): ?>
       <div class="alert alert-danger" style="margin-bottom:var(--space-4)">
@@ -97,12 +104,16 @@ require_once __DIR__ . '/includes/header.php';
 
     <div class="auth-divider"><span>or sign up with NEAR wallet</span></div>
 
-    <button id="nearRegisterBtn" class="btn near-btn" style="width:100%;background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright);margin-bottom:var(--space-3)">
+    <button id="nearRegisterBtn" class="btn btn-ghost" style="width:100%;border:2px solid var(--accent-bright);color:var(--accent-bright);margin-bottom:var(--space-3)">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle">
         <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
       </svg>
       Register with NEAR Wallet
     </button>
+
+    <p class="testnet-notice" style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);text-align:center">
+      NEAR Testnet only. Connect using a NEAR Testnet account. Mainnet accounts are not supported yet. Testnet tokens have no real monetary value.
+    </p>
 
     <div class="auth-divider"><span>or sign up with email</span></div>
 
@@ -157,7 +168,7 @@ document.getElementById('nearRegisterBtn').addEventListener('click', async () =>
     // Step 3: Sign message (NEP-413)
     const nonce = challenge.nonce;
     const signed = await Web3EduNear.signMessage(
-      'Register on Web3Edu',
+      'Register on Web3Edu NEAR',
       nonce,
       window.location.origin
     );
@@ -166,10 +177,10 @@ document.getElementById('nearRegisterBtn').addEventListener('click', async () =>
     const result = await Web3EduNear.submitSignature(
       challenge.challenge_id,
       walletInfo.accountId,
-      walletInfo.publicKey,
+      signed.publicKey,
       signed.signature,
       {
-        message: 'Register on Web3Edu',
+        message: 'Register on Web3Edu NEAR',
         nonce: challenge.nonce,
         recipient: challenge.recipient,
         callbackUrl: window.location.origin,

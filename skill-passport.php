@@ -304,9 +304,9 @@ require_once __DIR__ . '/includes/header.php';
   padding: var(--space-4);
 }
 .passport-card {
-  background: var(--bg-card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: var(--space-6);
   box-shadow: var(--shadow-card);
 }
@@ -321,7 +321,7 @@ require_once __DIR__ . '/includes/header.php';
   height: 80px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--primary-bright);
+  border: 3px solid var(--accent-bright);
 }
 .passport-avatar img {
   width: 100%;
@@ -350,7 +350,7 @@ require_once __DIR__ . '/includes/header.php';
 .passport-qr img {
   width: 100px;
   height: 100px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
 }
 .passport-qr .qr-label {
   font-size: var(--text-xs);
@@ -364,7 +364,7 @@ require_once __DIR__ . '/includes/header.php';
   font-size: var(--text-lg);
   font-weight: 600;
   margin-bottom: var(--space-3);
-  color: var(--text);
+  color: var(--text-primary);
 }
 .wallet-list {
   display: flex;
@@ -376,8 +376,8 @@ require_once __DIR__ . '/includes/header.php';
   align-items: center;
   justify-content: space-between;
   padding: var(--space-2) var(--space-3);
-  background: var(--bg-card2);
-  border-radius: var(--radius);
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
 }
 .wallet-address {

@@ -162,7 +162,7 @@ $labelStyle = 'display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px
 </p>
 
 <?php if ($saved): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac;border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:0.9rem">✓ Saved successfully.</div>
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);color:#0B7958;border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:0.9rem">✓ Saved successfully.</div>
 <?php endif; ?>
 <?php if (!empty($errors)): ?>
 <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:0.9rem">
@@ -230,7 +230,7 @@ $labelStyle = 'display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px
             <?php if ($testResult): ?>
             <div style="border-radius:var(--radius);padding:14px 16px;font-size:0.86rem;
                 <?= $testResult['success']
-                    ? 'background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac'
+                    ? 'background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);color:#0B7958'
                     : 'background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5' ?>">
                 <?php if ($testResult['success']): ?>
                     ✓ Success — <?= sanitize($testResult['provider']) ?> / <?= sanitize($testResult['model']) ?> replied in <?= (int)$testResult['ms'] ?>ms:
@@ -339,7 +339,7 @@ $labelStyle = 'display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px
                         <td>$<?= number_format((float)$log['cost_estimated'], 5) ?></td>
                         <td>
                             <?php if ($log['success']): ?>
-                                <span style="color:#86efac">✓ OK</span>
+                                <span style="color:#0B7958">✓ OK</span>
                             <?php else: ?>
                                 <span style="color:#f87171">✗ Error</span>
                                 <?php if (!empty($log['error_message'])): ?>

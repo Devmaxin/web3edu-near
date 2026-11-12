@@ -128,7 +128,7 @@ require_once __DIR__ . '/includes/header.php';
 .gp-bar-fill {
     height: 100%;
     border-radius: 99px;
-    background: linear-gradient(90deg, var(--primary), var(--cyan));
+    background: var(--accent-gradient);
     transition: width 0.5s ease;
 }
 
@@ -144,7 +144,7 @@ require_once __DIR__ . '/includes/header.php';
     transition: border-color 0.2s;
     position: relative;
 }
-.guide-step.done  { border-color: rgba(34,197,94,0.35); }
+.guide-step.done  { border-color: rgba(11,121,88,0.35); }
 .guide-step.locked-step { opacity: 0.55; }
 .guide-step:not(.locked-step):hover { border-color: var(--border-hov); }
 .step-num {
@@ -154,7 +154,7 @@ require_once __DIR__ . '/includes/header.php';
     font-size: 0.72rem; font-weight: 700;
     flex-shrink: 0;
 }
-.step-num.done-num { background: rgba(34,197,94,0.15); color: #86efac; }
+.step-num.done-num { background: rgba(11,121,88,0.15); color: #0B7958; }
 .step-num.todo-num { background: var(--bg-card2); color: var(--text-muted); border: 1px solid var(--border); }
 
 /* Badge strip */
@@ -172,15 +172,15 @@ require_once __DIR__ . '/includes/header.php';
     border-radius: 20px;
     font-size: 0.78rem;
     font-weight: 600;
-    background: rgba(168,85,247,0.12);
-    border: 1px solid rgba(168,85,247,0.3);
-    color: #d8b4fe;
+    background: rgba(11,121,88,0.12);
+    border: 1px solid rgba(11,121,88,0.3);
+    color: #dcfce7;
 }
 
 /* Quiz card */
 .quiz-card {
     background: var(--bg-card);
-    border: 1.5px solid rgba(139,92,246,0.3);
+    border: 1.5px solid rgba(11,121,88,0.3);
     border-radius: var(--radius-lg);
     padding: 24px;
     margin-top: 24px;
@@ -198,8 +198,8 @@ require_once __DIR__ . '/includes/header.php';
     font-size: 0.875rem;
     transition: border-color 0.15s, background 0.15s;
 }
-.quiz-opts label:hover { border-color: var(--primary); background: var(--glow-soft); }
-.quiz-opts input[type=radio] { accent-color: var(--primary); flex-shrink: 0; }
+.quiz-opts label:hover { border-color: var(--accent); background: var(--glow-soft); }
+.quiz-opts input[type=radio] { accent-color: var(--accent); flex-shrink: 0; }
 
 /* Badge modal */
 .badge-modal-overlay {
@@ -213,13 +213,13 @@ require_once __DIR__ . '/includes/header.php';
 .badge-modal-overlay.show { display: flex; }
 .badge-modal-box {
     background: var(--bg-card);
-    border: 1.5px solid rgba(168,85,247,0.4);
+    border: 1.5px solid rgba(11,121,88,0.4);
     border-radius: var(--radius-lg);
     padding: 40px 32px;
     text-align: center;
     max-width: 340px;
     width: 90%;
-    box-shadow: 0 0 60px rgba(139,92,246,0.25);
+    box-shadow: 0 0 60px rgba(11,121,88,0.25);
     animation: badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 @keyframes badgePop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -299,11 +299,13 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Badge Modal -->
 <div class="badge-modal-overlay" id="badgeModal" role="dialog" aria-modal="true">
     <div class="badge-modal-box">
-        <span class="badge-icon-big" id="badgeModalIcon">🏆</span>
-        <p style="color:var(--primary-bright);font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">You Earned a Badge!</p>
+        <span class="badge-icon-big" id="badgeModalIcon">
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+</span>
+        <p style="color:var(--accent-bright);font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">You Earned a Badge!</p>
         <h2 id="badgeModalName" style="font-size:1.4rem;font-weight:800;margin-bottom:8px"></h2>
         <p id="badgeModalDesc" style="color:var(--text-muted);font-size:0.875rem;margin-bottom:24px"></p>
-        <button onclick="closeBadgeModal()" class="btn-primary" style="width:100%">Awesome! 🎉</button>
+        <button onclick="closeBadgeModal()" class="btn-primary" style="width:100%">Awesome!</button>
     </div>
 </div>
 
@@ -341,7 +343,7 @@ require_once __DIR__ . '/includes/header.php';
             <?php foreach ($guides as $g): ?>
             <a href="<?= SITE_URL ?>/guide.php?guide=<?= $g['id'] ?>"
                style="padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;border:1px solid var(--border);
-                      <?= $g['id'] == $activeGuideId ? 'background:var(--primary);color:#fff;border-color:var(--primary)' : 'color:var(--text-muted)' ?>">
+                      <?= $g['id'] == $activeGuideId ? 'background:var(--accent);color:#fff;border-color:var(--accent)' : 'color:var(--text-muted)' ?>">
                 <?= sanitize($g['title']) ?>
             </a>
             <?php endforeach; ?>
@@ -361,7 +363,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text-muted)">
                 <span><?= $guideProgress['completed'] ?> / <?= $guideProgress['total'] ?> lessons</span>
-                <span style="font-weight:700;color:var(--primary-bright)"><?= $guideProgress['pct'] ?>%</span>
+                <span style="font-weight:700;color:var(--accent-bright)"><?= $guideProgress['pct'] ?>%</span>
             </div>
         </div>
 
@@ -414,7 +416,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <div style="font-size:0.76rem;color:var(--text-muted)">
                     <?= sanitize($lesson['category']) ?> · <?= sanitize($lesson['duration']) ?>
-                    <?= $done ? ' <span style="color:#86efac;font-weight:700">✓ Done</span>' : '' ?>
+                    <?= $done ? ' <span style="color:var(--accent-bright);font-weight:700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Done</span>' : '' ?>
                 </div>
             </div>
 
@@ -446,13 +448,13 @@ require_once __DIR__ . '/includes/header.php';
         <?php if ($guideQuiz): ?>
         <?php if ($guideQuiz['already_passed']): ?>
         <!-- Passed state -->
-        <div class="quiz-card" style="border-color:rgba(34,197,94,0.3)">
+        <div class="quiz-card" style="border-color:rgba(11,121,88,0.3)">
             <div style="display:flex;align-items:center;gap:12px">
-                <div style="width:40px;height:40px;border-radius:50%;background:rgba(34,197,94,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <div style="width:40px;height:40px;border-radius:50%;background:rgba(11,121,88,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7958" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <div>
-                    <div style="font-weight:700;font-size:0.95rem;color:#86efac">Quiz Passed ✓</div>
+                    <div style="font-weight:700;font-size:0.95rem;color:var(--accent-bright)">Quiz Passed <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
                     <div style="font-size:0.8rem;color:var(--text-muted)"><?= sanitize($guideQuiz['title']) ?><?= $guideQuiz['badge_name'] ? ' · ' . htmlspecialchars($guideQuiz['badge_icon']) . ' ' . sanitize($guideQuiz['badge_name']) : '' ?></div>
                 </div>
             </div>
@@ -466,13 +468,13 @@ require_once __DIR__ . '/includes/header.php';
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
                 <div>
-                    <div style="font-weight:700;font-size:0.9rem">🎯 <?= sanitize($guideQuiz['title']) ?></div>
+                    <div style="font-weight:700;font-size:0.9rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="24"/><line x1="2" y1="12" x2="22" y2="12"/></svg> <?= sanitize($guideQuiz['title']) ?></div>
                     <div style="font-size:0.78rem;color:var(--text-muted)">Complete all <?= $guideProgress['total'] ?> lessons to unlock this quiz<?= $guideQuiz['badge_name'] ? ' and earn the ' . sanitize($guideQuiz['badge_name']) . ' badge' : '' ?>.</div>
                 </div>
             </div>
             <div style="margin-top:12px">
                 <div style="background:var(--border);border-radius:99px;height:4px;overflow:hidden">
-                    <div style="width:<?= $guideProgress['pct'] ?>%;height:100%;border-radius:99px;background:var(--primary);transition:width 0.5s"></div>
+                    <div style="width:<?= $guideProgress['pct'] ?>%;height:100%;border-radius:99px;background:var(--accent);transition:width 0.5s"></div>
                 </div>
                 <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px"><?= $guideProgress['completed'] ?>/<?= $guideProgress['total'] ?> lessons done</div>
             </div>
@@ -480,17 +482,17 @@ require_once __DIR__ . '/includes/header.php';
 
         <?php else: ?>
         <!-- UNLOCKED — all lessons done -->
-        <div class="quiz-card" style="border-color:rgba(168,85,247,0.5);background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(168,85,247,0.03))">
+        <div class="quiz-card" style="border-color:rgba(11,121,88,0.5);background:linear-gradient(135deg,rgba(11,121,88,0.06),rgba(11,121,88,0.03))">
             <!-- Unlocked header -->
             <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:20px">
-                <div style="width:44px;height:44px;border-radius:50%;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(168,85,247,0.3);font-size:1.2rem">🎯</div>
+                <div style="width:44px;height:44px;border-radius:50%;background:rgba(11,121,88,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(11,121,88,0.3);font-size:1.2rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="24"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
                 <div style="flex:1;min-width:0">
-                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary-bright);margin-bottom:4px">Quiz Unlocked</div>
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-bright);margin-bottom:4px">Quiz Unlocked</div>
                     <h3 style="font-size:1rem;font-weight:800;margin-bottom:4px;line-height:1.3"><?= sanitize($guideQuiz['title']) ?></h3>
                     <p style="font-size:0.8rem;color:var(--text-muted);margin:0;line-height:1.4">
-                        Pass mark: <strong style="color:var(--primary-bright)"><?= $guideQuiz['pass_percent'] ?>%</strong>
+                        Pass mark: <strong style="color:var(--accent-bright)"><?= $guideQuiz['pass_percent'] ?>%</strong>
                         <?php if (!empty($guideQuiz['badge_name'])): ?>
-                        · Earn: <strong style="color:#d8b4fe"><?= htmlspecialchars($guideQuiz['badge_icon']) ?> <?= sanitize($guideQuiz['badge_name']) ?></strong>
+                        · Earn: <strong style="color:#dcfce7"><?= htmlspecialchars($guideQuiz['badge_icon']) ?> <?= sanitize($guideQuiz['badge_name']) ?></strong>
                         <?php endif; ?>
                     </p>
                 </div>
@@ -557,19 +559,19 @@ require_once __DIR__ . '/includes/header.php';
         <?php
             $pStatus = $proj['submission_status'];
             $pApproved = $pStatus === 'approved';
-            $pBorder = $pApproved ? 'rgba(34,197,94,0.3)' : 'rgba(107,114,128,0.3)';
+            $pBorder = $pApproved ? 'rgba(11,121,88,0.3)' : 'rgba(107,114,128,0.3)';
         ?>
         <div class="quiz-card" style="border-color:<?= $pBorder ?>;<?= $pApproved ? '' : 'border-style:dashed;' ?>margin-top:14px">
             <div style="display:flex;align-items:center;gap:12px">
-                <div style="width:40px;height:40px;border-radius:50%;background:<?= $pApproved ? 'rgba(34,197,94,0.15)' : 'var(--bg-card2)' ?>;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem"><?= $pApproved ? '✓' : '🛠️' ?></div>
+                <div style="width:40px;height:40px;border-radius:50%;background:<?= $pApproved ? 'rgba(11,121,88,0.15)' : 'var(--surface-raised)' ?>;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem"><?= $pApproved ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-0.41-8.2 6 6 0 0 1-8.2-0.41l-3.8 3.77z"/><path d="M2 12h20"/><path d="M13 18h-6"/></svg>' ?></div>
                 <div style="flex:1;min-width:0">
-                    <div style="font-weight:700;font-size:0.9rem;<?= $pApproved ? 'color:#86efac' : '' ?>"><?= sanitize($proj['title']) ?><?= $proj['requirement']==='optional' ? ' <span style="font-weight:400;color:var(--text-muted);font-size:0.75rem">(optional)</span>' : '' ?></div>
+                    <div style="font-weight:700;font-size:0.9rem;<?= $pApproved ? 'color:#0B7958' : '' ?>"><?= sanitize($proj['title']) ?><?= $proj['requirement']==='optional' ? ' <span style="font-weight:400;color:var(--text-muted);font-size:0.75rem">(optional)</span>' : '' ?></div>
                     <div style="font-size:0.78rem;color:var(--text-muted)">
                         <?php if ($pStatus === null): ?>Not started
                         <?php elseif ($pStatus === 'draft'): ?>Draft saved
                         <?php elseif ($pStatus === 'submitted'): ?>Awaiting review
                         <?php elseif ($pStatus === 'needs_revision'): ?>Needs revision — see feedback
-                        <?php elseif ($pStatus === 'approved'): ?>Approved ✓
+                        <?php elseif ($pStatus === 'approved'): ?>Approved <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         <?php elseif ($pStatus === 'rejected'): ?>Rejected — see feedback
                         <?php endif; ?>
                     </div>
@@ -586,19 +588,19 @@ require_once __DIR__ . '/includes/header.php';
                 </a>
             </div>
             <?php else: ?>
-            <div style="margin-top:10px"><a href="<?= SITE_URL ?>/portfolio.php" style="font-size:0.78rem;color:var(--primary-bright)">View in Portfolio →</a></div>
+            <div style="margin-top:10px"><a href="<?= SITE_URL ?>/portfolio.php" style="font-size:0.78rem;color:var(--accent-bright)">View in Portfolio →</a></div>
             <?php endif; ?>
         </div>
         <?php endforeach; ?>
 
         <!-- Phase 2: Final Assessment -->
         <?php if ($guideAssessment): ?>
-        <div class="quiz-card" style="margin-top:14px;<?= $guideAssessment['already_passed'] ? 'border-color:rgba(34,197,94,0.3)' : '' ?>">
+        <div class="quiz-card" style="margin-top:14px;<?= $guideAssessment['already_passed'] ? 'border-color:rgba(11,121,88,0.3)' : '' ?>">
             <div style="display:flex;align-items:center;gap:12px">
-                <div style="width:40px;height:40px;border-radius:50%;background:<?= $guideAssessment['already_passed'] ? 'rgba(34,197,94,0.15)' : 'var(--bg-card2)' ?>;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem"><?= $guideAssessment['already_passed'] ? '✓' : '📝' ?></div>
+                <div style="width:40px;height:40px;border-radius:50%;background:<?= $guideAssessment['already_passed'] ? 'rgba(11,121,88,0.15)' : 'var(--surface-raised)' ?>;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem"><?= $guideAssessment['already_passed'] ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>' ?></div>
                 <div style="flex:1;min-width:0">
-                    <div style="font-weight:700;font-size:0.9rem;<?= $guideAssessment['already_passed'] ? 'color:#86efac' : '' ?>">Final Assessment: <?= sanitize($guideAssessment['title']) ?></div>
-                    <div style="font-size:0.78rem;color:var(--text-muted)"><?= $guideAssessment['already_passed'] ? 'Passed ✓' : 'Pass mark: ' . (int)$guideAssessment['pass_percent'] . '%' ?></div>
+                    <div style="font-weight:700;font-size:0.9rem;<?= $guideAssessment['already_passed'] ? 'color:#0B7958' : '' ?>">Final Assessment: <?= sanitize($guideAssessment['title']) ?></div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)"><?= $guideAssessment['already_passed'] ? 'Passed <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : 'Pass mark: ' . (int)$guideAssessment['pass_percent'] . '%' ?></div>
                 </div>
             </div>
         </div>
@@ -607,14 +609,14 @@ require_once __DIR__ . '/includes/header.php';
         <!-- Phase 2: Resources -->
         <?php if (!empty($guideResources)): ?>
         <div class="quiz-card" style="margin-top:14px;border-style:solid">
-            <div style="font-weight:700;font-size:0.85rem;margin-bottom:10px">📚 Resources</div>
+            <div style="font-weight:700;font-size:0.85rem;margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="8 14 6 14"/></svg> Resources</div>
             <div style="display:flex;flex-direction:column;gap:8px">
             <?php foreach ($guideResources as $res): ?>
                 <div style="display:flex;align-items:center;gap:6px">
                 <a href="<?= sanitize($res['url']) ?>" target="_blank" rel="noopener"
                    onclick="fetch(window.SITE_URL+'/api/resource-view.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'resource_id=<?= (int)$res['id'] ?>'})"
                    style="font-size:0.82rem;color:var(--text-muted);display:flex;align-items:center;gap:8px;flex:1">
-                    <span><?= ['documentation'=>'📄','github'=>'💻','article'=>'📰','youtube'=>'▶️','download'=>'⬇️','tool'=>'🔧','template'=>'📋'][$res['resource_type']] ?? '🔗' ?></span>
+                    <span><?= ['documentation'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="8 14 6 14"/></svg>','github'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-4.77 0-2.84-4.35-4.11-7-1.5-1.26.66-2.29 1.6-2.74 2.66m5.46 2.89a3.37 3.37 0 0 1-3.74 0"/><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-4.77 0-2.84-4.35-4.11-7-1.5-1.26.66-2.29 1.6-2.74 2.66m5.46 2.89a3.37 3.37 0 0 1-3.74 0"/></svg>','article'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="8 14 6 14"/></svg>','youtube'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A2.78 2.78 0 0 0 2 12c0 2.78 0 4 2 4.89a2.78 2.78 0 0 0 1.94 2C4.87 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2A2.78 2.78 0 0 0 22 12c0-2.78 0-4-2-4.89a2.78 2.78 0 0 0-1.94-2z"/><polygon points="10 15 15 12 10 9"/><line x1="15" y1="12" x2="15" y2="12"/></svg>','download'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>','tool'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-0.41-8.2 6 6 0 0 1-8.2-0.41l-3.8 3.77z"/><path d="M2 12h20"/><path d="M13 18h-6"/></svg>','template'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="16" rx="2" ry="2"/><path d="M20 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/></svg>' ][$res['resource_type']] ?? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="24"/><path d="M14.5 4.5c1.1 1.1 2.5 1.7 4 1.7 2.8 0 5-2.2 5-5s-2.2-5-5-5-5 2.2-5 5"/></svg>' ?>
                     <span><?= sanitize($res['title']) ?></span>
                 </a>
                 <button type="button" class="bookmark-btn <?= isBookmarked('resource', (int)$res['id']) ? 'active' : '' ?>"
@@ -637,7 +639,7 @@ require_once __DIR__ . '/includes/header.php';
 <script>
 // ── Badge modal ────────────────────────────────────────────────────────────────
 function showBadgeModal(icon, name, desc) {
-    document.getElementById('badgeModalIcon').textContent = icon || '🏆';
+    document.getElementById('badgeModalIcon').innerHTML = icon || '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
     document.getElementById('badgeModalName').textContent = name;
     document.getElementById('badgeModalDesc').textContent = desc;
     document.getElementById('badgeModal').classList.add('show');
@@ -649,7 +651,7 @@ function closeBadgeModal() {
 
 // ── Confetti ──────────────────────────────────────────────────────────────────
 function launchConfetti() {
-    const colors = ['#a855f7','#22d3ee','#86efac','#fbbf24','#f87171'];
+    const colors = ['#a855f7','#22d3ee','#0B7958','#fbbf24','#f87171'];
     for (let i = 0; i < 50; i++) {
         setTimeout(() => {
             const el = document.createElement('div');
@@ -732,8 +734,8 @@ function submitQuiz(quizId) {
             resultEl.style.display = 'block';
 
             if (d.passed) {
-                resultEl.style.cssText = 'display:block;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#86efac;margin-bottom:14px;padding:13px 14px;border-radius:var(--radius);font-size:0.875rem;font-weight:700';
-                resultEl.textContent = '🎉 You passed! Score: ' + d.score + '% (' + d.correct + '/' + d.total + ' correct)';
+                resultEl.style.cssText = 'display:block;background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.25);color:#0B7958;margin-bottom:14px;padding:13px 14px;border-radius:var(--radius);font-size:0.875rem;font-weight:700';
+                resultEl.textContent = 'You passed! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Score: ' + d.score + '% (' + d.correct + '/' + d.total + ' correct)';
                 btnRow.style.display = 'none';
                 // Hide questions
                 document.getElementById('quizQuestionsWrap').style.display = 'none';
@@ -745,7 +747,7 @@ function submitQuiz(quizId) {
                 resultEl.innerHTML = '<strong>Score: ' + d.score + '%</strong> — you need ' + d.pass_percent + '% to pass. Keep learning and try again!';
                 if (d.ai_explanation) {
                     resultEl.innerHTML += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(252,165,165,0.25);font-weight:400;font-size:0.85rem;white-space:pre-line">'
-                        + '<strong style="display:block;margin-bottom:6px;font-weight:700">🧠 AI Mentor</strong>' + d.ai_explanation.replace(/</g,'&lt;') + '</div>';
+                        + '<strong style="display:block;margin-bottom:6px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 15a3 3 0 1 0-6 0"/><path d="M11 18h2"/></svg> AI Mentor</strong>' + d.ai_explanation.replace(/</g,'&lt;') + '</div>';
                 }
                 // Show retry + continue buttons
                 btnRow.innerHTML =

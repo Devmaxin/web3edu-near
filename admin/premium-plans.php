@@ -128,7 +128,7 @@ $plans = $db->query("
     <td style="text-align:center"><?= $p['is_recommended'] ? '★' : '—' ?></td>
     <td style="text-align:center"><?= (int)$p['active_subs'] ?></td>
     <td style="text-align:center">
-        <a href="?action=toggle&id=<?= $p['id'] ?>" style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;<?= $p['is_active'] ? 'background:rgba(34,197,94,0.12);color:#22c55e' : 'background:rgba(148,148,163,0.12);color:var(--text-muted)' ?>">
+        <a href="?action=toggle&id=<?= $p['id'] ?>" style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;<?= $p['is_active'] ? 'background:rgba(11,121,88,0.12);color:#0B7958' : 'background:rgba(148,148,163,0.12);color:var(--text-muted)' ?>">
             <?= $p['is_active'] ? 'Active' : 'Disabled' ?>
         </a>
     </td>

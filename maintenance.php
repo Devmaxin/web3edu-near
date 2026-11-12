@@ -55,7 +55,7 @@ if (getSetting('maintenance_mode', '0') === '0') {
             opacity:0.18;pointer-events:none;z-index:0;
             animation:float 8s ease-in-out infinite;
         }
-        .orb-1{width:480px;height:480px;background:radial-gradient(circle,#8b5cf6,transparent);top:-120px;left:-120px;animation-delay:0s}
+        .orb-1{width:480px;height:480px;background:radial-gradient(circle,#0B7958,transparent);top:-120px;left:-120px;animation-delay:0s}
         .orb-2{width:360px;height:360px;background:radial-gradient(circle,#ec4899,transparent);bottom:-80px;right:-80px;animation-delay:-4s}
         .orb-3{width:280px;height:280px;background:radial-gradient(circle,#06b6d4,transparent);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-2s}
 
@@ -129,7 +129,7 @@ if (getSetting('maintenance_mode', '0') === '0') {
         }
         .maint-progress-bar{
             height:100%;border-radius:99px;
-            background:linear-gradient(90deg,#8b5cf6,#ec4899,#8b5cf6);
+            background:linear-gradient(90deg,#0B7958,#ec4899,#0B7958);
             background-size:200%;
             animation:shimmer 2.2s linear infinite;
         }

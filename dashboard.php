@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cance
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="container dash-wrap">
+<div class="container dash-wrap" data-reveal>
   <div class="dash-grid">
 
     <!-- ====== SIDEBAR ====== -->
@@ -127,10 +127,11 @@ require_once __DIR__ . '/includes/header.php';
     <!-- ====== MAIN ====== -->
     <main>
       <h1 style="margin-bottom:var(--space-1)">Welcome back, <span style="background:var(--accent-gradient);-webkit-background-clip:text;background-clip:text;color:transparent"><?= htmlspecialchars($user['username']) ?></span></h1>
+<p style="margin-bottom:var(--space-5);font-size:var(--text-sm);color:var(--text-secondary)">Your Web3Edu NEAR learning overview.</p>
       <p style="margin-bottom:var(--space-5)">Here's your Web3Edu learning overview.</p>
 
       <!-- XP / Level -->
-      <div class="card" style="margin-bottom:var(--space-5)">
+      <div class="card" data-reveal style="margin-bottom:var(--space-5)">
         <div class="xp-ring">
           <div class="xp-ring-level">L<?= $currentLevel ?></div>
           <div style="flex:1">
@@ -196,7 +197,7 @@ require_once __DIR__ . '/includes/header.php';
 
       <!-- Phase 3: Career Path / Roadmap / Continue Learning (personalized, additive — the generic "firstGuide" card above still shows for users with no active path) -->
       <?php if ($dashActivePath && $dashRoadmap): ?>
-      <div class="card" style="margin-bottom:var(--space-5)">
+      <div class="card" data-reveal style="margin-bottom:var(--space-5)">
         <div class="card-header">
           <h2 style="font-size:var(--text-lg);margin:0"><?= sanitize($dashActivePath['icon'] ?: '⭐') ?> <?= sanitize($dashActivePath['name']) ?></h2>
           <a href="<?= SITE_URL ?>/roadmap.php" class="btn btn-ghost btn-sm">View Roadmap →</a>
@@ -214,14 +215,14 @@ require_once __DIR__ . '/includes/header.php';
           <a href="<?= SITE_URL ?>/roadmap.php" class="btn btn-primary btn-sm">Continue Learning →</a>
         </div>
         <?php elseif ($dashRoadmap['is_complete']): ?>
-          <div style="font-size:var(--text-sm);color:#86efac">🎉 This path is complete!</div>
+          <div style="font-size:var(--text-sm);color:#0B7958">🎉 This path is complete!</div>
         <?php endif; ?>
       </div>
       <?php endif; ?>
 
       <!-- Phase 3: AI Mentor daily recommendation -->
       <?php if ($dashAiRecommendation): ?>
-      <div class="card" style="margin-bottom:var(--space-5);border-color:rgba(139,92,246,0.35);background:linear-gradient(145deg, rgba(139,92,246,0.06), transparent)">
+      <div class="card" style="margin-bottom:var(--space-5);border-color:rgba(11,121,88,0.35);background:linear-gradient(145deg, rgba(11,121,88,0.06), transparent)">
         <div class="section-label" style="margin-bottom:var(--space-2)">🧠 AI Mentor Recommends</div>
         <div style="font-size:var(--text-sm);color:var(--text-secondary);line-height:1.7;white-space:pre-line"><?= sanitize($dashAiRecommendation) ?></div>
       </div>
@@ -257,7 +258,7 @@ require_once __DIR__ . '/includes/header.php';
       </div>
       <?php endif; ?>
       <?php if ($subscription && $subscription['status'] === 'active'): ?>
-      <div class="card" style="margin-bottom:var(--space-5)">
+      <div class="card" data-reveal style="margin-bottom:var(--space-5)">
         <div class="card-header">
           <h2 style="font-size:var(--text-lg);margin:0">Your subscription</h2>
           <span class="badge badge-success">Active</span>
@@ -292,7 +293,7 @@ require_once __DIR__ . '/includes/header.php';
       <?php endif; ?>
 
       <!-- Quick actions -->
-      <div class="card" style="margin-bottom:var(--space-5)">
+      <div class="card" data-reveal style="margin-bottom:var(--space-5)">
         <div class="quick-actions">
           <a href="<?= SITE_URL ?>/learn.php" class="quick-action"><span class="quick-action-icon">▶</span> Continue learning</a>
           <a href="<?= SITE_URL ?>/learn.php?view=guides" class="quick-action"><span class="quick-action-icon">◧</span> Browse guides</a>
@@ -310,7 +311,7 @@ require_once __DIR__ . '/includes/header.php';
       </div>
 
       <!-- Recent Activity -->
-      <div class="card" style="margin-bottom:var(--space-5)">
+      <div class="card" data-reveal style="margin-bottom:var(--space-5)">
         <div class="card-header">
           <h2 style="font-size:var(--text-lg);margin:0">Recent activity</h2>
           <a href="<?= SITE_URL ?>/learn.php" class="btn btn-ghost btn-sm">View all →</a>

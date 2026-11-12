@@ -189,7 +189,7 @@ $templates = $db->query("SELECT id, name, certificate_type_id FROM certificate_t
         <?php elseif ($isExpired): ?>
             <span style="padding:3px 8px;border-radius:20px;font-size:0.7rem;font-weight:700;background:rgba(245,158,11,0.12);color:#fbbf24">Expired</span>
         <?php else: ?>
-            <span style="padding:3px 8px;border-radius:20px;font-size:0.7rem;font-weight:700;background:rgba(34,197,94,0.12);color:#22c55e">Active</span>
+            <span style="padding:3px 8px;border-radius:20px;font-size:0.7rem;font-weight:700;background:rgba(11,121,88,0.12);color:#0B7958">Active</span>
         <?php endif; ?>
     </td>
     <td>
@@ -198,7 +198,7 @@ $templates = $db->query("SELECT id, name, certificate_type_id FROM certificate_t
             <a href="?action=regenerate&id=<?= $c['id'] ?>" class="btn-ghost btn-sm">Regenerate</a>
             <a href="?action=reissue&id=<?= $c['id'] ?>" class="btn-ghost btn-sm" onclick="return confirm('Reissue with a new certificate code? The old code will be revoked.')">Reissue</a>
             <?php if ($c['is_revoked']): ?>
-                <a href="?action=unrevoke&id=<?= $c['id'] ?>" class="btn-ghost btn-sm" style="color:#22c55e">Restore</a>
+                <a href="?action=unrevoke&id=<?= $c['id'] ?>" class="btn-ghost btn-sm" style="color:#0B7958">Restore</a>
             <?php else: ?>
                 <button type="button" class="btn-danger btn-sm" onclick="revokePrompt(<?= $c['id'] ?>)">Revoke</button>
             <?php endif; ?>
@@ -249,7 +249,7 @@ function searchUsers(q) {
 function pickUser(id, username) {
     document.getElementById('userIdField').value = id;
     document.getElementById('userSearch').value = username;
-    document.getElementById('userResults').innerHTML = '<span style="color:#22c55e">Selected ✓</span>';
+    document.getElementById('userResults').innerHTML = '<span style="color:#0B7958">Selected ✓</span>';
 }
 function filterManualTemplates() {
     const typeId = document.getElementById('manualType').value;

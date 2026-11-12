@@ -58,14 +58,14 @@ if ($needsBountyProfile):
 }
 .bpw-dot::after {
   content: ''; position: absolute; inset: -6px; border-radius: 50%;
-  border: 2px solid var(--accent-bright, #8b5cf6); opacity: 0; transition: opacity .25s ease;
+  border: 2px solid var(--accent-bright, #0B7958); opacity: 0; transition: opacity .25s ease;
 }
-.bpw-dot.is-current { background: var(--accent-gradient, linear-gradient(135deg,#8b5cf6,#6d28d9)); border-color: transparent; }
+.bpw-dot.is-current { background: var(--accent-gradient, linear-gradient(135deg,#0B7958,#075B43)); border-color: transparent; }
 .bpw-dot.is-current::after { opacity: 1; }
-.bpw-dot.is-done { background: var(--success, #22c55e); border-color: transparent; }
+.bpw-dot.is-done { background: var(--success, #0B7958); border-color: transparent; }
 .bpw-dot svg { width: 8px; height: 8px; color: #fff; }
 .bpw-line { flex: 1; height: 2px; background: var(--border, #3a3350); margin: 0 6px; transition: background .25s ease; }
-.bpw-line.is-done { background: var(--success, #22c55e); }
+.bpw-line.is-done { background: var(--success, #0B7958); }
 .bpw-progress-label {
   margin: 10px 0 var(--space-5, 20px); text-align: center;
   font-size: var(--text-xs, 0.75rem); font-weight: 700; letter-spacing: .02em;
@@ -97,7 +97,7 @@ if ($needsBountyProfile):
 .bpw-field select { appearance: none; cursor: pointer; }
 .bpw-field textarea { resize: none; }
 .bpw-field input:focus, .bpw-field select:focus, .bpw-field textarea:focus {
-  outline: none; border-color: var(--accent-bright, #8b5cf6);
+  outline: none; border-color: var(--accent-bright, #0B7958);
 }
 .bpw-field input.bpw-invalid, .bpw-field select.bpw-invalid { border-color: var(--danger, #f43f5e); }
 .bpw-field-err { display: none; color: var(--danger, #f43f5e); font-size: 0.75rem; margin-top: 4px; }
@@ -116,7 +116,7 @@ if ($needsBountyProfile):
   cursor: pointer; border: 1px solid transparent; transition: filter .15s ease, transform .1s ease;
 }
 .bpw-btn:active { transform: scale(0.98); }
-.bpw-btn-primary { background: var(--accent-gradient, linear-gradient(135deg,#8b5cf6,#6d28d9)); color: #fff; }
+.bpw-btn-primary { background: var(--accent-gradient, linear-gradient(135deg,#0B7958,#075B43)); color: #fff; }
 .bpw-btn-primary:hover { filter: brightness(1.08); }
 .bpw-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
 .bpw-btn-secondary { background: transparent; border-color: var(--border, #3a3350); color: var(--text-secondary, #a6a0b8); }

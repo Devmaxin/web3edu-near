@@ -45,7 +45,7 @@ $payments = $db->query("SELECT p.*, u.username, u.email FROM purchases p LEFT JO
             <td style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted)"><?= sanitize(substr($p['reference'],0,28)) ?>...</td>
             <td style="color:var(--primary-bright);font-weight:600">₦<?= number_format($p['amount'],2) ?></td>
             <td><span style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;
-                <?= $p['status']==='success'?'background:rgba(34,197,94,0.15);color:#86efac':($p['status']==='failed'?'background:rgba(239,68,68,0.15);color:#fca5a5':'background:rgba(245,158,11,0.15);color:#fcd34d') ?>"><?= ucfirst($p['status']) ?></span></td>
+                <?= $p['status']==='success'?'background:rgba(11,121,88,0.15);color:#0B7958':($p['status']==='failed'?'background:rgba(239,68,68,0.15);color:#fca5a5':'background:rgba(245,158,11,0.15);color:#fcd34d') ?>"><?= ucfirst($p['status']) ?></span></td>
             <td style="color:var(--text-muted);font-size:0.78rem"><?= date('M j, Y · H:i', strtotime($p['created_at'])) ?></td>
         </tr>
         <?php endforeach; ?>

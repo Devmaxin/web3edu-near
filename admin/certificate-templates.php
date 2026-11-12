@@ -183,7 +183,7 @@ if ($action === 'edit' && $id) {
     <td style="text-align:center"><?= $t['is_default'] ? '★' : '<a href="?action=make_default&id='.$t['id'].'" class="btn-ghost btn-sm">Set default</a>' ?></td>
     <td style="text-align:center;font-family:var(--font-mono)"><?= (int)$t['issued_count'] ?></td>
     <td style="text-align:center">
-        <a href="?action=toggle&id=<?= $t['id'] ?>" style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;<?= $t['is_active'] ? 'background:rgba(34,197,94,0.12);color:#22c55e' : 'background:rgba(148,148,163,0.12);color:var(--text-muted)' ?>">
+        <a href="?action=toggle&id=<?= $t['id'] ?>" style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;<?= $t['is_active'] ? 'background:rgba(11,121,88,0.12);color:#0B7958' : 'background:rgba(148,148,163,0.12);color:var(--text-muted)' ?>">
             <?= $t['is_active'] ? 'Active' : 'Disabled' ?>
         </a>
     </td>

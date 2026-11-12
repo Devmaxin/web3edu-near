@@ -125,14 +125,14 @@ function ytThumbFallback(img, hq, mq) {
     user-select: none;
 }
 .page-btn:hover:not(.disabled) {
-    border-color: var(--primary);
-    color: var(--primary-bright);
-    background: var(--glow-soft, rgba(139,92,246,0.08));
+    border-color: var(--accent);
+    color: var(--accent-bright);
+    background: var(--glow-soft, rgba(11,121,88,0.08));
 }
 .page-btn.active {
-    border-color: var(--primary);
-    color: var(--primary-bright);
-    background: var(--glow-soft, rgba(139,92,246,0.1));
+    border-color: var(--accent);
+    color: var(--accent-bright);
+    background: var(--glow-soft, rgba(11,121,88,0.1));
 }
 .page-btn.disabled {
     opacity: 0.35;
@@ -178,11 +178,11 @@ function ytThumbFallback(img, hq, mq) {
       <p class="page-header-subtitle">Master blockchain from fundamentals to advanced development — video lessons, curated by experts.</p>
     </div>
     <?php if (!isPremium()): ?>
-    <div style="margin-top:22px;padding:14px 20px;background:rgba(139,92,246,0.08);border:1.5px solid rgba(139,92,246,0.25);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+    <div style="margin-top:22px;padding:14px 20px;background:rgba(11,121,88,0.08);border:1.5px solid rgba(11,121,88,0.25);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
       <div style="display:flex;align-items:center;gap:10px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-bright);flex-shrink:0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-bright);flex-shrink:0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <div>
-          <span style="color:var(--primary-bright);font-weight:600;font-size:0.9rem"><?= $counts['premium'] ?> premium lessons locked</span>
+          <span style="color:var(--accent-bright);font-weight:600;font-size:0.9rem"><?= $counts['premium'] ?> premium lessons locked</span>
           <span style="color:var(--text-muted);font-size:0.84rem;margin-left:8px">Upgrade for full access.</span>
         </div>
       </div>
@@ -225,12 +225,12 @@ function ytThumbFallback(img, hq, mq) {
     <?php if (!empty($cats)): ?>
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:28px" data-reveal>
       <a href="<?= SITE_URL ?>/learn.php?filter=<?= $filter ?>"
-         style="padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;border:1.5px solid <?= empty($category)?'var(--primary)':'var(--border)' ?>;color:<?= empty($category)?'var(--primary-bright)':'var(--text-muted)' ?>;background:<?= empty($category)?'var(--glow-soft)':'transparent' ?>;transition:all 0.2s;text-decoration:none">
+         style="padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;border:1.5px solid <?= empty($category)?'var(--accent)':'var(--border)' ?>;color:<?= empty($category)?'var(--accent-bright)':'var(--text-muted)' ?>;background:<?= empty($category)?'var(--accent-soft)':'transparent' ?>;transition:all 0.2s;text-decoration:none">
         All
       </a>
       <?php foreach ($cats as $cat): ?>
       <a href="?<?= http_build_query(array_merge($_GET, ['cat'=>$cat, 'page'=>1])) ?>"
-         style="padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;border:1.5px solid <?= $category===$cat?'var(--primary)':'var(--border)' ?>;color:<?= $category===$cat?'var(--primary-bright)':'var(--text-muted)' ?>;background:<?= $category===$cat?'var(--glow-soft)':'transparent' ?>;transition:all 0.2s;text-decoration:none">
+         style="padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:600;border:1.5px solid <?= $category===$cat?'var(--accent)':'var(--border)' ?>;color:<?= $category===$cat?'var(--accent-bright)':'var(--text-muted)' ?>;background:<?= $category===$cat?'var(--accent-soft)':'transparent' ?>;transition:all 0.2s;text-decoration:none">
         <?= sanitize($cat) ?>
       </a>
       <?php endforeach; ?>
@@ -289,9 +289,9 @@ function ytThumbFallback(img, hq, mq) {
             <?php else: ?>
               <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">
                 <?php if ($isPremiumLesson): ?>
-                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" style="color:rgba(139,92,246,0.3)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" style="color:rgba(11,121,88,0.3)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <?php else: ?>
-                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" style="color:rgba(139,92,246,0.2)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" style="color:rgba(11,121,88,0.2)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <?php endif; ?>
               </div>
             <?php endif; ?>

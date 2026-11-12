@@ -5,7 +5,7 @@
   display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
   margin-bottom: var(--space-6); flex-wrap: wrap;
   border: 1px solid var(--border-strong, rgba(255,255,255,0.1));
-  background: linear-gradient(145deg, rgba(139,92,246,0.1), rgba(255,255,255,0.02));
+  background: linear-gradient(145deg, var(--accent-soft), rgba(255,255,255,0.02));
 }
 
 .rm-milestone-header { margin: var(--space-7) 0 var(--space-3); }
@@ -13,8 +13,8 @@
 .rm-milestone-header p { margin: 4px 0 0; color: var(--text-muted); font-size: var(--text-sm, 0.85rem); }
 
 .rm-guide--locked { opacity: 0.5; }
-.rm-guide--current { border-color: var(--primary-bright, #a78bfa); }
-.rm-guide--completed .guide-row-thumb { background: var(--success-soft, rgba(74,222,128,0.15)); color: var(--success, #4ade80); }
+.rm-guide--current { border-color: var(--accent-bright); }
+.rm-guide--completed .guide-row-thumb { background: var(--success-soft, rgba(11,121,88,0.15)); color: var(--success, #0B7958); }
 
 .rm-optional-tag, .rm-current-tag {
   display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.03em;
@@ -22,6 +22,6 @@
   margin-left: 8px; vertical-align: middle;
 }
 .rm-optional-tag { background: rgba(255,255,255,0.06); color: var(--text-muted); }
-.rm-current-tag { background: rgba(139,92,246,0.18); color: var(--primary-bright, #a78bfa); }
+.rm-current-tag { background: var(--accent-soft); color: var(--accent-bright); }
 
 .rm-locked-label { font-size: var(--text-xs, 0.78rem); color: var(--text-muted); white-space: nowrap; padding-right: var(--space-2); }

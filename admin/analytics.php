@@ -94,7 +94,7 @@ function renderBars(array $series, string $labelKey, string $valueKey, string $c
 
 function pctBadge(?float $pct): string {
     if ($pct === null) return '<span style="color:var(--text-muted);font-size:0.75rem">new</span>';
-    $color = $pct > 0 ? '#86efac' : ($pct < 0 ? '#fca5a5' : 'var(--text-muted)');
+    $color = $pct > 0 ? '#0B7958' : ($pct < 0 ? '#fca5a5' : 'var(--text-muted)');
     $arrow = $pct > 0 ? '↑' : ($pct < 0 ? '↓' : '·');
     return '<span style="color:' . $color . ';font-size:0.75rem;font-weight:700">' . $arrow . ' ' . abs($pct) . '%</span>';
 }
@@ -207,7 +207,7 @@ elseif ($tab === 'learning'):
 ?>
 <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:24px">
     <strong style="font-size:0.9rem">Lessons completed per day</strong>
-    <?php renderBars($l['activity_series'], 'day', 'n', '#86efac'); ?>
+    <?php renderBars($l['activity_series'], 'day', 'n', '#0B7958'); ?>
 </div>
 
 <div class="admin-dash-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
@@ -306,7 +306,7 @@ elseif ($tab === 'revenue'):
         <strong style="font-size:0.9rem">Revenue over time</strong>
         <a href="<?= qs(['export' => 'revenue']) ?>" class="btn-ghost" style="padding:4px 10px;font-size:0.72rem">Export CSV</a>
     </div>
-    <?php renderBars($r['revenue_series'], 'day', 'revenue', '#86efac'); ?>
+    <?php renderBars($r['revenue_series'], 'day', 'revenue', '#0B7958'); ?>
 </div>
 <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
     <div style="padding:16px 16px 0"><strong style="font-size:0.9rem">Plan Performance</strong></div>

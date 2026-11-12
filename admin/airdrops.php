@@ -126,17 +126,17 @@ $airdrops = $db->query("SELECT * FROM airdrops ORDER BY is_featured DESC, create
 ?>
 
 <?php if ($notice === 'updated'): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem;display:flex;align-items:center;gap:8px">
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem;display:flex;align-items:center;gap:8px">
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   Airdrop updated successfully.
 </div>
 <?php elseif ($notice === 'created'): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem;display:flex;align-items:center;gap:8px">
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem;display:flex;align-items:center;gap:8px">
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   Airdrop created successfully.
 </div>
 <?php elseif ($notice === 'deleted'): ?>
-<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#86efac;font-size:0.875rem;display:flex;align-items:center;gap:8px">
+<div style="background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#0B7958;font-size:0.875rem;display:flex;align-items:center;gap:8px">
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   Airdrop deleted.
 </div>
@@ -184,7 +184,7 @@ $airdrops = $db->query("SELECT * FROM airdrops ORDER BY is_featured DESC, create
       <td style="color:var(--primary-bright);font-size:0.82rem"><?= sanitize($a['reward']) ?></td>
       <td><span class="diff-<?= strtolower($a['difficulty']) ?>" style="font-size:0.82rem"><?= $a['difficulty'] ?></span></td>
       <td><span class="airdrop-status status-<?= $a['status'] ?>"><?= ucfirst($a['status']) ?></span></td>
-      <td style="font-size:0.82rem;color:<?= $a['access_level']==='premium'?'#d8b4fe':'#86efac' ?>"><?= ucfirst($a['access_level']) ?></td>
+      <td style="font-size:0.82rem;color:<?= $a['access_level']==='premium'?'#d8b4fe':'#0B7958' ?>"><?= ucfirst($a['access_level']) ?></td>
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <a href="?action=edit&id=<?= $a['id'] ?>" class="btn-ghost btn-sm">Edit</a>

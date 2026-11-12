@@ -321,7 +321,7 @@ $otherLessons = $otherLessons->fetchAll();
             <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.84rem">No lessons assigned yet.</div>
         <?php else: ?>
         <?php foreach ($currentLessons as $l): ?>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius);margin-bottom:4px;background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.12)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius);margin-bottom:4px;background:rgba(11,121,88,0.05);border:1px solid rgba(11,121,88,0.12)">
             <div style="min-width:0">
                 <div style="font-size:0.84rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= sanitize($l['title']) ?></div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">

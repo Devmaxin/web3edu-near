@@ -290,7 +290,7 @@ $editQuizId = isset($_GET['edit_quiz']) ? intval($_GET['edit_quiz']) : 0;
 
 <h1 class="admin-page-title">Gamification</h1>
 
-<?php if ($msg): ?><div class="admin-flash success" style="margin-bottom:16px;padding:12px 16px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:var(--radius);color:#86efac"><?= sanitize($msg) ?></div><?php endif; ?>
+<?php if ($msg): ?><div class="admin-flash success" style="margin-bottom:16px;padding:12px 16px;background:rgba(11,121,88,0.1);border:1px solid rgba(11,121,88,0.25);border-radius:var(--radius);color:#0B7958"><?= sanitize($msg) ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-flash error"   style="margin-bottom:16px;padding:12px 16px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius);color:#fca5a5"><?= sanitize($err) ?></div><?php endif; ?>
 
 <!-- Tab bar -->

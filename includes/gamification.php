@@ -247,6 +247,33 @@ function getOnboardingRewardFlash(): ?array {
 }
 
 /**
+ * Check whether a quiz is unlocked for a given user.
+ *
+ * Returns true if all required lessons (per quiz_required_lessons) have been
+ * completed by the user in user_lesson_progress. If the quiz has no required
+ * lessons, returns true (unlocked).
+ */
+function isQuizUnlocked(int $quizId, int $userId, PDO $db): bool {
+    // Find all required lessons for this quiz
+    $reqStmt = $db->prepare("SELECT lesson_id FROM quiz_required_lessons WHERE quiz_id = ?");
+    $reqStmt->execute([$quizId]);
+    $requiredLessons = $reqStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    // No required lessons → quiz is unlocked
+    if (empty($requiredLessons)) {
+        return true;
+    }
+
+    // Check that the user has completed every required lesson
+    $placeholders = implode(',', array_fill(0, count($requiredLessons), '?'));
+    $completed = $db->prepare("SELECT lesson_id FROM user_lesson_progress WHERE user_id = ? AND lesson_id IN ($placeholders)");
+    $completed->execute(array_merge([$userId], $requiredLessons));
+    $completedLessons = $completed->fetchAll(PDO::FETCH_COLUMN);
+
+    return count($completedLessons) === count($requiredLessons);
+}
+
+/**
  * Awards a comeback bonus if the user is returning (via a qualifying
  * learning activity — called from updateStreak() only, never from a bare
  * login) after crossing one or more configured comeback_rules thresholds.

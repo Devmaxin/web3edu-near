@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/login_throttle.php';
 
 if (isLoggedIn()) { header('Location: ' . SITE_URL . '/index.php'); exit; }
 
-$pageTitle = 'Login';
+$pageTitle = 'Sign in — Web3Edu NEAR';
 $extraCss  = [SITE_URL . '/assets/css/auth.css'];
 $errors    = [];
 
@@ -31,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'email
             Analytics::track('login', (int)$user['id'], ['method' => 'email']);
             $redirect = $_SESSION['redirect_after_login'] ?? null;
             unset($_SESSION['redirect_after_login']);
-            // New user (registered < 5 min ago) → home; returning → dashboard
             if (!$redirect) {
                 $isNew    = (time() - strtotime($user['created_at'])) < 300;
                 $redirect = $isNew ? SITE_URL . '/index.php' : SITE_URL . '/dashboard.php';
@@ -54,11 +53,18 @@ require_once __DIR__ . '/includes/header.php';
 <div class="auth-page">
   <div class="auth-card">
     <a href="<?= SITE_URL ?>/index.php" class="auth-logo">
-      <img src="<?= SITE_URL ?>/assets/images/logo-wordmark.png" alt="Web3Edu" class="auth-logo-img">
+      <span class="auth-logo-mark" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </span>
+      <span class="auth-logo-word">Web3Edu<span class="logo-accent"> NEAR</span></span>
     </a>
 
     <h1 class="auth-title">Welcome back</h1>
-    <p class="auth-subtitle">Continue your Web3 learning journey.</p>
+    <p class="auth-subtitle">Continue your Web3 learning journey on NEAR.</p>
 
     <?php if (!empty($errors)): ?>
       <div class="alert alert-danger" style="margin-bottom:var(--space-4)">
@@ -101,12 +107,16 @@ require_once __DIR__ . '/includes/header.php';
 
     <div class="auth-divider"><span>or continue with NEAR wallet</span></div>
 
-    <button id="nearLoginBtn" class="btn near-btn" style="width:100%;background:transparent;border:2px solid var(--primary-bright);color:var(--primary-bright);margin-bottom:var(--space-3)">
+    <button id="nearLoginBtn" class="btn btn-ghost" style="width:100%;border:2px solid var(--accent-bright);color:var(--accent-bright);margin-bottom:var(--space-3)">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle">
         <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
       </svg>
       Connect NEAR Wallet
     </button>
+
+    <p class="testnet-notice" style="font-size:var(--text-xs);color:var(--text-muted);margin-top:var(--space-2);text-align:center">
+      NEAR Testnet only. Connect using a NEAR Testnet account. Mainnet accounts are not supported yet. Testnet tokens have no real monetary value.
+    </p>
 
     <div class="auth-footer">Don't have an account? <a href="<?= SITE_URL ?>/register.php">Create one free</a></div>
   </div>
@@ -126,37 +136,29 @@ document.getElementById('nearLoginBtn').addEventListener('click', async () => {
   btn.textContent = 'Connecting…';
 
   try {
-    // Step 1: Request challenge
     const challenge = await Web3EduNear.requestChallenge('login');
-
-    // Step 2: Connect wallet
     const walletInfo = await Web3EduNear.connectWallet();
     if (!walletInfo) {
       throw new Error('No wallet connected');
     }
-
-    // Step 3: Sign message (NEP-413)
     const nonce = challenge.nonce;
     const signed = await Web3EduNear.signMessage(
-  'Log in to Web3Edu',
+  'Log in to Web3Edu NEAR',
   nonce
 );
-
-    // Step 4: Submit signature for verification
     const result = await Web3EduNear.submitSignature(
   challenge.challenge_id,
   walletInfo.accountId,
   signed.publicKey,
   signed.signature,
       {
-        message: 'Log in to Web3Edu',
+        message: 'Log in to Web3Edu NEAR',
         nonce: challenge.nonce,
         recipient: challenge.recipient,
       }
     );
 
     if (result.success && result.is_new) {
-      // New wallet-only user redirected to onboarding
       window.location.href = '<?= SITE_URL ?>/onboarding.php';
     } else if (result.success) {
       window.location.href = '<?= SITE_URL ?>/dashboard.php';

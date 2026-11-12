@@ -8,7 +8,7 @@ $admin = getCurrentAdmin();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($adminTitle) ? sanitize($adminTitle) . ' — Web3edu Admin' : 'Web3edu Admin' ?></title>
+    <title><?= isset($adminTitle) ? sanitize($adminTitle) . ' — Web3edu NEAR Admin' : 'Web3edu NEAR Admin' ?></title>
     <script>
         (function(){
             var t = localStorage.getItem('web3edu_theme');
@@ -38,13 +38,13 @@ $admin = getCurrentAdmin();
         }
         .admin-topbar-brand img {
             width: 30px; height: 30px; border-radius: 8px; object-fit: contain;
-            filter: drop-shadow(0 0 6px var(--glow-color));
+            filter: drop-shadow(0 0 6px var(--accent-soft));
         }
         .admin-topbar-actions { display: flex; align-items: center; gap: 10px; }
         .admin-badge {
             padding: 3px 10px; border-radius: 20px;
-            background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3);
-            color: var(--primary-bright); font-size: 0.72rem; font-weight: 700;
+            background: var(--accent-soft); border: 1px solid var(--accent-soft);
+            color: var(--accent-bright); font-size: 0.72rem; font-weight: 700;
             letter-spacing: 0.06em; text-transform: uppercase;
         }
     </style>
@@ -57,11 +57,22 @@ $admin = getCurrentAdmin();
         <img src="<?= SITE_URL ?>/assets/images/logo.png"
              alt="Web3edu"
              onerror="this.style.display='none'">
-        <span>Web3<span style="background:linear-gradient(135deg,var(--primary-bright),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">edu</span></span>
+        <span>Web3<span style="background:linear-gradient(135deg,var(--accent-bright),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">edu</span></span>
         <span class="admin-badge">Admin</span>
     </div>
     <div class="admin-topbar-actions">
-        <?php $__adminUnread = (int)getDB()->query("SELECT COUNT(*) FROM admin_notifications WHERE is_read = 0")->fetchColumn(); ?>
+        <?php
+try {
+    $__adminUnread = (int)getDB()->query("SELECT COUNT(*) FROM admin_notifications WHERE is_read = 0")->fetchColumn();
+} catch (PDOException $e) {
+    if ($e->getCode() === '42S02') {
+        $__adminUnread = 0;
+    } else {
+        error_log("Database error in admin/header.php: " . $e->getMessage());
+        $__adminUnread = 0;
+    }
+}
+?>
         <a href="<?= SITE_URL ?>/admin/notification-center.php" class="btn-ghost btn-sm" style="position:relative;display:inline-flex;align-items:center;gap:6px" title="Notification Center">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
             <?php if ($__adminUnread > 0): ?><span style="background:#ef4444;color:#fff;border-radius:20px;padding:0 6px;font-size:0.68rem;font-weight:700;line-height:1.5"><?= $__adminUnread > 99 ? '99+' : $__adminUnread ?></span><?php endif; ?>
@@ -197,6 +208,10 @@ $admin = getCurrentAdmin();
         <a href="<?= SITE_URL ?>/admin/settings.php" class="admin-nav-item <?= strpos(basename($_SERVER['PHP_SELF']),'settings')!==false?'active':'' ?>">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <span>Settings</span>
         </a>
+        <a href="<?= SITE_URL ?>/admin/near-issuance.php" class="admin-nav-item <?= strpos(basename($_SERVER['PHP_SELF']),'near-issuance')!==false?'active':'' ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> <span>NEAR Issuance</span>
+        </a>
+
         <?php $_maint_active = (getSetting('maintenance_mode', '0') === '1'); ?>
         <a href="<?= SITE_URL ?>/admin/maintenance.php"
            class="admin-nav-item <?= strpos(basename($_SERVER['PHP_SELF']),'maintenance')!==false?'active':'' ?>"
@@ -213,7 +228,7 @@ $admin = getCurrentAdmin();
         <div style="margin:20px 8px 0;padding-top:16px;border-top:1px solid var(--border)">
             <a href="<?= SITE_URL ?>/index.php" target="_blank"
                style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;font-size:0.8rem;color:var(--text-muted);transition:all 0.2s"
-               onmouseover="this.style.color='var(--primary-bright)'" onmouseout="this.style.color='var(--text-muted)'">
+               onmouseover="this.style.color='var(--accent-bright)'" onmouseout="this.style.color='var(--text-muted)'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> <span>View Site</span>
             </a>
         </div>

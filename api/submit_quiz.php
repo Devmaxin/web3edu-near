@@ -17,8 +17,14 @@ if (!isLoggedIn()) {
     exit;
 }
 
-$quizId  = intval($_POST['quiz_id'] ?? 0);
-$answers = $_POST['answers'] ?? [];
+$input = json_decode(file_get_contents('php://input'), true);
+if ($input !== null) {
+    $quizId  = intval($input['quiz_id'] ?? 0);
+    $answers = $input['answers'] ?? [];
+} else {
+    $quizId  = intval($_POST['quiz_id'] ?? 0);
+    $answers = $_POST['answers'] ?? [];
+}
 
 if (!$quizId || !is_array($answers)) {
     echo json_encode(['success' => false, 'error' => 'Invalid data']);

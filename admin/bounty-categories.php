@@ -54,7 +54,7 @@ $categories = getBountyCategories(false);
 <tr>
     <td style="font-weight:600"><?= $c['icon'] ?> <?= sanitize($c['name']) ?></td>
     <td style="font-size:0.76rem;color:var(--text-muted)"><?= sanitize($c['slug']) ?></td>
-    <td><a href="?action=toggle&id=<?= $c['id'] ?>&<?= csrfLink() ?>" style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;<?= $c['is_active'] ? 'background:rgba(34,197,94,0.12);color:#22c55e' : 'background:rgba(148,148,163,0.12);color:var(--text-muted)' ?>"><?= $c['is_active'] ? 'Active' : 'Disabled' ?></a></td>
+    <td><a href="?action=toggle&id=<?= $c['id'] ?>&<?= csrfLink() ?>" style="padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;text-decoration:none;<?= $c['is_active'] ? 'background:rgba(11,121,88,0.12);color:#0B7958' : 'background:rgba(148,148,163,0.12);color:var(--text-muted)' ?>"><?= $c['is_active'] ? 'Active' : 'Disabled' ?></a></td>
     <td><a href="?action=delete&id=<?= $c['id'] ?>&<?= csrfLink() ?>" class="btn-danger btn-sm" onclick="return confirm('Delete?')"><?= lucide('trash', ['size' => 12]) ?> Delete</a></td>
 </tr>
 <?php endforeach; ?>

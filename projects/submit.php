@@ -119,7 +119,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if ($locked): ?>
             <div style="text-align:center;padding:20px">
                 <div style="font-size:2rem;margin-bottom:8px">🎉</div>
-                <p style="font-weight:700;color:#86efac">Approved!</p>
+                <p style="font-weight:700;color:#0B7958">Approved!</p>
                 <p style="font-size:0.82rem;color:var(--text-muted);margin-top:6px">This project is locked and now appears in your <a href="<?= SITE_URL ?>/portfolio.php" style="color:var(--primary-bright)">Portfolio</a>.</p>
             </div>
         <?php else: ?>
@@ -170,7 +170,7 @@ function submitProject(finalize) {
             const msg = document.getElementById('submitMsg');
             msg.style.display = 'block';
             if (data.success) {
-                msg.style.background = 'rgba(34,197,94,0.1)'; msg.style.color = '#86efac';
+                msg.style.background = 'rgba(11,121,88,0.1)'; msg.style.color = '#0B7958';
                 msg.textContent = finalize ? 'Submitted for review!' : 'Draft saved.';
                 if (finalize) setTimeout(() => location.reload(), 1200);
             } else {

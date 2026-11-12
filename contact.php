@@ -58,9 +58,9 @@ require_once __DIR__ . '/includes/header.php';
                      ============================================================ -->
 
                 <!-- Success banner (hidden until form submits successfully) -->
-                <div id="contact-success" style="display:none;text-align:center;padding:60px;background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius-lg);margin-bottom:20px">
+                <div id="contact-success" style="display:none;text-align:center;padding:60px;background:rgba(11,121,88,0.05);border:1px solid rgba(11,121,88,0.2);border-radius:var(--radius-lg);margin-bottom:20px">
                     <div style="font-size:3rem;margin-bottom:16px">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#22c55e"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#0B7958"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     </div>
                     <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:8px">Message Sent!</h3>
                     <p style="color:var(--text-muted)">✅ Your message has been sent successfully. We'll get back to you soon.</p>

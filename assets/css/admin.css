@@ -1,114 +1,111 @@
 /* ==========================================================================
-   WEB3EDU V2 — ADMIN PANEL THEMING
-   main.css defines every .admin-*/.form-*/.btn-* rule in terms of CSS custom
-   properties (--primary-bright, --bg-card, --border, --font-head, etc).
-   Remapping those properties here to the exact v2 token values restyles the
-   entire admin panel — all 10 existing pages and every new one — without
-   touching a single admin page's PHP or duplicating any component CSS.
-   Load order: main.css, then this file (so these values win the cascade).
+   WEB3EDU NEAR — ADMIN PANEL THEMING
+   Uses CSS custom properties defined in tokens.css (loaded via main.css).
+   Load order: main.css → tokens.css → admin.css → pages.
    ========================================================================== */
 
 :root,
 [data-theme="dark"] {
-  --primary:       #7C3AED;
-  --primary-bright:#A855F7;
-  --primary-dim:   #6D28D9;
-  --primary-deep:  #4C1D95;
-  --accent:        #C026D3;
-  --accent-dim:    #A855F7;
-  --pink:          #C026D3;
-  --glow-color:    rgba(168,139,250,0.35);
-  --glow-soft:     rgba(124,58,237,0.14);
-
-  --bg-base:       #0A0714;
-  --bg-mid:        #0F0B1E;
-  --bg-card:       #17102B;
-  --bg-card2:      #1F1638;
-  --bg-input:      #0F0B1E;
-
-  --border:        rgba(168,139,250,0.16);
-  --border-hov:    rgba(168,139,250,0.32);
-  --border-subtle: rgba(168,139,250,0.10);
-
-  --text:          #F5F3FF;
-  --text-muted:    #7C7196;
-  --text-dim:      #B4A9D6;
-  --text-on-primary: #ffffff;
-  --white:         #ffffff;
-
-  --success:       #22C55E;
-  --warning:       #F59E0B;
-  --danger:        #F43F5E;
-
-  --radius:        10px;
-  --radius-lg:     16px;
-  --radius-xl:     24px;
-
-  --shadow:        0 20px 40px -24px rgba(124,58,237,0.35);
-  --shadow-glow:   0 0 24px rgba(168,139,250,0.35);
-  --shadow-card:   0 0 0 1px rgba(168,139,250,0.16), 0 20px 40px -24px rgba(124,58,237,0.35);
+  --primary:       #0B7958;
+  --primary-bright:#15966B;
+  --primary-dim:   #075B43;
+  --primary-deep:  #075B43;
+  --accent:        #0B7958;
+  --accent-dim:    #15966B;
+  --pink:          #0B7958;
+  --glow-color:    rgba(11,121,88,0.35);
+  --glow-soft:     rgba(11,121,88,0.14);
 
   --font-head:     'Space Grotesk', sans-serif;
   --font-body:     'Inter', sans-serif;
   --font-mono:     'JetBrains Mono', monospace;
 
-  --header-bg:     rgba(10,7,20,0.88);
-  --header-scroll: rgba(10,7,20,0.98);
+  --header-bg:     rgba(17,26,22,0.88);
+  --header-scroll: rgba(17,26,22,0.98);
 }
 
 [data-theme="light"] {
-  --primary:       #7C3AED;
-  --primary-bright:#7C3AED;
-  --primary-dim:   #6D28D9;
-  --primary-deep:  #EDE9FE;
-  --accent:        #A855F7;
-  --accent-dim:    #7C3AED;
-  --pink:          #C026D3;
-  --glow-color:    rgba(124,58,237,0.2);
-  --glow-soft:     rgba(124,58,237,0.08);
+  --primary:       #0B7958;
+  --primary-bright:#15966B;
+  --primary-dim:   #075B43;
+  --primary-deep:  #075B43;
+  --accent:        #0B7958;
+  --accent-dim:    #15966B;
+  --pink:          #0B7958;
+  --glow-color:    rgba(11,121,88,0.2);
+  --glow-soft:     rgba(11,121,88,0.08);
 
-  --bg-base:       #FAF9FC;
-  --bg-mid:        #F3F0FA;
-  --bg-card:       #FFFFFF;
-  --bg-card2:      #F3F0FA;
-  --bg-input:      #FFFFFF;
-
-  --border:        rgba(124,58,237,0.14);
-  --border-hov:    rgba(124,58,237,0.32);
-  --border-subtle: rgba(124,58,237,0.08);
-
-  --text:          #1A1330;
-  --text-muted:    #8A81A3;
-  --text-dim:      #564C77;
-  --text-on-primary: #ffffff;
-  --white:         #1A1330;
-
-  --success:       #16A34A;
-  --warning:       #D97706;
-  --danger:        #DC2626;
-
-  --shadow:        0 16px 32px -24px rgba(124,58,237,0.2);
-  --shadow-glow:   0 0 20px rgba(124,58,237,0.15);
-  --shadow-card:   0 0 0 1px rgba(124,58,237,0.14), 0 16px 32px -24px rgba(124,58,237,0.2);
-
-  --header-bg:     rgba(250,249,252,0.92);
+  --header-bg:     rgba(247,248,246,0.92);
   --header-scroll: rgba(255,255,255,0.98);
 }
 
 /* ---- Small admin-specific additions not covered by remapped vars ---- */
 .admin-stat-card {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 20px; box-shadow: var(--shadow-card);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
 }
-.admin-stat-card .value { font-family: var(--font-mono); font-size: 1.75rem; font-weight: 700; color: var(--text); display: block; }
-.admin-stat-card .label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-.admin-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
 
-.admin-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.admin-stat-value {
+  font-family: var(--font-mono); font-size: var(--text-3xl); font-weight: 800;
+  color: var(--accent-bright);
+}
 
-/* .admin-alert-success / .admin-alert-error were already used (e.g.
-   admin/premium-plans.php) but never actually defined, so those banners
-   rendered as plain unstyled text. Adding the missing base + variants here. */
-.admin-alert { padding: 12px 16px; border-radius: var(--radius); font-size: 0.875rem; margin-bottom: 20px; border: 1px solid transparent; }
-.admin-alert-success { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #86efac; }
-.admin-alert-error   { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+.admin-stat-label {
+  font-size: var(--text-xs); color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-table {
+  width: 100%; border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: var(--space-3) var(--space-4); text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+.admin-table th {
+  color: var(--text-muted); font-size: var(--text-xs); text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-table tr:hover {
+  background: var(--surface-raised);
+}
+
+/* Status chips */
+.status-chip {
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-pill);
+  font-size: var(--text-xs); font-weight: 600;
+}
+
+.status-draft, .status-pending_review { background: var(--warning-soft); color: var(--warning); }
+.status-awaiting_payment { background: #F43F5E22; color: #F43F5E; }
+.status-published { background: var(--success-soft); color: var(--success); }
+.status-judging { background: var(--accent-soft); color: var(--accent-bright); }
+.status-winners_announced { background: linear-gradient(135deg,#F59E0B22,#F59E0B11); color: #F59E0B; }
+.status-archived, .status-rejected { background: var(--surface-raised); color: var(--text-muted); }
+
+/* Host Profile statuses */
+.status-pending_approval { background: var(--warning-soft); color: var(--warning); }
+.status-approved { background: var(--success-soft); color: var(--success); }
+.status-request_changes { background: var(--accent-soft); color: var(--accent-bright); }
+.status-suspended { background: #F43F5E22; color: #F43F5E; }
+
+/* Payment flow statuses */
+.status-pending { background: var(--warning-soft); color: var(--warning); }
+.status-paid { background: var(--accent-soft); color: var(--accent-bright); }
+.status-awaiting_verification { background: var(--accent-soft); color: var(--accent-bright); }
+.status-failed { background: #F43F5E22; color: #F43F5E; }
+
+/* Admin page title */
+.admin-page-title {
+  font-family: var(--font-head); font-size: var(--text-3xl); font-weight: 800;
+  margin-bottom: var(--space-5); color: var(--text-primary);
+}
+
+/* Responsive admin sidebar adjustments */
+@media (max-width: 768px) {
+  .admin-sidebar-inner { padding: 0; }
+}

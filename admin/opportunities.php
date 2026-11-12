@@ -124,7 +124,7 @@ if ($action === 'list') {
     <td style="text-align:center"><?= (int)$o['career_path_count'] ?></td>
     <td style="text-align:center"><?= $o['is_featured'] ? '⭐' : '—' ?></td>
     <td>
-        <span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $o['status']==='active'?'background:rgba(34,197,94,0.12);color:#86efac':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>">
+        <span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $o['status']==='active'?'background:rgba(11,121,88,0.12);color:#0B7958':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>">
             <?= ucfirst($o['status']) ?>
         </span>
     </td>

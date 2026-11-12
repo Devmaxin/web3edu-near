@@ -145,11 +145,11 @@ function ytThumbFallback(img, hq, mq) {
     border-left: 3px solid transparent;
     transition: all 0.18s;
 }
-.vcat-link:hover { background: rgba(139,92,246,0.06); color: var(--text); }
+.vcat-link:hover { background: rgba(11,121,88,0.06); color: var(--text); }
 .vcat-link.active {
-    background: rgba(139,92,246,0.1);
-    border-left-color: var(--primary);
-    color: var(--primary-bright);
+    background: rgba(11,121,88,0.1);
+    border-left-color: var(--accent);
+    color: var(--accent-bright);
     font-weight: 600;
 }
 .vcat-count {
@@ -178,9 +178,9 @@ function ytThumbFallback(img, hq, mq) {
     white-space: nowrap;
 }
 .vcat-pill.active, .vcat-pill:hover {
-    border-color: var(--primary);
-    color: var(--primary-bright);
-    background: var(--glow-soft, rgba(139,92,246,0.08));
+    border-color: var(--accent);
+    color: var(--accent-bright);
+    background: var(--glow-soft, rgba(11,121,88,0.08));
 }
 
 /* ── Video card ─────────────────────────────────────────────── */
@@ -195,7 +195,7 @@ function ytThumbFallback(img, hq, mq) {
 }
 .video-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(139,92,246,0.4);
+    border-color: rgba(11,121,88,0.4);
     box-shadow: 0 8px 24px rgba(0,0,0,0.25);
 }
 .video-thumb {
@@ -223,15 +223,15 @@ function ytThumbFallback(img, hq, mq) {
     border: 2px solid rgba(255,255,255,0.25);
     transition: transform 0.2s, background 0.2s;
 }
-.video-card:hover .play-btn-inner { transform: scale(1.12); background: rgba(139,92,246,0.7); }
+.video-card:hover .play-btn-inner { transform: scale(1.12); background: rgba(11,121,88,0.7); }
 .video-badge {
     position: absolute; top: 8px; right: 8px;
     padding: 3px 9px; border-radius: 20px;
     font-size: 0.68rem; font-weight: 700;
     letter-spacing: 0.04em; text-transform: uppercase; z-index: 2;
 }
-.badge-free    { background: rgba(34,197,94,0.85);  color: #fff; }
-.badge-premium { background: rgba(139,92,246,0.85); color: #fff; }
+.badge-free    { background: rgba(11,121,88,0.85);  color: #fff; }
+.badge-premium { background: rgba(11,121,88,0.85); color: #fff; }
 .video-lock {
     position: absolute; inset: 0;
     background: rgba(0,0,0,0.55);
@@ -244,7 +244,7 @@ function ytThumbFallback(img, hq, mq) {
 .video-cat-tag {
     font-size: 0.7rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.07em;
-    color: var(--primary-bright); opacity: 0.8;
+    color: var(--accent-bright); opacity: 0.8;
 }
 .video-title { font-size: 0.92rem; font-weight: 700; line-height: 1.35; color: var(--text); margin: 0; }
 .video-meta {
@@ -255,8 +255,8 @@ function ytThumbFallback(img, hq, mq) {
 
 /* ── Category banner ────────────────────────────────────────── */
 .vcat-banner {
-    background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(6,182,212,0.06));
-    border: 1.5px solid rgba(139,92,246,0.25);
+    background: linear-gradient(135deg, rgba(11,121,88,0.12), rgba(6,182,212,0.06));
+    border: 1.5px solid rgba(11,121,88,0.25);
     border-radius: var(--radius-lg);
     padding: 20px 24px;
     margin-bottom: 24px;
@@ -291,12 +291,12 @@ function ytThumbFallback(img, hq, mq) {
     transition: all 0.18s; text-decoration: none; user-select: none;
 }
 .page-btn:hover:not(.disabled) {
-    border-color: var(--primary); color: var(--primary-bright);
-    background: var(--glow-soft, rgba(139,92,246,0.08));
+    border-color: var(--accent); color: var(--accent-bright);
+    background: var(--glow-soft, rgba(11,121,88,0.08));
 }
 .page-btn.active {
-    border-color: var(--primary); color: var(--primary-bright);
-    background: var(--glow-soft, rgba(139,92,246,0.1));
+    border-color: var(--accent); color: var(--accent-bright);
+    background: var(--glow-soft, rgba(11,121,88,0.1));
 }
 .page-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 .page-btn.arrow { font-size: 1rem; font-weight: 700; gap: 4px; }
@@ -325,11 +325,11 @@ function ytThumbFallback(img, hq, mq) {
       <p class="page-header-subtitle">Watch curated video lessons across blockchain, DeFi, NFTs, smart contracts, and more — at your own pace.</p>
     </div>
     <?php if (!isPremium()): ?>
-    <div style="margin-top:22px;padding:14px 20px;background:rgba(139,92,246,0.08);border:1.5px solid rgba(139,92,246,0.25);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+    <div style="margin-top:22px;padding:14px 20px;background:rgba(11,121,88,0.08);border:1.5px solid rgba(11,121,88,0.25);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
       <div style="display:flex;align-items:center;gap:10px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-bright);flex-shrink:0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-bright);flex-shrink:0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <div>
-          <span style="color:var(--primary-bright);font-weight:600;font-size:0.9rem"><?= $counts['premium'] ?> premium videos locked</span>
+          <span style="color:var(--accent-bright);font-weight:600;font-size:0.9rem"><?= $counts['premium'] ?> premium videos locked</span>
           <span style="color:var(--text-muted);font-size:0.84rem;margin-left:8px">Upgrade for full access.</span>
         </div>
       </div>
@@ -408,7 +408,7 @@ function ytThumbFallback(img, hq, mq) {
         <?php if ($activeCat): ?>
         <div class="vcat-banner" data-reveal>
           <div>
-            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary-bright);font-weight:600;margin-bottom:4px">Category</div>
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-bright);font-weight:600;margin-bottom:4px">Category</div>
             <h2 style="margin:0;font-size:1.15rem;font-weight:700"><?= sanitize($activeCat['name']) ?></h2>
             <?php if (!empty($activeCat['description'])): ?>
             <p style="margin:6px 0 0;font-size:0.85rem;color:var(--text-muted)"><?= sanitize($activeCat['description']) ?></p>

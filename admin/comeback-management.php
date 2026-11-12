@@ -141,7 +141,7 @@ if ($tab === 'rules') {
         <td><?= (int)$r['xp_reward'] ?: '—' ?></td>
         <td><?= (int)$r['freeze_reward'] ?: '—' ?></td>
         <td><?= sanitize($r['badge_name'] ?? '—') ?></td>
-        <td><span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $r['is_active']?'background:rgba(34,197,94,0.12);color:#86efac':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>"><?= $r['is_active']?'Active':'Inactive' ?></span></td>
+        <td><span style="padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;<?= $r['is_active']?'background:rgba(11,121,88,0.12);color:#0B7958':'background:rgba(107,114,128,0.12);color:var(--text-muted)' ?>"><?= $r['is_active']?'Active':'Inactive' ?></span></td>
         <td>
             <form method="POST" style="display:inline">
                 <input type="hidden" name="action" value="toggle_rule"><input type="hidden" name="id" value="<?= $r['id'] ?>">
