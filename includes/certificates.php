@@ -403,6 +403,27 @@ CSS;
 // ============================================================
 
 /**
+ * Queue a freshly inserted certificate for NEAR issuance (admin dashboard).
+ *
+ * Must never break normal certificate issuance, but must not fail silently
+ * either: queueCertificateForNear() logs database errors itself. A skip (NEAR
+ * off, learner has no linked wallet yet, already queued) is a normal outcome;
+ * the admin backfill on /admin/near-issuance.php picks up skipped certificates.
+ */
+function nearQueueNewCertificate(int $certId, string $source): void
+{
+    try {
+        require_once __DIR__ . '/near-issuance.php';
+        $r = \Web3Edu\Near\Issuance\queueCertificateForNear($certId, $source);
+        if ($r['status'] === 'error') {
+            error_log("[web3edu-near] certificate {$certId} issued but NEAR queue insert failed (source={$source})");
+        }
+    } catch (\Throwable $e) {
+        error_log("[web3edu-near] NEAR queue hook crashed for certificate {$certId} (source={$source}): " . $e->getMessage());
+    }
+}
+
+/**
  * The one true issuance path. Every certificate — guide completion, quiz
  * mastery, badge earned, XP level, premium purchase, or manual admin
  * award — flows through here.
@@ -447,6 +468,8 @@ function issueCertificateV2(
     ")->execute([$code, $userId, $issuableType, $issuableId, $certificateTypeId, $ruleId, $templateId, $achievementTitle, $metadata, $expiresAt]);
 
     $certId = (int)$db->lastInsertId();
+
+    nearQueueNewCertificate($certId, 'issueCertificateV2');
 
     Analytics::track('certificate_issued', $userId, [
         'certificate_id' => $certId, 'issuable_type' => $issuableType, 'issuable_id' => $issuableId,
@@ -656,6 +679,8 @@ function reissueCertificate(int $certId, ?int $adminId): ?string
         $code, $old['user_id'], $old['issuable_type'], $old['issuable_id'], $old['certificate_type_id'],
         $old['rule_id'], $certId, $old['template_id'], $old['achievement_title'], $old['metadata'], $old['expires_at'],
     ]);
+
+    nearQueueNewCertificate((int)$db->lastInsertId(), 'reissueCertificate');
 
     return $code;
 }

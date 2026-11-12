@@ -16,74 +16,25 @@ declare(strict_types=1);
 define('DISABLE_INTERNAL_EMAIL_RUNNER', true);
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/csrf.php';
+require_once __DIR__ . '/includes/near-issuance.php';
 
 
 $credentialId = trim($_GET['id'] ?? $_GET['code'] ?? '');
 $pageTitle = 'Verify Credential';
 
-$certData = null;
-$nearNetwork = getenv('NEAR_NETWORK') ?: 'testnet';
-$nearRpcUrl = 'https://test.rpc.fastnear.com'; // NEAR testnet RPC
-$contractId = getenv('NEAR_CONTRACT_ID') ?: '';
-
-if ($credentialId) {
-    // Query NEAR smart contract for credential status via RPC
-    $rpcPayload = json_encode([
-        'jsonrpc' => '2.0',
-        'id' => 'verify',
-        'method' => 'query',
-        'params' => [
-            'request_type' => 'call_function',
-            'finality' => 'final',
-            'account_id' => $contractId,
-            'method_name' => 'get_credential',
-           'args_base64' => base64_encode(json_encode(['credential_id' => $credentialId])),
-        ],
-    ]);
-
-    $ch = curl_init($nearRpcUrl);
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $rpcPayload,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 10,
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    ]);
-    $rpcResponse = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($rpcResponse && $httpCode === 200) {
-        $rpcData = json_decode($rpcResponse, true);
-        if ($rpcData && !isset($rpcData['error']) && isset($rpcData['result'])) {
- $result = $rpcData['result']['result'] ?? null;
-
-if (is_array($result)) {
-    $decodedStr = implode('', array_map('chr', $result));
-    $nearCredential = json_decode($decodedStr, true);
-
-    if (is_array($nearCredential)) {
-        $issuedAt = isset($nearCredential['issued_at'])
-            ? date('Y-m-d H:i:s', (int) floor((float) $nearCredential['issued_at'] / 1000000000))
-            : null;
-
-        $certData = [
-            'certificate_code'  => $credentialId,
-            'user_id'           => $nearCredential['learner_id'] ?? 'Unknown',
-            'issuer_id'         => $nearCredential['issuer_id'] ?? 'Unknown',
-            'achievement_title' => $nearCredential['course'] ?? 'Certificate',
-            'type'              => 'Learning Path Completion',
-            'issued_at'         => $issuedAt,
-            'is_revoked'        => (bool) ($nearCredential['revoked'] ?? false),
-            'source'             => 'near',
-        ];
+// The identifier is normally a Web3Edu certificate code (WEB3-YYYY-NNNNNN). It is
+// resolved locally -> issuance record -> credential on the NEAR contract, which is
+// always re-read and compared (see verifyCertificateOnNear()). A NEAR credential ID
+// (e.g. "cred-0") is still accepted.
+$result = null;
+if ($credentialId !== '') {
+    try {
+        $result = \Web3Edu\Near\Issuance\verifyCertificateOnNear($credentialId);
+    } catch (\Throwable $e) {
+        error_log('[web3edu-near] verify-near failed: ' . $e->getMessage());
+        $result = null;
+        $verifyError = true;
     }
-}
-            }
-        }
-
-    // Fallback: check local database (for testing without deployed contract)
-        // Local database fallback disabled for this NEAR-only verification test.
 }
 
 $pageTitle = 'Verify Credential';
@@ -107,54 +58,119 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <button type="submit" class="btn btn-primary" style="width:100%">Verify</button>
       </form>
-    <?php elseif (!$certData): ?>
+    <?php elseif (!$result): ?>
+      <div class="verify-result revoked">
+        <div class="verify-icon">⚠️</div>
+        <h3>Verification temporarily unavailable</h3>
+        <p>We could not complete the check. Please try again shortly.</p>
+        <a href="<?= SITE_URL ?>/verify-near.php" class="btn btn-ghost">Try Another ID</a>
+      </div>
+    <?php elseif ($result['overall'] === 'not_found'): ?>
       <div class="verify-result not-found">
         <div class="verify-icon">❌</div>
         <h3>Certificate Not Found</h3>
         <p>"<?= htmlspecialchars($credentialId) ?>" doesn't match any certificate we've issued.</p>
+        <?php if (($result['near']['status'] ?? '') === 'unavailable'): ?>
+          <p>The NEAR network could not be reached, so credential IDs could not be checked either.</p>
+        <?php endif; ?>
         <a href="<?= SITE_URL ?>/verify-near.php" class="btn btn-ghost">Try Another ID</a>
       </div>
     <?php else: ?>
       <?php
-      $isValid = !$certData['is_revoked'];
-      $statusColor = $isValid ? '#22c55e' : '#f87171';
-      $statusLabel = $isValid ? '✓ Valid' : '✕ Revoked';
-      $statusBg = $isValid ? '#22c55e22' : '#f8717122';
+      $local = $result['local'];
+      $near  = $result['near'];
+      $oc    = $near['on_chain'] ?? null;
+      $overall = $result['overall'];
+      $good = ($overall === 'verified');
+      $banner = [
+          'verified'      => ['✓ Valid · Verified on NEAR', true],
+          'local_only'    => ['✓ Certificate valid · NEAR not verified', true],
+          'near_failed'   => ['✕ NEAR verification failed', false],
+          'local_invalid' => [$local && $local['status'] === 'expired' ? '⚠ Certificate expired' : '✕ Certificate revoked', false],
+          'on_chain_only' => [$near['status'] === 'revoked_on_chain' ? '✕ Revoked on NEAR' : 'On-chain credential · no local record', $near['status'] !== 'revoked_on_chain'],
+      ][$overall];
+      $statusLabel = $banner[0];
+      $okColor = $banner[1];
+      $statusColor = $okColor ? 'var(--success)' : 'var(--danger)';
+      $statusBg = $okColor ? 'var(--success-soft)' : 'var(--danger-soft)';
+      $nearLabels = [
+          'verified'           => '✓ Verified on NEAR',
+          'not_issued'         => 'No NEAR credential issued',
+          'pending'            => 'NEAR issuance pending',
+          'not_configured'     => 'NEAR verification not configured',
+          'unavailable'        => 'Could not reach NEAR — try again',
+          'not_found_on_chain' => '✕ Credential not found on NEAR',
+          'revoked_on_chain'   => '✕ Revoked on NEAR',
+          'mismatch'           => '✕ On-chain data does not match',
+          'on_chain_only'      => 'Exists on NEAR · no local record',
+      ];
+      $localLabels = ['valid' => '✓ Valid', 'revoked' => '✕ Revoked', 'expired' => '⚠ Expired'];
+      $checkLabels = ['learner' => 'Learner account', 'course' => 'Course', 'metadata_hash' => 'Metadata hash', 'issuer' => 'Issuer'];
+      $title = $local['achievement_title'] ?? ($oc['course_id'] ?? 'Certificate');
+      $learner = $local['username'] ?? ($oc['learner_id'] ?? 'Unknown');
+      $code = $local['certificate_code'] ?? $credentialId;
       ?>
-      <div class="verify-result <?php echo $isValid ? 'valid' : 'revoked'; ?>">
-        <div class="verify-icon"><?php echo $isValid ? '✅' : '❌'; ?></div>
+      <div class="verify-result <?= $okColor ? 'valid' : 'revoked' ?>">
+        <div class="verify-icon"><?= $good ? '✅' : ($okColor ? 'ℹ️' : '❌') ?></div>
         <div style="display:inline-block;padding:4px 14px;border-radius:20px;font-weight:700;font-size:0.85rem;background:<?= $statusBg ?>;color:<?= $statusColor ?>">
-          <?= $statusLabel ?>
+          <?= htmlspecialchars($statusLabel) ?>
         </div>
-        <h2 style="margin-top:var(--space-2)"><?= htmlspecialchars($certData['achievement_title'] ?? 'Certificate') ?></h3>
-        <p style="color:var(--text-muted);margin-bottom:var(--space-4)">Issued to <strong><?= htmlspecialchars($certData['user_id'] ?? 'Unknown') ?></strong></p>
+        <h2 style="margin-top:var(--space-2)"><?= htmlspecialchars((string)$title) ?></h2>
+        <p style="color:var(--text-muted);margin-bottom:var(--space-4)">Issued to <strong><?= htmlspecialchars((string)$learner) ?></strong></p>
 
         <div class="credential-details">
           <div class="detail-row">
             <span class="label">Certificate ID</span>
-            <span class="value mono"><?= htmlspecialchars($certData['certificate_code']) ?></span>
+            <span class="value mono"><?= htmlspecialchars((string)$code) ?></span>
           </div>
+          <?php if ($local): ?>
           <div class="detail-row">
-            <span class="label">Type</span>
-            <span class="value"><?= htmlspecialchars($certData['type'] ?? 'Learning Path Completion') ?></span>
+            <span class="label">Web3Edu certificate</span>
+            <span class="value" style="<?= $local['status'] === 'valid' ? '' : 'color:var(--danger)' ?>"><?= htmlspecialchars($localLabels[$local['status']]) ?></span>
           </div>
           <div class="detail-row">
             <span class="label">Date Issued</span>
-            <span class="value"><?= isset($certData['issued_at']) ? date('F j, Y', strtotime($certData['issued_at'])) : 'N/A' ?></span>
+            <span class="value"><?= !empty($local['issued_at']) ? date('F j, Y', strtotime((string)$local['issued_at'])) : 'N/A' ?></span>
+          </div>
+          <?php endif; ?>
+          <div class="detail-row">
+            <span class="label">NEAR credential</span>
+            <span class="value" style="<?= in_array($near['status'], ['mismatch','revoked_on_chain','not_found_on_chain'], true) ? 'color:var(--danger)' : '' ?>"><?= htmlspecialchars($nearLabels[$near['status']] ?? $near['status']) ?></span>
+          </div>
+          <?php if (!empty($near['credential_id'])): ?>
+          <div class="detail-row">
+            <span class="label">NEAR credential ID</span>
+            <span class="value mono"><?= htmlspecialchars((string)$near['credential_id']) ?></span>
+          </div>
+          <?php endif; ?>
+          <?php if ($oc): ?>
+          <div class="detail-row">
+            <span class="label">On-chain learner</span>
+            <span class="value mono"><?= htmlspecialchars((string)($oc['learner_id'] ?? '')) ?></span>
           </div>
           <div class="detail-row">
             <span class="label">Issuer</span>
-            <span class="value"><?= htmlspecialchars($certData['issuer_id'] ?? 'Unknown') ?></span>
+            <span class="value mono"><?= htmlspecialchars((string)($oc['issuer_id'] ?? 'Unknown')) ?></span>
           </div>
+          <?php endif; ?>
+          <?php foreach ($near['checks'] as $k => $ok): ?>
+          <div class="detail-row">
+            <span class="label"><?= htmlspecialchars($checkLabels[$k] ?? $k) ?> matches certificate</span>
+            <span class="value" style="<?= $ok ? '' : 'color:var(--danger)' ?>"><?= $ok ? '✓ Match' : '✕ Mismatch' ?></span>
+          </div>
+          <?php endforeach; ?>
         </div>
+        <?php if ($near['message'] !== ''): ?>
+          <p><?= htmlspecialchars($near['message']) ?></p>
+        <?php endif; ?>
 
         <div class="verify-qr">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=<?= urlencode(SITE_URL . '/verify-near.php?id=' . urlencode($certData['certificate_code'])) ?>" width="140" height="140" alt="Verification QR code">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=<?= urlencode(SITE_URL . '/verify-near.php?id=' . urlencode((string)$code)) ?>" width="140" height="140" alt="Verification QR code">
           <div class="qr-label">Scan to verify</div>
         </div>
 
-        <?php if ($isValid): ?>
-          <a href="<?= SITE_URL ?>/certificate-view.php?code=<?= urlencode($certData['certificate_code']) ?>" class="btn btn-primary" style="margin-top:var(--space-4)">View Full Certificate</a>
+        <?php if ($local && $local['status'] === 'valid'): ?>
+          <a href="<?= SITE_URL ?>/certificate-view.php?code=<?= urlencode((string)$code) ?>" class="btn btn-primary" style="margin-top:var(--space-4)">View Full Certificate</a>
         <?php endif; ?>
       </div>
     <?php endif; ?>
@@ -168,7 +184,7 @@ require_once __DIR__ . '/includes/header.php';
   padding: var(--space-4);
 }
 .verify-card {
-  background: var(--bg-card);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
@@ -196,7 +212,7 @@ require_once __DIR__ . '/includes/header.php';
   text-align: center;
   padding: var(--space-6);
   border-radius: var(--radius-lg);
-  background: var(--bg-card2);
+  background: var(--surface-raised);
   border: 1px solid var(--border);
 }
 .verify-result.valid {
@@ -230,20 +246,20 @@ require_once __DIR__ . '/includes/header.php';
   display: flex;
   justify-content: space-between;
   padding: var(--space-2);
-  background: var(--bg-card);
-  border-radius: var(--radius);
+  background: var(--surface);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
 }
 .label {
   font-size: var(--text-sm);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 .value {
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-primary);
 }
 .mono {
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
 }
 .verify-qr {
@@ -255,7 +271,7 @@ require_once __DIR__ . '/includes/header.php';
 .verify-qr img {
   width: 140px;
   height: 140px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
 }
 .verify-qr .qr-label {
   font-size: var(--text-xs);

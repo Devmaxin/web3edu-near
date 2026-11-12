@@ -155,23 +155,34 @@ class NearAuth
         string $accountId,
         string $publicKey,
         string $signature,
-        array $signedPayload
+        array $signedPayload,
+?string &$diagnosticCode = null,
+array &$diagnosticDetails = []
     ): bool {
         // 1. Verify the nonce matches the challenge (exact string match)
         $receivedNonce = $signedPayload['nonce'] ?? '';
         if ($receivedNonce !== $challenge['nonce']) {
+            $diagnosticCode = 'NONCE_MISMATCH';
+            $diagnosticDetails = [];
+            error_log('[NEAR-VERIFY-DEBUG] NONCE_MISMATCH callbackUrlPresent=' . (isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0'));
             return false;
         }
 
         // 2. Verify the nonce decodes to exactly 32 bytes
         $nonceBytes = base64_decode($receivedNonce, true);
         if ($nonceBytes === false || strlen($nonceBytes) !== 32) {
+            $diagnosticCode = 'NONCE_INVALID_LENGTH';
+            $diagnosticDetails = [];
+            error_log('[NEAR-VERIFY-DEBUG] NONCE_INVALID_LENGTH callbackUrlPresent=' . (isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0'));
             return false;
         }
 
         // 3. Verify the recipient matches
         $receivedRecipient = $signedPayload['recipient'] ?? '';
         if ($receivedRecipient !== $challenge['recipient']) {
+            $diagnosticCode = 'RECIPIENT_MISMATCH';
+            $diagnosticDetails = [];
+            error_log('[NEAR-VERIFY-DEBUG] RECIPIENT_MISMATCH callbackUrlPresent=' . (isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0'));
             return false;
         }
 
@@ -189,22 +200,57 @@ class NearAuth
         // 6. Decode the signature (base64 -> exactly 64 bytes for Ed25519)
         $sigBytes = base64_decode($signature, true);
         if ($sigBytes === false || strlen($sigBytes) !== 64) {
+            $diagnosticCode = 'SIGNATURE_INVALID_LENGTH';
+            $diagnosticDetails = [];
+            error_log('[NEAR-VERIFY-DEBUG] SIGNATURE_INVALID_LENGTH callbackUrlPresent=' . (isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0'));
             return false;
         }
 
         // 7. Decode the public key (ed25519:base58 -> exactly 32 bytes)
         $pkBytes = self::decodeNearPublicKey($publicKey);
         if ($pkBytes === false || strlen($pkBytes) !== 32) {
+            $diagnosticCode = 'PUBLIC_KEY_INVALID_LENGTH';
+            $diagnosticDetails = [];
+            error_log('[NEAR-VERIFY-DEBUG] PUBLIC_KEY_INVALID_LENGTH callbackUrlPresent=' . (isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0'));
             return false;
         }
 
-       // 8. Verify Ed25519 signature cryptographically
-if (!sodium_crypto_sign_verify_detached($sigBytes, $digest, $pkBytes)) {
-    return false;
-}
+        // 8. Verify Ed25519 signature cryptographically
+        $callbackUrlPresent = isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0';
+        $ed25519Result = sodium_crypto_sign_verify_detached($sigBytes, $digest, $pkBytes);
+        if (!$ed25519Result) {
+            // Diagnostic: if callbackUrl was present, try verification without it
+            // to determine whether the wallet omitted callbackUrl from the signed payload.
+            // This never changes the original verification result.
+            $altVerified = '0';
+            if ($callbackUrlPresent === '1') {
+                $altPayload = $signedPayload;
+                $altPayload['callbackUrl'] = null;
+                $altMessage = self::serializeNep413Payload($altPayload);
+                $altDigestInput = self::NEP413_PREFIX . $altMessage;
+                $altDigest = hash('sha256', $altDigestInput, true);
+                $altVerified = sodium_crypto_sign_verify_detached($sigBytes, $altDigest, $pkBytes) ? '1' : '0';
+            }
+            $diagnosticCode = 'ED25519_VERIFICATION_FAILED';
+            $diagnosticDetails = [];
+            if ($callbackUrlPresent === '1') {
+                $diagnosticDetails['verified_without_callback_url'] = $altVerified === '1';
+            }
+            error_log('[NEAR-VERIFY-DEBUG] ED25519_VERIFICATION_FAILED callbackUrlPresent=' . $callbackUrlPresent . ' verifiedWithoutCallbackUrl=' . $altVerified);
+            return false;
+        }
 
 // 9. Verify the public key is authorized for the claimed NEAR account.
-return self::verifyAccountKey($accountId, $pkBytes, $publicKey);
+        $rpcResult = self::verifyAccountKey($accountId, $pkBytes, $publicKey);
+        if (!$rpcResult) {
+            $diagnosticCode = 'ACCOUNT_KEY_AUTHORIZATION_FAILED';
+            $diagnosticDetails = [];
+        } else {
+            $diagnosticCode = 'VERIFICATION_SUCCESS';
+            $diagnosticDetails = [];
+        }
+        error_log('[NEAR-VERIFY-DEBUG] ' . $diagnosticCode . ' callbackUrlPresent=' . (isset($signedPayload['callbackUrl']) && $signedPayload['callbackUrl'] !== '' ? '1' : '0'));
+        return $rpcResult;
     }
 
     /**
@@ -382,18 +428,28 @@ return self::verifyAccountKey($accountId, $pkBytes, $publicKey);
 
             // Network error or HTTP error → fail closed
             if ($response === false || $httpCode >= 400) {
+                error_log('[NEAR verifyAccountKey] curl failure: httpCode=' . var_export($httpCode, true) . ' curlError=' . curl_error($ch));
                 return false;
             }
 
             $data = json_decode($response, true);
-            if (!$data || isset($data['error'])) {
+            if (!$data) {
+                error_log('[NEAR verifyAccountKey] JSON decode failed');
+                return false;
+            }
+            if (isset($data['error'])) {
+                $err = $data['error'];
+                error_log('[NEAR verifyAccountKey] RPC error: name=' . ($err['name'] ?? 'unknown') . ' code=' . ($err['code'] ?? 'unknown') . ' message=' . ($err['message'] ?? 'unknown'));
                 return false;
             }
 
             // Key exists on account → authorized
-            return isset($data['result']['access_key']);
+            // view_access_key returns access-key fields directly under result (not nested under result.access_key)
+            $hasKey = is_array($data['result']) && isset($data['result']['nonce']);
+            return $hasKey;
         } catch (Exception $e) {
             // Any exception → fail closed
+            error_log('[NEAR verifyAccountKey] exception: ' . $e->getMessage());
             return false;
         }
     }

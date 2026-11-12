@@ -71,12 +71,16 @@ if (Web3Edu\Near\Auth\NearAuth::isRateLimited($challenge['action'])) {
 
 // Verify NEP-413 signature
 try {
+    $diagnosticCode = null;
+    $diagnosticDetails = [];
     $valid = Web3Edu\Near\Auth\NearAuth::verifyNep413Signature(
         $challenge,
         $accountId,
         $publicKey,
         $signature,
-        $signedPayload
+        $signedPayload,
+        $diagnosticCode,
+        $diagnosticDetails
     );
 } catch (Exception $e) {
     Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($challenge['action']);
@@ -88,7 +92,15 @@ try {
 if (!$valid) {
     Web3Edu\Near\Auth\NearAuth::recordFailedAttempt($challenge['action']);
     http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Invalid signature']);
+    $response = ['success' => false, 'error' => 'Invalid signature'];
+    // Diagnostic details only for the registration flow.
+    if ($challenge['action'] === 'register' && $diagnosticCode !== null) {
+        $response['diagnostic_code'] = $diagnosticCode;
+        if (isset($diagnosticDetails['verified_without_callback_url'])) {
+            $response['verified_without_callback_url'] = $diagnosticDetails['verified_without_callback_url'];
+        }
+    }
+    echo json_encode($response);
     exit;
 }
 
