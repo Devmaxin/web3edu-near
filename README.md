@@ -16,6 +16,16 @@ For the **NEAR HACKATHON: Build Beyond Boundaries**, Web3Edu was extended with a
 
 ---
 
+## Platform Preview
+
+### Web3Edu Learning Platform
+
+Explore structured Web3 learning, courses, and learning paths.
+
+![Web3Edu Learning Dashboard](readme-images/web3edu-dashboard.png)
+
+---
+
 ## Table of Contents
 
 - [The Problem](#the-problem)
@@ -62,6 +72,12 @@ The platform combines a familiar web-based learning experience with blockchain i
 ## NEAR Protocol Integration
 
 The NEAR integration introduces on-chain educational credentials to Web3Edu.
+
+### NEAR Wallet Integration
+
+Learners can connect their NEAR wallet to associate their educational achievements with their NEAR account.
+
+![Web3Edu NEAR Wallet Integration](readme-images/near-wallet.png)
 
 A custom smart contract deployed on NEAR Testnet records credential information associated with a learner's educational achievement.
 
@@ -289,6 +305,12 @@ A successful verification confirms that:
 6. The issuer matches the expected contract issuer.
 
 If the blockchain RPC is unavailable, the application distinguishes that situation from a confirmed invalid credential.
+
+### On-Chain Credential Verification
+
+Educational credentials can be independently checked against the NEAR Testnet smart contract.
+
+![Web3Edu NEAR Credential Verification](readme-images/near-verification.png)
 
 **Example verification:**
 
